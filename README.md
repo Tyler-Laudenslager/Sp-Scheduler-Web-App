@@ -7,8 +7,11 @@
 
 ### Plan for Tech Stack:
     Back-end : Go Programming
+    
     Front-end : React.js
+    
     Data Persitance : Postgresql 14.0
+    
     Deployment : Google Cloud
 
 *need resources and availability to learn all above*
