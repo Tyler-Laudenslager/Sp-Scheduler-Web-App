@@ -15,9 +15,9 @@ Prototype:
     January / Feb 2023
     
 Must Do Currently Before Anything Else:
-    1. SRS (Software Requirments Specification)
-    2. Design of UI (User Interface / Front end)
-    3. Design of Backend (Server side)
-    4. Rough Implementation.
+1. SRS (Software Requirments Specification)
+1. Design of UI (User Interface / Front end)
+1. Design of Backend (Server side)
+1. Rough Implementation.
     
 
