@@ -1,7 +1,7 @@
 <html>
     <body>
-        <h1>Standardized Patient Scheduler Web Application</h1>
-        <h3>Prototype Date:</h3>
+        <h2>Standardized Patient Scheduler Web Application</h2>
+        <h4>Prototype Date:</h4>
         &#8195;January / February 2023
     </body>
 </html>
