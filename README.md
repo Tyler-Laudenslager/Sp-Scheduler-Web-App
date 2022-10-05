@@ -14,7 +14,7 @@
         &#8195;Data-Persistance&#8195;->&#8195;&#8195;<a href="https://www.postgresql.org/">Postgresql</a></br></br>
         &#8195;Deployment&#8195;&#8195;&#8195; ->&#8195;&#8195;<a href="https://www.docker.com/">Docker Container</a>&#8195;<a href="https://www.digitalocean.com/products/droplets">Digital Ocean Droplet</a> </br></br>
         <p>Any questions / concerns concerning the contents of this repository can be directed to the repository owner :</p></br> 
-        <p>Email : tyler@lauden.cloud</b></p></br>
+        <p>Email : <b>tyler@lauden.cloud</b></p></br>
         <p>Note: All emails <b><i>not</i></b> concerning the contents of this repository will be quietly supressed.</p>
     </body>
 </html>
