@@ -15,6 +15,5 @@
         &#8195;Deployment&#8195;&#8195;&#8195; ->&#8195;&#8195;<a href="https://www.docker.com/">Docker Container</a>&#8195;<a href="https://www.digitalocean.com/products/droplets">Digital Ocean Droplet</a> </br></br>
         <p>Any questions / concerns concerning the contents of this repository can be directed to the repository admin :</p></br> 
         <p>Email : <b>tyler.laudenslager@sluhn.org</b></p></br>
-        
     </body>
 </html>
