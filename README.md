@@ -4,9 +4,9 @@
         <h3>Prototype Date:</h3>
         &#8195;January / February 2023
         <h3>Technology Stack:</h3>
-        &#8195;Front-End -> Bootstrap v5 : (bootstrap url)</br></br>
-        &#8195;Back-End -> Go Programming : (go url)</br></br>
-        &#8195;Data-Persistance -> Postgresql : (postgresql url)</br></br>
-        &#8195;Deployment -> Docker Container w/ Digitial Ocean Droplet : (docker url) (digitial ocean url)</br></br>
+        &#8195;Front-End&#8195;&#8195;&#8195;&#8195; ->&#8195;&#8195;<a href="https://getbootstrap.com/">Bootstrap v5</a></br></br>
+        &#8195;Back-End &#8195;&#8195;&#8195;&#8195; ->&#8195;&#8195;<a href="https://go.dev">Go Programming</a></br></br>
+        &#8195;Data-Persistance&#8195;->&#8195;&#8195;<a href="https://www.postgresql.org/">Postgresql</a></br></br>
+        &#8195;Deployment&#8195;&#8195;&#8195; ->&#8195;&#8195;<a href="https://www.docker.com/">Docker Container</a>&#8195;<a href="https://www.digitalocean.com/products/droplets">Digital Ocean Droplet</a> </br></br>
     </body>
 </html>
