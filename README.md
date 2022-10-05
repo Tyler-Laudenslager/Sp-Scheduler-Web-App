@@ -13,7 +13,7 @@
         &#8195;Back-End &#8195;&#8195;&#8195;&#8195; ->&#8195;&#8195;<a href="https://go.dev">Go Programming</a></br></br>
         &#8195;Data-Persistance&#8195;->&#8195;&#8195;<a href="https://www.postgresql.org/">Postgresql</a></br></br>
         &#8195;Deployment&#8195;&#8195;&#8195; ->&#8195;&#8195;<a href="https://www.docker.com/">Docker Container</a>&#8195;<a href="https://www.digitalocean.com/products/droplets">Digital Ocean Droplet</a> </br></br>
-        <p><b>Any questions / concerns concerning the contents of this repository can be directed to the repository owner :</p></br> <p>tyler@lauden.cloud</b></p></br>
-        <p><b>Note: All questions / concerns not concerning the contents of this repository will be quietly supressed.</b></p>
+        <p>Any questions / concerns concerning the contents of this repository can be directed to the repository owner :</p></br> <p>tyler@lauden.cloud</b></p></br>
+        <p>Note: All questions / concerns <b>not</b> concerning the contents of this repository will be quietly supressed.</p>
     </body>
 </html>
