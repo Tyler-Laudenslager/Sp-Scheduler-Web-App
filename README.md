@@ -5,7 +5,7 @@
         <p>This respository contains all the documentation, source files, and resources needed to deploy 
             the Standardized Patient Scheduler Web Application.</p>
         <h3>Purpose</h3>
-        <p>This web application was created with the intention to reduce time and complexity of assigning standardized patients within the St. Luke's University Hospital Network to scheduled medical training sessions.</p>
+        <p>This web application was created with the intention to reduce time and complexity of assigning standardized patients within the </br>St. Luke's University Hospital Network to scheduled medical training sessions.</p>
         <h3>Prototype Date:</h3>
         &#8195;January / February 2023
         <h3>Technology Stack:</h3>
