@@ -1,15 +1,15 @@
 # Sp-Scheduler-Web-App
 
 ### Purpose: 
-.. Web application that assists with assigning
-.. standardized patients to scheduled medical sessions.
+    Web application that assists with assigning
+    standardized patients to scheduled medical sessions.
 
 
 ### Plan for Tech Stack:
-..* Back-end : Go Programming
-..* Front-end : React.js
-..* Data Persitance : Postgresql 14.0
-..* Deployment : Google Cloud
+    Back-end : Go Programming
+    Front-end : React.js
+    Data Persitance : Postgresql 14.0
+    Deployment : Google Cloud
 
 *need resources and availability to learn all above*
   
