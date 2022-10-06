@@ -32,6 +32,18 @@ func (n Name) Create(full_name string) *Name {
 	}
 }
 
+type Instructor struct {
+	Name  Name
+	Title string
+}
+
+func (i Instructor) Create(full_name string, title string) *Instructor {
+	return &Instructor{
+		Name:  *Name{}.Create(full_name),
+		Title: title,
+	}
+}
+
 type SpUser struct {
 	Name                Name
 	Role                Role
@@ -43,10 +55,7 @@ type SpUser struct {
 	Email               string
 }
 
-func (spUser SpUser) Create(name Name,
-	role Role,
-	sex Sex,
-	email string) *SpUser {
+func (spUser SpUser) Create(name Name, role Role, sex Sex, email string) *SpUser {
 	return &SpUser{
 		Name:                name,
 		Role:                role,
@@ -69,9 +78,7 @@ type SpManager struct {
 	Email             string
 }
 
-func (spManager SpManager) Create(name Name,
-	role Role,
-	email string) *SpManager {
+func (spManager SpManager) Create(name Name, role Role, email string) *SpManager {
 	return &SpManager{
 		Name:              name,
 		Role:              role,
@@ -89,7 +96,7 @@ type Session struct {
 	Duration            string
 	Location            string
 	Description         string
-	Instructors         string
+	Instructors         []*Instructor
 	PatientsNeeded      int
 	PatientsAssigned    []*SpUser
 	PatientsAvailable   []*SpUser
@@ -97,17 +104,14 @@ type Session struct {
 	PatientsNoResponse  []*SpUser
 }
 
-func (s Session) Create(date string,
-	time string,
-	duration string,
-	location string) *Session {
+func (s Session) Create(date string, time string, duration string, location string) *Session {
 	return &Session{
 		Date:                date,
 		Time:                time,
 		Duration:            duration,
 		Location:            location,
 		Description:         "",
-		Instructors:         "",
+		Instructors:         []*Instructor{},
 		PatientsNeeded:      0,
 		PatientsAssigned:    []*SpUser{},
 		PatientsAvailable:   []*SpUser{},
