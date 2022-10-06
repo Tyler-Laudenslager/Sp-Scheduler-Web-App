@@ -14,13 +14,13 @@ const (
 	Female
 )
 
-type name struct {
-	first string
-	last  string
+type Name struct {
+	First string
+	Last  string
 }
 
-type SPUser struct {
-	Name                name
+type SpUser struct {
+	Name                Name
 	Role                Role
 	Sex                 Sex
 	SessionsAvailable   []*Session
@@ -30,14 +30,44 @@ type SPUser struct {
 	Email               string
 }
 
-type SPManager struct {
-	Name              name
+func (spUser SpUser) Create(name Name,
+	role Role,
+	sex Sex,
+	email string) *SpUser {
+	return &SpUser{
+		Name:                name,
+		Role:                role,
+		Sex:                 sex,
+		SessionsAvailable:   []*Session{},
+		SessionsUnavailable: []*Session{},
+		SessionsAssigned:    []*Session{},
+		Password:            "",
+		Email:               email,
+	}
+}
+
+type SpManager struct {
+	Name              Name
 	Role              Role
-	AssignedPatients  []*SPUser
-	SessionsManaged   []*SPUser
-	SessionsUnmanaged []*SPUser
+	AssignedPatients  []*SpUser
+	SessionsManaged   []*SpUser
+	SessionsUnmanaged []*SpUser
 	Password          string
 	Email             string
+}
+
+func (spManager SpManager) Create(name Name,
+	role Role,
+	email string) *SpManager {
+	return &SpManager{
+		Name:              name,
+		Role:              role,
+		AssignedPatients:  []*SpUser{},
+		SessionsManaged:   []*SpUser{},
+		SessionsUnmanaged: []*SpUser{},
+		Password:          "",
+		Email:             email,
+	}
 }
 
 type Session struct {
@@ -48,10 +78,29 @@ type Session struct {
 	Description         string
 	Instructors         string
 	PatientsNeeded      int
-	PatientsAssigned    []*SPUser
-	PatientsAvailable   []*SPUser
-	PatientsUnavailable []*SPUser
-	PatientsNoResponse  []*SPUser
+	PatientsAssigned    []*SpUser
+	PatientsAvailable   []*SpUser
+	PatientsUnavailable []*SpUser
+	PatientsNoResponse  []*SpUser
+}
+
+func (s Session) Create(date string,
+	time string,
+	duration string,
+	location string) *Session {
+	return &Session{
+		Date:                date,
+		Time:                time,
+		Duration:            duration,
+		Location:            location,
+		Description:         "",
+		Instructors:         "",
+		PatientsNeeded:      0,
+		PatientsAssigned:    []*SpUser{},
+		PatientsAvailable:   []*SpUser{},
+		PatientsUnavailable: []*SpUser{},
+		PatientsNoResponse:  []*SpUser{},
+	}
 }
 
 type Admin struct {
