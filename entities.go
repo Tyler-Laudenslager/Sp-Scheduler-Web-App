@@ -45,14 +45,14 @@ func (i Instructor) Create(full_name string, title string) *Instructor {
 }
 
 type SpUser struct {
-	Name                Name           `json:'Name'`
-	Role                Role           `json:'Role'`
-	Sex                 Sex            `json:'Sex'`
-	SessionsAvailable   []*SessionInfo `json:'SessionsAvailable'`
-	SessionsUnavailable []*SessionInfo `json:'SessionsUnavailable'`
-	SessionsAssigned    []*SessionInfo `json:'SessionsAssigned'`
-	Password            string         `json:'Password'`
-	Email               string         `json:'Email'`
+	Name                Name           `json:"Name"`
+	Role                Role           `json:"Role"`
+	Sex                 Sex            `json:"Sex"`
+	SessionsAvailable   []*SessionInfo `json:"SessionsAvailable"`
+	SessionsUnavailable []*SessionInfo `json:"SessionsUnavailable"`
+	SessionsAssigned    []*SessionInfo `json:"SessionsAssigned"`
+	Password            string         `json:"Password"`
+	Email               string         `json:"Email"`
 }
 
 func (spUser SpUser) Create(name Name, role Role, sex Sex, email string) *SpUser {
