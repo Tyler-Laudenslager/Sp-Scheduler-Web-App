@@ -19,8 +19,8 @@ const (
 )
 
 type Name struct {
-	First string
-	Last  string
+	First string `json:'First'`
+	Last  string `json:'Last'`
 }
 
 func (n Name) Create(full_name string) *Name {
@@ -33,8 +33,8 @@ func (n Name) Create(full_name string) *Name {
 }
 
 type Instructor struct {
-	Name  Name
-	Title string
+	Name  Name   `json:'Name'`
+	Title string `json:'Title'`
 }
 
 func (i Instructor) Create(full_name string, title string) *Instructor {
@@ -45,14 +45,14 @@ func (i Instructor) Create(full_name string, title string) *Instructor {
 }
 
 type SpUser struct {
-	Name                Name
-	Role                Role
-	Sex                 Sex
-	SessionsAvailable   []*Session
-	SessionsUnavailable []*Session
-	SessionsAssigned    []*Session
-	Password            string
-	Email               string
+	Name                Name           `json:'Name'`
+	Role                Role           `json:'Role'`
+	Sex                 Sex            `json:'Sex'`
+	SessionsAvailable   []*SessionInfo `json:'SessionsAvailable'`
+	SessionsUnavailable []*SessionInfo `json:'SessionsUnavailable'`
+	SessionsAssigned    []*SessionInfo `json:'SessionsAssigned'`
+	Password            string         `json:'Password'`
+	Email               string         `json:'Email'`
 }
 
 func (spUser SpUser) Create(name Name, role Role, sex Sex, email string) *SpUser {
@@ -60,22 +60,22 @@ func (spUser SpUser) Create(name Name, role Role, sex Sex, email string) *SpUser
 		Name:                name,
 		Role:                role,
 		Sex:                 sex,
-		SessionsAvailable:   []*Session{},
-		SessionsUnavailable: []*Session{},
-		SessionsAssigned:    []*Session{},
+		SessionsAvailable:   []*SessionInfo{},
+		SessionsUnavailable: []*SessionInfo{},
+		SessionsAssigned:    []*SessionInfo{},
 		Password:            "",
 		Email:               email,
 	}
 }
 
 type SpManager struct {
-	Name              Name
-	Role              Role
-	AssignedPatients  []*SpUser
-	SessionsManaged   []*SpUser
-	SessionsUnmanaged []*SpUser
-	Password          string
-	Email             string
+	Name              Name      `json:'Name'`
+	Role              Role      `json:'Role'`
+	AssignedPatients  []*SpUser `json:'AssignedPatients'`
+	SessionsManaged   []*SpUser `json:'SessionsManaged'`
+	SessionsUnmanaged []*SpUser `json:'SessionsUnmanaged'`
+	Password          string    `json:'Password`
+	Email             string    `json:'Email`
 }
 
 func (spManager SpManager) Create(name Name, role Role, email string) *SpManager {
@@ -91,17 +91,17 @@ func (spManager SpManager) Create(name Name, role Role, email string) *SpManager
 }
 
 type Session struct {
-	Date                string
-	Time                string
-	Duration            string
-	Location            string
-	Description         string
-	Instructors         []*Instructor
-	PatientsNeeded      int
-	PatientsAssigned    []*SpUser
-	PatientsAvailable   []*SpUser
-	PatientsUnavailable []*SpUser
-	PatientsNoResponse  []*SpUser
+	Date                string        `json:'Date'`
+	Time                string        `json:'Time'`
+	Duration            string        `json:'Duration'`
+	Location            string        `json:'Location'`
+	Description         string        `json:'Description'`
+	Instructors         []*Instructor `json:'Instructors'`
+	PatientsNeeded      int           `json:'PatientsNeeded'`
+	PatientsAssigned    []*SpUser     `json:'PatientsAssigned'`
+	PatientsAvailable   []*SpUser     `json:'PatientsAvailable'`
+	PatientsUnavailable []*SpUser     `json:'PatientsUnavailable'`
+	PatientsNoResponse  []*SpUser     `json:'PatientsNoResponse'`
 }
 
 func (s Session) Create(date string, time string, duration string, location string) *Session {
@@ -117,6 +117,22 @@ func (s Session) Create(date string, time string, duration string, location stri
 		PatientsAvailable:   []*SpUser{},
 		PatientsUnavailable: []*SpUser{},
 		PatientsNoResponse:  []*SpUser{},
+	}
+}
+
+type SessionInfo struct {
+	Date     string
+	Time     string
+	Duration string
+	Location string
+}
+
+func (s Session) Info() *SessionInfo {
+	return &SessionInfo{
+		Date:     s.Date,
+		Time:     s.Time,
+		Duration: s.Duration,
+		Location: s.Location,
 	}
 }
 
