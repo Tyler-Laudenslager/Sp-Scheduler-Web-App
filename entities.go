@@ -1,5 +1,9 @@
 package main
 
+import (
+	"strings"
+)
+
 type Role int
 type Sex int
 
@@ -17,6 +21,15 @@ const (
 type Name struct {
 	First string
 	Last  string
+}
+
+func (n Name) Create(full_name string) *Name {
+	fullname_split := strings.Split(full_name, " ")
+	first, last := fullname_split[0], fullname_split[1]
+	return &Name{
+		First: first,
+		Last:  last,
+	}
 }
 
 type SpUser struct {
@@ -103,5 +116,5 @@ func (s Session) Create(date string,
 	}
 }
 
-type Admin struct {
-}
+// type Admin struct {
+// }
