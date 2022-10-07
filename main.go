@@ -30,6 +30,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 	SpUsersBox := append(make(SpUsers, 0, 2), bob_marcs, susan_miller)
 	SpManagersBox := append(make(SpManagers, 0, 1), andy_thomas)
 	SessionsBox := append(make(SpSessions, 0, 1), session1)
+
 	HospitalCalendar := HospitalCalendar{
 		Users:    SpUsersBox,
 		Managers: SpManagersBox,
