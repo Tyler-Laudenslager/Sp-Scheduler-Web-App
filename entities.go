@@ -19,8 +19,8 @@ const (
 )
 
 type Name struct {
-	First string `json:'First'`
-	Last  string `json:'Last'`
+	First string `json:"First"`
+	Last  string `json:"Last"`
 }
 
 func (n Name) Create(full_name string) *Name {
@@ -33,8 +33,8 @@ func (n Name) Create(full_name string) *Name {
 }
 
 type Instructor struct {
-	Name  Name   `json:'Name'`
-	Title string `json:'Title'`
+	Name  Name   `json:"Name"`
+	Title string `json:"Title"`
 }
 
 func (i Instructor) Create(full_name string, title string) *Instructor {
@@ -69,13 +69,13 @@ func (spUser SpUser) Create(name Name, role Role, sex Sex, email string) *SpUser
 }
 
 type SpManager struct {
-	Name              Name      `json:'Name'`
-	Role              Role      `json:'Role'`
-	AssignedPatients  []*SpUser `json:'AssignedPatients'`
-	SessionsManaged   []*SpUser `json:'SessionsManaged'`
-	SessionsUnmanaged []*SpUser `json:'SessionsUnmanaged'`
-	Password          string    `json:'Password`
-	Email             string    `json:'Email`
+	Name              Name      `json:"Name"`
+	Role              Role      `json:"Role"`
+	AssignedPatients  []*SpUser `json:"AssignedPatients"`
+	SessionsManaged   []*SpUser `json:"SessionsManaged"`
+	SessionsUnmanaged []*SpUser `json:"SessionsUnmanaged"`
+	Password          string    `json:"Password"`
+	Email             string    `json:"Email"`
 }
 
 func (spManager SpManager) Create(name Name, role Role, email string) *SpManager {
@@ -91,17 +91,18 @@ func (spManager SpManager) Create(name Name, role Role, email string) *SpManager
 }
 
 type Session struct {
-	Date                string        `json:'Date'`
-	Time                string        `json:'Time'`
-	Duration            string        `json:'Duration'`
-	Location            string        `json:'Location'`
-	Description         string        `json:'Description'`
-	Instructors         []*Instructor `json:'Instructors'`
-	PatientsNeeded      int           `json:'PatientsNeeded'`
-	PatientsAssigned    []*SpUser     `json:'PatientsAssigned'`
-	PatientsAvailable   []*SpUser     `json:'PatientsAvailable'`
-	PatientsUnavailable []*SpUser     `json:'PatientsUnavailable'`
-	PatientsNoResponse  []*SpUser     `json:'PatientsNoResponse'`
+	Date                string        `json:"Date"`
+	Time                string        `json:"Time"`
+	Duration            string        `json:"Duration"`
+	Location            string        `json:"Location"`
+	Description         string        `json:"Description"`
+	Information         *SessionInfo  `json:"Information"`
+	Instructors         []*Instructor `json:"Instructors"`
+	PatientsNeeded      int           `json:"PatientsNeeded"`
+	PatientsAssigned    []*SpUser     `json:"PatientsAssigned"`
+	PatientsAvailable   []*SpUser     `json:"PatientsAvailable"`
+	PatientsUnavailable []*SpUser     `json:"PatientsUnavailable"`
+	PatientsNoResponse  []*SpUser     `json:"PatientsNoResponse"`
 }
 
 func (s Session) Create(date string, time string, duration string, location string) *Session {
@@ -111,6 +112,7 @@ func (s Session) Create(date string, time string, duration string, location stri
 		Duration:            duration,
 		Location:            location,
 		Description:         "",
+		Information:         &SessionInfo{},
 		Instructors:         []*Instructor{},
 		PatientsNeeded:      0,
 		PatientsAssigned:    []*SpUser{},
@@ -121,20 +123,24 @@ func (s Session) Create(date string, time string, duration string, location stri
 }
 
 type SessionInfo struct {
-	Date     string
-	Time     string
-	Duration string
-	Location string
+	Date     string `json:"Date"`
+	Time     string `json:"Time"`
+	Duration string `json:"Duration"`
+	Location string `json:"Location"`
 }
 
 func (s Session) Info() *SessionInfo {
-	return &SessionInfo{
-		Date:     s.Date,
-		Time:     s.Time,
-		Duration: s.Duration,
-		Location: s.Location,
+	if s.Information.Date == "" &&
+		s.Information.Time == "" &&
+		s.Information.Duration == "" &&
+		s.Information.Location == "" {
+
+		s.Information.Date = s.Date
+		s.Information.Time = s.Time
+		s.Information.Duration = s.Duration
+		s.Information.Location = s.Location
+		return s.Information
+	} else {
+		return s.Information
 	}
 }
-
-// type Admin struct {
-// }

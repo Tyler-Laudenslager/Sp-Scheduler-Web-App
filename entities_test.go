@@ -123,3 +123,21 @@ func TestSessionCreation(t *testing.T) {
 	}
 
 }
+
+func TestSessionInfoCreation(t *testing.T) {
+	SessionObj := Session{}.Create("11/23/2022", "11:00AM", "1H", "Anderson")
+	SessionInfo := SessionObj.Info()
+
+	if SessionInfo.Date != "11/23/2022" {
+		t.Error("Expected '11/23/2022' : Received", SessionInfo.Date)
+	}
+	if SessionInfo.Time != "11:00AM" {
+		t.Error("Expected '11:00AM' : Received", SessionInfo.Time)
+	}
+	if SessionInfo.Duration != "1H" {
+		t.Error("Expected '1H' : Received", SessionInfo.Duration)
+	}
+	if SessionInfo.Location != "Anderson" {
+		t.Error("Expected 'Anderson' : Received", SessionInfo.Location)
+	}
+}
