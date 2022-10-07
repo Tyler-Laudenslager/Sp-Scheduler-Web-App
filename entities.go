@@ -105,13 +105,13 @@ type Session struct {
 	PatientsNoResponse  []*SpUser     `json:"PatientsNoResponse"`
 }
 
-func (s Session) Create(date string, time string, duration string, location string) *Session {
+func (s Session) Create(date string, time string, duration string, location string, description string) *Session {
 	return &Session{
 		Date:                date,
 		Time:                time,
 		Duration:            duration,
 		Location:            location,
-		Description:         "",
+		Description:         description,
 		Information:         &SessionInfo{},
 		Instructors:         []*Instructor{},
 		PatientsNeeded:      0,
@@ -123,10 +123,11 @@ func (s Session) Create(date string, time string, duration string, location stri
 }
 
 type SessionInfo struct {
-	Date     string `json:"Date"`
-	Time     string `json:"Time"`
-	Duration string `json:"Duration"`
-	Location string `json:"Location"`
+	Date        string `json:"Date"`
+	Time        string `json:"Time"`
+	Duration    string `json:"Duration"`
+	Location    string `json:"Location"`
+	Description string `json:"Description"`
 }
 
 func (s Session) Info() *SessionInfo {
@@ -139,6 +140,7 @@ func (s Session) Info() *SessionInfo {
 		s.Information.Time = s.Time
 		s.Information.Duration = s.Duration
 		s.Information.Location = s.Location
+		s.Information.Description = s.Description
 		return s.Information
 	} else {
 		return s.Information

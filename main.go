@@ -17,7 +17,7 @@ func sendjson(w http.ResponseWriter, r *http.Request) {
 
 	andy_thomas := SpManager{}.Create(*Name{}.Create("Andy Thomas"), Manager, "andy@thomas.com")
 
-	session1 := Session{}.Create("11/15/2022", "11:00AM", "1H", "Anderson")
+	session1 := Session{}.Create("11/15/2022", "11:00AM", "1H", "Anderson", "Check-Up")
 
 	andy_thomas.AssignedPatients = append(andy_thomas.AssignedPatients, bob_marcs, susan_miller)
 	andy_thomas.SessionsManaged = append(andy_thomas.SessionsManaged, session1)

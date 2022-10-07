@@ -90,7 +90,7 @@ func TestSpManagerCreation(t *testing.T) {
 }
 
 func TestSessionCreation(t *testing.T) {
-	SessionObj := Session{}.Create("11/23/2022", "11:00AM", "1H", "Anderson")
+	SessionObj := Session{}.Create("11/23/2022", "11:00AM", "1H", "Anderson", "Check-Up")
 	if SessionObj.Date != "11/23/2022" {
 		t.Error("Expected '11/23/2022' : Received", SessionObj.Date)
 	}
@@ -102,6 +102,9 @@ func TestSessionCreation(t *testing.T) {
 	}
 	if SessionObj.Location != "Anderson" {
 		t.Error("Expected 'Anderson' : Received", SessionObj.Location)
+	}
+	if SessionObj.Description != "Check-Up" {
+		t.Error("Expected 'Check-Up' : Received", SessionObj.Description)
 	}
 	if SessionObj.PatientsNeeded != 0 {
 		t.Error("Expected '0' : Received", SessionObj.PatientsNeeded)
@@ -125,7 +128,7 @@ func TestSessionCreation(t *testing.T) {
 }
 
 func TestSessionInfoCreation(t *testing.T) {
-	SessionObj := Session{}.Create("11/23/2022", "11:00AM", "1H", "Anderson")
+	SessionObj := Session{}.Create("11/23/2022", "11:00AM", "1H", "Anderson", "Check-Up")
 	SessionInfo := SessionObj.Info()
 
 	if SessionInfo.Date != "11/23/2022" {
@@ -139,5 +142,8 @@ func TestSessionInfoCreation(t *testing.T) {
 	}
 	if SessionInfo.Location != "Anderson" {
 		t.Error("Expected 'Anderson' : Received", SessionInfo.Location)
+	}
+	if SessionInfo.Description != "Check-Up" {
+		t.Error("Expected 'Check-Up' : Received", SessionInfo.Description)
 	}
 }
