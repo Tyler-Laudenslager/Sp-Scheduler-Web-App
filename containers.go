@@ -1,10 +1,10 @@
 package main
 
 type HospitalCalendar struct {
-	Users    SpUsers    `json:"SP Users"`
-	Managers SpManagers `json:"SP Managers"`
-	Sessions SpSessions `json:"SP Sessions"`
+	Users    SpUsersBox    `json:"SP Users"`
+	Managers SpManagersBox `json:"SP Managers"`
+	Sessions SpSessionsBox `json:"SP Sessions"`
 }
-type SpUsers []*SpUser
-type SpManagers []*SpManager
-type SpSessions []*Session
+type SpUsersBox []*SpUser
+type SpManagersBox []*SpManager
+type SpSessionsBox []*Session

@@ -27,9 +27,9 @@ func index(w http.ResponseWriter, r *http.Request) {
 	session1.PatientsAssigned = append(session1.PatientsAssigned, bob_marcs)
 	session1.PatientsAssigned = append(session1.PatientsAssigned, susan_miller)
 
-	SpUsersBox := append(make(SpUsers, 0, 2), bob_marcs, susan_miller)
-	SpManagersBox := append(make(SpManagers, 0, 1), andy_thomas)
-	SessionsBox := append(make(SpSessions, 0, 1), session1)
+	SpUsersBox := append(make(SpUsersBox, 0, 2), bob_marcs, susan_miller)
+	SpManagersBox := append(make(SpManagersBox, 0, 1), andy_thomas)
+	SessionsBox := append(make(SpSessionsBox, 0, 1), session1)
 
 	HospitalCalendar := HospitalCalendar{
 		Users:    SpUsersBox,
