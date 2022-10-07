@@ -69,13 +69,13 @@ func (spUser SpUser) Create(name Name, role Role, sex Sex, email string) *SpUser
 }
 
 type SpManager struct {
-	Name              Name      `json:"Name"`
-	Role              Role      `json:"Role"`
-	AssignedPatients  []*SpUser `json:"AssignedPatients"`
-	SessionsManaged   []*SpUser `json:"SessionsManaged"`
-	SessionsUnmanaged []*SpUser `json:"SessionsUnmanaged"`
-	Password          string    `json:"Password"`
-	Email             string    `json:"Email"`
+	Name              Name       `json:"Name"`
+	Role              Role       `json:"Role"`
+	AssignedPatients  []*SpUser  `json:"AssignedPatients"`
+	SessionsManaged   []*Session `json:"SessionsManaged"`
+	SessionsUnmanaged []*Session `json:"SessionsUnmanaged"`
+	Password          string     `json:"Password"`
+	Email             string     `json:"Email"`
 }
 
 func (spManager SpManager) Create(name Name, role Role, email string) *SpManager {
@@ -83,8 +83,8 @@ func (spManager SpManager) Create(name Name, role Role, email string) *SpManager
 		Name:              name,
 		Role:              role,
 		AssignedPatients:  []*SpUser{},
-		SessionsManaged:   []*SpUser{},
-		SessionsUnmanaged: []*SpUser{},
+		SessionsManaged:   []*Session{},
+		SessionsUnmanaged: []*Session{},
 		Password:          "",
 		Email:             email,
 	}
