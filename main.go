@@ -3,9 +3,15 @@ package main
 import (
 	"encoding/json"
 	"net/http"
+	"text/template"
 )
 
-func index(w http.ResponseWriter, r *http.Request) {
+func login(w http.ResponseWriter, r *http.Request) {
+	t, _ := template.ParseFiles("login.html")
+	t.Execute(w, t)
+}
+
+func sendjson(w http.ResponseWriter, r *http.Request) {
 	bob_marcs := SpUser{}.Create(*Name{}.Create("Bob Marcs"), SP, Male, "bob@marcs.com")
 	susan_miller := SpUser{}.Create(*Name{}.Create("Susan Miller"), SP, Female, "susan@miller.com")
 
@@ -49,6 +55,8 @@ func main() {
 	server := http.Server{
 		Addr: "127.0.0.1:6600",
 	}
-	http.HandleFunc("/", index)
+	http.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir("images"))))
+	http.HandleFunc("/json", sendjson)
+	http.HandleFunc("/", login)
 	server.ListenAndServe()
 }
