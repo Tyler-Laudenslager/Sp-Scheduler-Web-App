@@ -7,7 +7,7 @@
         <h3>Purpose</h3>
         <p>This web application was created with the intention to reduce time and complexity of assigning standardized patients within the </br>St. Luke's University Hospital Network to scheduled medical training sessions.</p>
         <h3>Progress</h3>
-        <p>Images of Progress for the Web Application can be accessed under /ProgressImages </p>
+        <p>Progress images can be accessed under <a href="https://github.com/Tyler-Laudenslager/Sp-Scheduler-Web-App/tree/main/images/progress">/images/progress/</a></p>
         <h3>Prototype Date:</h3>
         &#8195;December 2023
         <h3>Technology Stack:</h3>
@@ -15,7 +15,7 @@
         &#8195;Back-End &#8195;&#8195;&#8195;&#8195; ->&#8195;&#8195;<a href="https://go.dev">Go Programming</a></br></br>
         &#8195;Data-Persistance&#8195;->&#8195;&#8195;<a href="https://www.postgresql.org/">Postgresql</a></br></br>
         &#8195;Deployment&#8195;&#8195;&#8195; ->&#8195;&#8195;<a href="https://www.docker.com/">Docker Container</a>&#8195;<a href="https://www.digitalocean.com/products/droplets">Digital Ocean Droplet</a> </br></br>
-        <p>Any questions / concerns concerning the contents of this repository can be directed to the repository admin :</p></br> 
+        <p>Any questions / concerns concerning the contents of this repository can be directed to the project admin :</p></br> 
         <p>Email : <b>tyler.laudenslager@sluhn.org</b></p></br>
     </body>
 </html>
