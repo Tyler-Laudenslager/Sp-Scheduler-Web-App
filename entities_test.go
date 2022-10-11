@@ -91,19 +91,19 @@ func TestSpManagerCreation(t *testing.T) {
 
 func TestSessionCreation(t *testing.T) {
 	SessionObj := Session{}.Create("11/23/2022", "11:00AM", "1H", "Anderson", "Check-Up")
-	if SessionObj.Date != "11/23/2022" {
+	if SessionObj.Information.Date != "11/23/2022" {
 		t.Error("Expected '11/23/2022' : Received", SessionObj.Date)
 	}
-	if SessionObj.Time != "11:00AM" {
+	if SessionObj.Information.Time != "11:00AM" {
 		t.Error("Expected '11:00AM' : Received", SessionObj.Time)
 	}
-	if SessionObj.Duration != "1H" {
+	if SessionObj.Information.Duration != "1H" {
 		t.Error("Expected '1H' : Received", SessionObj.Duration)
 	}
-	if SessionObj.Location != "Anderson" {
+	if SessionObj.Information.Location != "Anderson" {
 		t.Error("Expected 'Anderson' : Received", SessionObj.Location)
 	}
-	if SessionObj.Description != "Check-Up" {
+	if SessionObj.Information.Description != "Check-Up" {
 		t.Error("Expected 'Check-Up' : Received", SessionObj.Description)
 	}
 	if SessionObj.PatientsNeeded != 0 {

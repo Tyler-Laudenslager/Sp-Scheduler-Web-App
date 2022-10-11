@@ -107,12 +107,11 @@ type Session struct {
 
 func (s Session) Create(date string, time string, duration string, location string, description string) *Session {
 	return &Session{
-		Date:                date,
-		Time:                time,
-		Duration:            duration,
-		Location:            location,
-		Description:         description,
-		Information:         &SessionInfo{},
+		Information: &SessionInfo{Date: date,
+			Time:        time,
+			Duration:    duration,
+			Location:    location,
+			Description: description},
 		Instructors:         []*Instructor{},
 		PatientsNeeded:      0,
 		PatientsAssigned:    []*SpUser{},
