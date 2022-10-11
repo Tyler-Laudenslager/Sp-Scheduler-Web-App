@@ -2,13 +2,19 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"text/template"
 )
 
 func login(w http.ResponseWriter, r *http.Request) {
-	t, _ := template.ParseFiles("login.html")
-	t.Execute(w, t)
+	t, _ := template.ParseFiles("html-boilerplate.html", "login-content.html")
+	t.ExecuteTemplate(w, "html-boilerplate", "")
+}
+
+func authenticate(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, r.PostFormValue("userid"))
+	fmt.Fprintln(w, r.PostFormValue("password"))
 }
 
 func sendjson(w http.ResponseWriter, r *http.Request) {
@@ -57,6 +63,7 @@ func main() {
 	}
 	http.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir("images"))))
 	http.HandleFunc("/json", sendjson)
+	http.HandleFunc("/authenticate", authenticate)
 	http.HandleFunc("/", login)
 	server.ListenAndServe()
 }
