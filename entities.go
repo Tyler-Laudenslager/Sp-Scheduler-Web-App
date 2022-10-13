@@ -1,6 +1,9 @@
 package main
 
 import (
+	"database/sql/driver"
+	"encoding/json"
+	"errors"
 	"strings"
 )
 
@@ -32,9 +35,35 @@ func (n Name) Create(full_name string) *Name {
 	}
 }
 
+func (n Name) Value() (driver.Value, error) {
+	return json.Marshal(n)
+}
+
+func (n *Name) Scan(value interface{}) error {
+	b, ok := value.([]byte)
+	if !ok {
+		return errors.New("type assertion to []byte failed")
+	}
+
+	return json.Unmarshal(b, &n)
+}
+
 type Instructor struct {
 	Name  Name   `json:"Name"`
 	Title string `json:"Title"`
+}
+
+func (i Instructor) Value() (driver.Value, error) {
+	return json.Marshal(i)
+}
+
+func (i *Instructor) Scan(value interface{}) error {
+	b, ok := value.([]byte)
+	if !ok {
+		return errors.New("type assertion to []byte failed")
+	}
+
+	return json.Unmarshal(b, &i)
 }
 
 func (i Instructor) Create(full_name string, title string) *Instructor {
@@ -45,7 +74,9 @@ func (i Instructor) Create(full_name string, title string) *Instructor {
 }
 
 type SpUser struct {
+	Id                  uint           `json:"Id"`
 	Name                Name           `json:"Name"`
+	Username            string         `json:"Username"`
 	Role                Role           `json:"Role"`
 	Sex                 Sex            `json:"Sex"`
 	SessionsAvailable   []*SessionInfo `json:"SessionsAvailable"`
@@ -55,27 +86,55 @@ type SpUser struct {
 	Email               string         `json:"Email"`
 }
 
+func (sp SpUser) Value() (driver.Value, error) {
+	return json.Marshal(sp)
+}
+
+func (sp *SpUser) Scan(value interface{}) error {
+	b, ok := value.([]byte)
+	if !ok {
+		return errors.New("type assertion to []byte failed")
+	}
+
+	return json.Unmarshal(b, &sp)
+}
+
 func (spUser SpUser) Create(name Name, role Role, sex Sex, email string) *SpUser {
 	return &SpUser{
 		Name:                name,
 		Role:                role,
 		Sex:                 sex,
-		SessionsAvailable:   []*SessionInfo{},
-		SessionsUnavailable: []*SessionInfo{},
-		SessionsAssigned:    []*SessionInfo{},
+		SessionsAvailable:   make([]*SessionInfo, 0),
+		SessionsUnavailable: make([]*SessionInfo, 0),
+		SessionsAssigned:    make([]*SessionInfo, 0),
 		Password:            "",
 		Email:               email,
 	}
 }
 
 type SpManager struct {
+	Id                uint       `json:"Id"`
 	Name              Name       `json:"Name"`
+	Username          string     `json:"Username"`
 	Role              Role       `json:"Role"`
 	AssignedPatients  []*SpUser  `json:"AssignedPatients"`
 	SessionsManaged   []*Session `json:"SessionsManaged"`
 	SessionsUnmanaged []*Session `json:"SessionsUnmanaged"`
 	Password          string     `json:"Password"`
 	Email             string     `json:"Email"`
+}
+
+func (sp SpManager) Value() (driver.Value, error) {
+	return json.Marshal(sp)
+}
+
+func (sp *SpManager) Scan(value interface{}) error {
+	b, ok := value.([]byte)
+	if !ok {
+		return errors.New("type assertion to []byte failed")
+	}
+
+	return json.Unmarshal(b, &sp)
 }
 
 func (spManager SpManager) Create(name Name, role Role, email string) *SpManager {
@@ -91,11 +150,7 @@ func (spManager SpManager) Create(name Name, role Role, email string) *SpManager
 }
 
 type Session struct {
-	Date                string        `json:"Date"`
-	Time                string        `json:"Time"`
-	Duration            string        `json:"Duration"`
-	Location            string        `json:"Location"`
-	Description         string        `json:"Description"`
+	Id                  uint          `json:"Id"`
 	Information         *SessionInfo  `json:"Information"`
 	Instructors         []*Instructor `json:"Instructors"`
 	PatientsNeeded      int           `json:"PatientsNeeded"`
@@ -103,6 +158,19 @@ type Session struct {
 	PatientsAvailable   []*SpUser     `json:"PatientsAvailable"`
 	PatientsUnavailable []*SpUser     `json:"PatientsUnavailable"`
 	PatientsNoResponse  []*SpUser     `json:"PatientsNoResponse"`
+}
+
+func (s Session) Value() (driver.Value, error) {
+	return json.Marshal(s)
+}
+
+func (s *Session) Scan(value interface{}) error {
+	b, ok := value.([]byte)
+	if !ok {
+		return errors.New("type assertion to []byte failed")
+	}
+
+	return json.Unmarshal(b, &s)
 }
 
 func (s Session) Create(date string, time string, duration string, location string, description string) *Session {
@@ -129,19 +197,15 @@ type SessionInfo struct {
 	Description string `json:"Description"`
 }
 
-func (s Session) Info() *SessionInfo {
-	if s.Information.Date == "" &&
-		s.Information.Time == "" &&
-		s.Information.Duration == "" &&
-		s.Information.Location == "" {
+func (si SessionInfo) Value() (driver.Value, error) {
+	return json.Marshal(si)
+}
 
-		s.Information.Date = s.Date
-		s.Information.Time = s.Time
-		s.Information.Duration = s.Duration
-		s.Information.Location = s.Location
-		s.Information.Description = s.Description
-		return s.Information
-	} else {
-		return s.Information
+func (si *SessionInfo) Scan(value interface{}) error {
+	b, ok := value.([]byte)
+	if !ok {
+		return errors.New("type assertion to []byte failed")
 	}
+
+	return json.Unmarshal(b, &si)
 }

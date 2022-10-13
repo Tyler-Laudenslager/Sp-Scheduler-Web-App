@@ -28,11 +28,11 @@ func sendjson(w http.ResponseWriter, r *http.Request) {
 	andy_thomas.AssignedPatients = append(andy_thomas.AssignedPatients, bob_marcs, susan_miller)
 	andy_thomas.SessionsManaged = append(andy_thomas.SessionsManaged, session1)
 
-	bob_marcs.SessionsAvailable = append(bob_marcs.SessionsAvailable, session1.Info())
-	bob_marcs.SessionsAssigned = append(bob_marcs.SessionsAssigned, session1.Info())
+	bob_marcs.SessionsAvailable = append(bob_marcs.SessionsAvailable, session1.Information)
+	bob_marcs.SessionsAssigned = append(bob_marcs.SessionsAssigned, session1.Information)
 
-	susan_miller.SessionsAvailable = append(susan_miller.SessionsAvailable, session1.Info())
-	susan_miller.SessionsAssigned = append(susan_miller.SessionsAssigned, session1.Info())
+	susan_miller.SessionsAvailable = append(susan_miller.SessionsAvailable, session1.Information)
+	susan_miller.SessionsAssigned = append(susan_miller.SessionsAssigned, session1.Information)
 
 	session1.PatientsAvailable = append(session1.PatientsAvailable, bob_marcs)
 	session1.PatientsAvailable = append(session1.PatientsAvailable, susan_miller)
