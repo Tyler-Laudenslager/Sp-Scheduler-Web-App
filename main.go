@@ -13,8 +13,19 @@ func login(w http.ResponseWriter, r *http.Request) {
 }
 
 func authenticate(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, r.PostFormValue("userid"))
-	fmt.Fprintln(w, r.PostFormValue("password"))
+	username := r.PostFormValue("userid")
+	password := r.PostFormValue("password")
+	spuser, err := GetSpUserRecord(username, db)
+	if err != nil {
+		login(w, r)
+	}
+	if CheckPasswordHash(password, spuser.Password) {
+		fmt.Fprintln(w, "User Authenticated!")
+		fmt.Fprintln(w, "Welcome to the Dashboard ", spuser.Name.First, spuser.Name.Last)
+	} else {
+		login(w, r)
+	}
+
 }
 
 func sendjson(w http.ResponseWriter, r *http.Request) {
@@ -61,6 +72,26 @@ func main() {
 	server := http.Server{
 		Addr: "127.0.0.1:6600",
 	}
+	hashedPassword, err := HashPassword("letmein")
+	if err != nil {
+		fmt.Println("Error Hashing Password")
+		return
+	}
+	spuser := SpUser{
+		Name:     *Name{}.Create("Robert Pike"),
+		Username: "rpike",
+		Role:     SP,
+		Sex:      Male,
+		Password: hashedPassword,
+		Email:    "rpike@duck.com",
+	}
+	err = spuser.MakeRecord(db)
+	if err != nil {
+		fmt.Println("Error Making Record -> ", err)
+		return
+	}
+	fmt.Println("Created Record in Database -> ", spuser.Name)
+
 	http.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir("images"))))
 	http.HandleFunc("/json", sendjson)
 	http.HandleFunc("/authenticate", authenticate)
