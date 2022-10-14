@@ -5,26 +5,57 @@ import (
 	"fmt"
 	"net/http"
 	"text/template"
+
+	"github.com/gorilla/sessions"
+)
+
+var (
+	// key must be 16, 24 or 32 bytes long (AES-128, AES-192 or AES-256)
+	key   = []byte("super-secret-key")
+	store = sessions.NewCookieStore(key)
 )
 
 func login(w http.ResponseWriter, r *http.Request) {
+	session, _ := store.Get(r, "cookie-name")
+	if auth, ok := session.Values["authenticated"].(bool); ok && auth {
+		dashboard(w, r)
+		return
+	}
 	t, _ := template.ParseFiles("html-boilerplate.html", "login-content.html")
 	t.ExecuteTemplate(w, "html-boilerplate", "")
 }
 
+func dashboard(w http.ResponseWriter, r *http.Request) {
+	session, _ := store.Get(r, "cookie-name")
+	spuser, err := GetSpUserRecord(session.Values["username"].(string), db)
+	if err != nil {
+		fmt.Println("Error Get SP user record in authenticate: ", err)
+		return
+	}
+	fmt.Fprintln(w, "User Authenticated with Cookie!")
+	fmt.Fprintln(w, "Welcome to the Dashboard ", spuser.Name.First, spuser.Name.Last)
+}
+
 func authenticate(w http.ResponseWriter, r *http.Request) {
+	session, _ := store.Get(r, "cookie-name")
 	username := r.PostFormValue("userid")
 	password := r.PostFormValue("password")
 	spuser, err := GetSpUserRecord(username, db)
 	if err != nil {
 		login(w, r)
 	}
-	if CheckPasswordHash(password, spuser.Password) {
-		fmt.Fprintln(w, "User Authenticated!")
-		fmt.Fprintln(w, "Welcome to the Dashboard ", spuser.Name.First, spuser.Name.Last)
+	if !CheckPasswordHash(password, spuser.Password) {
+		login(w, r)
 	} else {
+		session.Values["authenticated"] = true
+		session.Values["username"] = spuser.Username
+	}
+	if auth, ok := session.Values["authenticated"].(bool); !ok || !auth {
 		login(w, r)
 	}
+	session.Save(r, w)
+	fmt.Fprintln(w, "User Authenticated!")
+	fmt.Fprintln(w, "Welcome to the Dashboard ", spuser.Name.First, spuser.Name.Last)
 
 }
 
