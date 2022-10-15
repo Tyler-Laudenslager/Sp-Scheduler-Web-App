@@ -32,8 +32,10 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Error Get SP user record in authenticate: ", err)
 		return
 	}
-	fmt.Fprintln(w, "User Authenticated with Cookie!")
-	fmt.Fprintln(w, "Welcome to the Dashboard ", spuser.Name.First, spuser.Name.Last)
+	/* fmt.Fprintln(w, "User Authenticated with Cookie!")
+	fmt.Fprintln(w, "Welcome to the Dashboard ", spuser.Name.First, spuser.Name.Last) */
+	t, _ := template.ParseFiles("html-boilerplate.html", "dashboard-content.html")
+	t.ExecuteTemplate(w, "html-boilerplate", spuser)
 }
 
 func authenticate(w http.ResponseWriter, r *http.Request) {
@@ -54,9 +56,7 @@ func authenticate(w http.ResponseWriter, r *http.Request) {
 		login(w, r)
 	}
 	session.Save(r, w)
-	fmt.Fprintln(w, "User Authenticated!")
-	fmt.Fprintln(w, "Welcome to the Dashboard ", spuser.Name.First, spuser.Name.Last)
-
+	dashboard(w, r)
 }
 
 func sendjson(w http.ResponseWriter, r *http.Request) {
