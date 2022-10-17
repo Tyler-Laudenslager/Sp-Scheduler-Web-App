@@ -142,17 +142,13 @@ func testGetAllSessions(db *sql.DB) (err error) {
 	session3.MakeRecord(db)
 	session4.MakeRecord(db)
 
-	session_records, err := GetAllSessionRecords(db)
+	_, err = GetAllSessionInfoRecords(db)
 
 	if err != nil {
 		fmt.Println("Error Get All Session Records: ", err)
 		return
 	}
 
-	for i := 0; i < 4; i++ {
-		session_records[i].Display()
-		fmt.Println()
-	}
 	session.DeleteRecord(db)
 	session2.DeleteRecord(db)
 	session3.DeleteRecord(db)

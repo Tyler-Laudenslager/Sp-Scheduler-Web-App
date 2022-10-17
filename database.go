@@ -351,20 +351,20 @@ func (s *Session) DeleteRecord(db *sql.DB) (err error) {
 	return
 }
 
-func GetAllSessionRecords(db *sql.DB) (sessions []Session, err error) {
+func GetAllSessionInfoRecords(db *sql.DB) (sessions []*SessionInfo, err error) {
 	rows, err := db.Query("select id, date, time, duration, location, description from sessions")
 	if err != nil {
 		return
 	}
 
 	for rows.Next() {
-		session := Session{Information: &SessionInfo{}}
+		session := &Session{Information: &SessionInfo{}}
 		err = rows.Scan(&session.Id, &session.Information.Date, &session.Information.Time, &session.Information.Duration,
 			&session.Information.Location, &session.Information.Description)
 		if err != nil {
 			return
 		}
-		sessions = append(sessions, session)
+		sessions = append(sessions, session.Information)
 	}
 	rows.Close()
 	return

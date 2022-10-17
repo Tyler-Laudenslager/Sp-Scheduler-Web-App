@@ -28,13 +28,21 @@ func login(w http.ResponseWriter, r *http.Request) {
 func dashboard(w http.ResponseWriter, r *http.Request) {
 	session, _ := store.Get(r, "cookie-name")
 	spuser, err := GetSpUserRecord(session.Values["username"].(string), db)
+
 	if err != nil {
 		fmt.Println("Error Get SP user record in authenticate: ", err)
 		return
 	}
 	/* fmt.Fprintln(w, "User Authenticated with Cookie!")
 	fmt.Fprintln(w, "Welcome to the Dashboard ", spuser.Name.First, spuser.Name.Last) */
-	t, _ := template.ParseFiles("html-boilerplate.html", "dashboard-content.html")
+	t, _ := template.ParseFiles("html-boilerplate.html", "dashboard-content.html", "session-content.html")
+	session_records, err := GetAllSessionInfoRecords(db)
+	if err != nil {
+		fmt.Println("Error Get All Session Records: ", err)
+	}
+
+	spuser.SessionsAvailable = session_records
+
 	t.ExecuteTemplate(w, "html-boilerplate", spuser)
 }
 
@@ -108,14 +116,39 @@ func main() {
 		fmt.Println("Error Hashing Password")
 		return
 	}
+	session := Session{}.Create("11/25/2022", "11:00AM", "1H", "Anderson", "Check-Up")
+	err = session.MakeRecord(db)
+	if err != nil {
+		fmt.Println("Error Making Session Record 1: ", err)
+	}
+	fmt.Println("Created Session -> ", session.Information)
+	session2 := Session{}.Create("12/25/2022", "12:00AM", "2H", "Anderson", "Follow-Up")
+	err = session2.MakeRecord(db)
+	if err != nil {
+		fmt.Println("Error Making Session Record 2: ", err)
+	}
+	fmt.Println("Created Session -> ", session2.Information)
+	session3 := Session{}.Create("1/25/2023", "1:00AM", "3H", "Anderson", "Invasion")
+	err = session3.MakeRecord(db)
+	if err != nil {
+		fmt.Println("Error Making Session Record 3: ", err)
+	}
+	fmt.Println("Created Session -> ", session3.Information)
+	session4 := Session{}.Create("2/25/2024", "2:00AM", "4H", "Anderson", "Holy-Grail")
+	err = session4.MakeRecord(db)
+	if err != nil {
+		fmt.Println("Error Making Session Record 4: ", err)
+	}
+	fmt.Println("Created Session -> ", session4.Information)
 	spuser := SpUser{
-		Name:     *Name{}.Create("Robert Pike"),
+		Name:     *Name{}.Create("Robert Pikert"),
 		Username: "rpike",
 		Role:     SP,
 		Sex:      Male,
 		Password: hashedPassword,
 		Email:    "rpike@duck.com",
 	}
+
 	err = spuser.MakeRecord(db)
 	if err != nil {
 		fmt.Println("Error Making Record -> ", err)
