@@ -16,17 +16,16 @@ var (
 )
 
 func login(w http.ResponseWriter, r *http.Request) {
-	session, _ := store.Get(r, "cookie-name")
+	session, _ := store.Get(r, "sessionAuthSPCalendar")
 	if auth, ok := session.Values["authenticated"].(bool); ok && auth {
-		dashboard(w, r)
-		return
+		http.Redirect(w, r, "/dashboard", http.StatusFound)
 	}
 	t, _ := template.ParseFiles("html-boilerplate.html", "login-content.html")
 	t.ExecuteTemplate(w, "html-boilerplate", "")
 }
 
 func dashboard(w http.ResponseWriter, r *http.Request) {
-	session, _ := store.Get(r, "cookie-name")
+	session, _ := store.Get(r, "sessionAuthSPCalendar")
 	spuser, err := GetSpUserRecord(session.Values["username"].(string), db)
 
 	if err != nil {
@@ -47,24 +46,24 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 }
 
 func authenticate(w http.ResponseWriter, r *http.Request) {
-	session, _ := store.Get(r, "cookie-name")
+	session, _ := store.Get(r, "sessionAuthSPCalendar")
 	username := r.PostFormValue("userid")
 	password := r.PostFormValue("password")
 	spuser, err := GetSpUserRecord(username, db)
 	if err != nil {
-		login(w, r)
+		http.Redirect(w, r, "/login", http.StatusFound)
 	}
 	if !CheckPasswordHash(password, spuser.Password) {
-		login(w, r)
+		http.Redirect(w, r, "/login", http.StatusFound)
 	} else {
 		session.Values["authenticated"] = true
 		session.Values["username"] = spuser.Username
 	}
 	if auth, ok := session.Values["authenticated"].(bool); !ok || !auth {
-		login(w, r)
+		http.Redirect(w, r, "/login", http.StatusFound)
 	}
 	session.Save(r, w)
-	dashboard(w, r)
+	http.Redirect(w, r, "/dashboard", http.StatusFound)
 }
 
 func sendjson(w http.ResponseWriter, r *http.Request) {
@@ -116,7 +115,7 @@ func main() {
 		fmt.Println("Error Hashing Password")
 		return
 	}
-	session := Session{}.Create("11/25/2022", "11:00AM", "1H", "Anderson", "Check-Up")
+	session := Session{}.Create("11/25/2022", "11:00AM", "1H", "Sacred Heart", "Check-Up")
 	err = session.MakeRecord(db)
 	if err != nil {
 		fmt.Println("Error Making Session Record 1: ", err)
@@ -128,20 +127,20 @@ func main() {
 		fmt.Println("Error Making Session Record 2: ", err)
 	}
 	fmt.Println("Created Session -> ", session2.Information)
-	session3 := Session{}.Create("1/25/2023", "1:00AM", "3H", "Anderson", "Invasion")
+	session3 := Session{}.Create("1/25/2023", "1:00PM", "3H", "Allentown", "Skills Workshop")
 	err = session3.MakeRecord(db)
 	if err != nil {
 		fmt.Println("Error Making Session Record 3: ", err)
 	}
 	fmt.Println("Created Session -> ", session3.Information)
-	session4 := Session{}.Create("2/25/2024", "2:00AM", "4H", "Anderson", "Holy-Grail")
+	session4 := Session{}.Create("2/25/2024", "2:00PM", "4H", "Anderson", "ED Skills Assessment")
 	err = session4.MakeRecord(db)
 	if err != nil {
 		fmt.Println("Error Making Session Record 4: ", err)
 	}
 	fmt.Println("Created Session -> ", session4.Information)
 	spuser := SpUser{
-		Name:     *Name{}.Create("Robert Pikert"),
+		Name:     *Name{}.Create("Robert Pike"),
 		Username: "rpike",
 		Role:     SP,
 		Sex:      Male,
@@ -157,6 +156,7 @@ func main() {
 	fmt.Println("Created Record in Database -> ", spuser.Name)
 
 	http.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir("images"))))
+	http.HandleFunc("/dashboard", dashboard)
 	http.HandleFunc("/json", sendjson)
 	http.HandleFunc("/authenticate", authenticate)
 	http.HandleFunc("/", login)
