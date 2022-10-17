@@ -14,7 +14,7 @@ func init() {
 	var err error
 	db, err = sql.Open("postgres", "user=postgres dbname=sp_calendar password=rxpt221!@# sslmode=disable")
 	if err != nil {
-		panic(err)
+		fmt.Println("Error in init: ", err)
 	}
 }
 
@@ -271,7 +271,7 @@ func (s *Session) MakeRecord(db *sql.DB) (err error) {
 	}
 	return
 }
-func GetSessionRecord(id uint, db *sql.DB) (s Session, err error) {
+func GetSessionRecord(sinfo *SessionInfo, db *sql.DB) (s Session, err error) {
 	s = Session{
 		Information: &SessionInfo{}}
 
@@ -283,7 +283,7 @@ func GetSessionRecord(id uint, db *sql.DB) (s Session, err error) {
 
 	err = db.QueryRow("select id, date, time, duration, location, description, "+
 		"instructors, patientsneeded, patientsassigned, patientsavailable, patientsunavailable, patientsnoresponse "+
-		"from sessions where id = $1 ", id).Scan(&s.Id, &s.Information.Date, &s.Information.Time, &s.Information.Duration, &s.Information.Location,
+		"from sessions where date = $1 and time = $2 and duration = $3 and location = $4 and description = $5 ", sinfo.Date, sinfo.Time, sinfo.Duration, sinfo.Location, sinfo.Description).Scan(&s.Id, &s.Information.Date, &s.Information.Time, &s.Information.Duration, &s.Information.Location,
 		&s.Information.Description, &instructorsByte, &s.PatientsNeeded,
 		&patientsAssignedByte, &patientsAvailableByte, &patientsUnavailableByte, &patientsNoResponseByte)
 

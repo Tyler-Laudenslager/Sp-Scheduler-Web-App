@@ -1,11 +1,12 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"testing"
 )
 
-func testSpUser() (err error) {
+func testSpUser(db *sql.DB) (err error) {
 	spuser := SpUser{
 		Name:     *Name{}.Create("Robert Pike"),
 		Username: "rpike",
@@ -29,40 +30,29 @@ func testSpUser() (err error) {
 		return
 	}
 
-	fmt.Println("Created Record -> ", spuser.Name)
-	fmt.Println()
-
 	spuser, err = GetSpUserRecord("rpike", db)
 
 	if err != nil {
-		fmt.Println("Error in main:", err)
+		fmt.Println("Error in Retrieving Record SP:", err)
 		return
 	}
 
-	fmt.Println("Retrieved Record -> ")
-	spuser.Display()
 	spuser.Email = "rpike@mousemail.com"
 	err = spuser.UpdateRecord(db)
 	if err != nil {
-		fmt.Println("Error in Update Main", err)
+		fmt.Println("Error in Update Record SP: ", err)
 		return
 	}
-	fmt.Println()
 
-	fmt.Println("Updated Record -> ")
-	spuser.Display()
-
-	fmt.Println()
 	err = spuser.DeleteRecord(db)
 	if err != nil {
-		fmt.Println("Error in Deletion of Record in Main: ", err)
+		fmt.Println("Error in Deletion of Record SP: ", err)
 		return
 	}
-	fmt.Println("Deleted Record -> ", spuser.Username)
 
 	return
 }
-func testSpManager() (err error) {
+func testSpManager(db *sql.DB) (err error) {
 	spmanager := SpManager{
 		Name:     *Name{}.Create("Lisa Thomas"),
 		Username: "lthomas",
@@ -76,18 +66,11 @@ func testSpManager() (err error) {
 		fmt.Println("Error Make Record Sp Manager in Main", err)
 	}
 
-	fmt.Println("Created Record -> ", spmanager.Name)
-	fmt.Println()
-
 	spmanager, err = GetSpManagerRecord("lthomas", db)
 
 	if err != nil {
 		fmt.Println("Error in retrieving SpManager record from DB", err)
 	}
-
-	fmt.Println("Retrieved Record ->")
-	spmanager.Display()
-	fmt.Println()
 
 	spuser := SpUser{
 		Name:     *Name{}.Create("Robert Pike"),
@@ -111,72 +94,61 @@ func testSpManager() (err error) {
 		return
 	}
 
-	fmt.Println("Updated Record -> ")
-	spmanager.Display()
-	fmt.Println()
-
 	err = spmanager.DeleteRecord(db)
 	if err != nil {
 		fmt.Println("Error Deleting Record Sp Manager in Main", err)
 	}
-	fmt.Println("Deleted Record -> ", spmanager.Username)
 	return
 }
 
-func testSession() (err error) {
+func testSession(db *sql.DB) (err error) {
 	session := Session{}.Create("11/25/2022", "11:00AM", "1H", "Anderson", "Check-Up")
 	err = session.MakeRecord(db)
 	if err != nil {
-		fmt.Println("Error Make session: ", err)
+		fmt.Println("Error Make Session: ", err)
 	}
-	fmt.Println()
-	fmt.Println("Created Record ->", *session.Information)
-	fmt.Println()
 
-	session2, err := GetSessionRecord(1, db)
+	session2, err := GetSessionRecord(session.Information, db)
 
 	if err != nil {
-		fmt.Println("Error in main: ", err)
+		fmt.Println("Error in Get Session: ", err)
 	}
-
-	fmt.Println("Record Retrieved -> ")
-	session2.Display()
-	fmt.Println()
 
 	session2.Information.Date = "12/15/2022"
 	session2.Information.Description = "Follow Up"
 	session2.Information.Location = "Park Ave"
 	err = session2.UpdateRecord(db)
 	if err != nil {
-		fmt.Println("Error Updating Record in Main", err)
+		fmt.Println("Error Updating Record Session: ", err)
 		return
 	}
-	fmt.Println("Updated Record ->: ")
-	session2.Display()
-	fmt.Println()
 
 	err = session2.DeleteRecord(db)
 	if err != nil {
-		fmt.Println("Error Deleting Record in Main", err)
+		fmt.Println("Error Deleting Record Session: ", err)
 		return
 	}
-	fmt.Println("Deleted Record ->", *session2.Information)
 	return
 }
 
 func TestDB(t *testing.T) {
 
-	err := testSpUser()
+	db, err := sql.Open("postgres", "user=postgres dbname=sp_calendar password=rxpt221!@# sslmode=disable")
+	if err != nil {
+		fmt.Println("Error after opening db: ", err)
+	}
+
+	err = testSpUser(db)
 	if err != nil {
 		fmt.Println("Error test db user in main: ", err)
 	}
 
-	err = testSpManager()
+	err = testSpManager(db)
 	if err != nil {
 		fmt.Println("Error test db user in main: ", err)
 	}
 
-	err = testSession()
+	err = testSession(db)
 	if err != nil {
 		fmt.Println("Error test db session in main: ", err)
 	}
