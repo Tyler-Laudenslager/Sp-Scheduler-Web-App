@@ -65,6 +65,7 @@ func main() {
 	http.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir("images"))))
 	http.HandleFunc("/dashboard", dashboard)
 	http.HandleFunc("/json", sendjson)
+	http.HandleFunc("/logout", logout)
 	http.HandleFunc("/authenticate", authenticate)
 	http.HandleFunc("/", login)
 	server.ListenAndServe()

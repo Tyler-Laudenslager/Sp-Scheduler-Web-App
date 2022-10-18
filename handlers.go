@@ -20,6 +20,15 @@ func login(w http.ResponseWriter, r *http.Request) {
 	t.ExecuteTemplate(w, "html-boilerplate", "")
 }
 
+func logout(w http.ResponseWriter, r *http.Request) {
+	session, _ := store.Get(r, "sessionAuthSPCalendar")
+
+	// Revoke users authentication
+	session.Values["authenticated"] = false
+	session.Save(r, w)
+	http.Redirect(w, r, "/login", httpRedirectResponse)
+}
+
 func dashboard(w http.ResponseWriter, r *http.Request) {
 	session, _ := store.Get(r, "sessionAuthSPCalendar")
 	if auth, ok := session.Values["authenticated"].(bool); !ok || !auth {
