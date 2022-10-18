@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"text/template"
+	"time"
 )
 
 const (
@@ -35,38 +36,69 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/login", httpRedirectResponse)
 		return
 	}
-	spuser, err := GetSpUserRecord(session.Values["username"].(string), db)
-
-	if err != nil {
-		fmt.Println("Error Get SP user record in authenticate: ", err)
-		return
+	var t *template.Template
+	var spmanager SpManager
+	isSpManager := false
+	dashboard_content := DashboardContent{
+		Date: time.Now().Format("01-02-2006"),
 	}
-	/* fmt.Fprintln(w, "User Authenticated with Cookie!")
-	fmt.Fprintln(w, "Welcome to the Dashboard ", spuser.Name.First, spuser.Name.Last) */
-	t, _ := template.ParseFiles("html-boilerplate.html", "dashboard-content.html", "session-content.html")
 	session_records, err := GetAllSessionInfoRecords(db)
 	if err != nil {
 		fmt.Println("Error Get All Session Records: ", err)
 	}
+	spuser, err := GetSpUserRecord(session.Values["username"].(string), db)
 
-	spuser.SessionsAvailable = session_records
+	if err != nil {
+		spmanager, err = GetSpManagerRecord(session.Values["username"].(string), db)
+		if err != nil {
+			fmt.Println("Error Get User record in dashboard: ", err)
+			return
+		}
+		session_records_manager, err := GetAllSessionRecords(db)
+		if err != nil {
+			fmt.Println("Error Get All Session records in dashboard: ", err)
+			return
+		}
+		spmanager.SessionsUnmanaged = session_records_manager
+		dashboard_content.User = spmanager
+		isSpManager = true
+	} else {
+		spuser.SessionsAvailable = session_records
+		dashboard_content.User = spuser
+	}
+	if !isSpManager {
+		t, _ = template.ParseFiles("html-boilerplate.html", "dashboard-content.html", "session-content.html")
+	} else {
+		t, _ = template.ParseFiles("html-boilerplate.html", "dashboard-content-manager.html", "session-content-manager.html")
+	}
 
-	t.ExecuteTemplate(w, "html-boilerplate", spuser)
+	t.ExecuteTemplate(w, "html-boilerplate", dashboard_content)
 }
 
 func authenticate(w http.ResponseWriter, r *http.Request) {
+	var spmanager SpManager
+	isSpManager := false
 	session, _ := store.Get(r, "sessionAuthSPCalendar")
 	username := r.PostFormValue("userid")
 	password := r.PostFormValue("password")
 	spuser, err := GetSpUserRecord(username, db)
 	if err != nil {
-		http.Redirect(w, r, "/login", httpRedirectResponse)
+		spmanager, err = GetSpManagerRecord(username, db)
+		if err != nil {
+			http.Redirect(w, r, "/login", httpRedirectResponse)
+		}
+		isSpManager = true
 	}
-	if !CheckPasswordHash(password, spuser.Password) {
+	if !isSpManager && !CheckPasswordHash(password, spuser.Password) {
 		http.Redirect(w, r, "/login", httpRedirectResponse)
 	} else {
-		session.Values["authenticated"] = true
-		session.Values["username"] = spuser.Username
+		if isSpManager && CheckPasswordHash(password, spmanager.Password) {
+			session.Values["authenticated"] = true
+			session.Values["username"] = spmanager.Username
+		} else {
+			session.Values["authenticated"] = true
+			session.Values["username"] = spuser.Username
+		}
 	}
 	if auth, ok := session.Values["authenticated"].(bool); !ok || !auth {
 		http.Redirect(w, r, "/login", httpRedirectResponse)

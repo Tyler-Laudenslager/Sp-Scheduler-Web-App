@@ -369,3 +369,49 @@ func GetAllSessionInfoRecords(db *sql.DB) (sessions []*SessionInfo, err error) {
 	rows.Close()
 	return
 }
+
+func GetAllSessionRecords(db *sql.DB) (sessions []*Session, err error) {
+	rows, err := db.Query("select id, date, time, duration, location, description, instructors, patientsneeded, " +
+		"patientsavailable, patientsassigned, patientsunavailable, patientsnoresponse" + " from sessions")
+	if err != nil {
+		return
+	}
+
+	for rows.Next() {
+		session := &Session{Information: &SessionInfo{}}
+		var instructorsByte []byte
+		var patientsAssignedByte []byte
+		var patientsAvailableByte []byte
+		var patientsUnavailableByte []byte
+		var patientsNoResponseByte []byte
+		err = rows.Scan(&session.Id, &session.Information.Date, &session.Information.Time, &session.Information.Duration,
+			&session.Information.Location, &session.Information.Description, &instructorsByte, &session.PatientsNeeded,
+			&patientsAssignedByte, &patientsAvailableByte, &patientsUnavailableByte, &patientsNoResponseByte)
+		if err != nil {
+			return
+		}
+		err = json.Unmarshal(instructorsByte, &session.Instructors)
+		if err != nil {
+			return
+		}
+		err = json.Unmarshal(patientsAssignedByte, &session.PatientsAssigned)
+		if err != nil {
+			return
+		}
+		err = json.Unmarshal(patientsAvailableByte, &session.PatientsAvailable)
+		if err != nil {
+			return
+		}
+		err = json.Unmarshal(patientsUnavailableByte, &session.PatientsUnavailable)
+		if err != nil {
+			return
+		}
+		err = json.Unmarshal(patientsNoResponseByte, &session.PatientsNoResponse)
+		if err != nil {
+			return
+		}
+		sessions = append(sessions, session)
+	}
+	rows.Close()
+	return
+}

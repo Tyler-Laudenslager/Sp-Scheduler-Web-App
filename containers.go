@@ -8,3 +8,8 @@ type HospitalCalendar struct {
 type SpUsersBox []*SpUser
 type SpManagersBox []*SpManager
 type SpSessionsBox []*Session
+
+type DashboardContent struct {
+	Date string
+	User interface{}
+}

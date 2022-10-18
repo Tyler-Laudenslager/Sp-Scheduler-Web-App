@@ -3,9 +3,9 @@
     <div class="container py-5">
         <div class="card" style="position: relative; align-content: flex-center; width: 14rem;">
             <div class="card-body">
-                <h5 class="card-text">Name: {{ .Name.First }} {{ .Name.Last }}</h5>
-                <h5 class="card-text">Role: SP </h5>
-                <h5 class="card-text">Date: 10/17/2022</h5>
+                <h5 class="card-text">Name: {{ .User.Name.First }} {{ .User.Name.Last }}</h5>
+                <h5 class="card-text">Role: {{ .User.Role }} </h5>
+                <h5 class="card-text">Date: {{ .Date }} </h5>
             </div>
         </div>
         <button type="button" class="btn me-4 mt-4 btn-info position-absolute top-0 end-0 logout-btn"

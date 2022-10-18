@@ -21,7 +21,7 @@ CREATE TABLE SpManagers (
 	name JSONB NOT NULL,
 	username varchar(30) NOT NULL,
 	role INT NOT NULL,
-	password varchar(50),
+	password varchar(100),
 	email varchar(50) NOT NULL,
 	assignedpatients JSONB,
 	sessionsmanaged JSONB,

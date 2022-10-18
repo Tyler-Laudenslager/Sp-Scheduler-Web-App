@@ -22,6 +22,11 @@ func main() {
 		fmt.Println("Error Hashing Password")
 		return
 	}
+	hashedPassword2, err := HashPassword("rxpt221!@#")
+	if err != nil {
+		fmt.Println("Error Hashing Password")
+		return
+	}
 	session := Session{}.Create("11/25/2022", "11:00AM", "1H", "Sacred Heart", "Check-Up")
 	err = session.MakeRecord(db)
 	if err != nil {
@@ -55,12 +60,27 @@ func main() {
 		Email:    "rpike@duck.com",
 	}
 
+	spmanager := SpManager{
+		Name:     *Name{}.Create("Thomas Avalon"),
+		Username: "tavalon",
+		Role:     Manager,
+		Password: hashedPassword2,
+		Email:    "tavalon@duck.com",
+	}
+
 	err = spuser.MakeRecord(db)
 	if err != nil {
 		fmt.Println("Error Making Record -> ", err)
 		return
 	}
 	fmt.Println("Created Record in Database -> ", spuser.Name)
+
+	err = spmanager.MakeRecord(db)
+	if err != nil {
+		fmt.Println("Error Making Record -> ", err)
+		return
+	}
+	fmt.Println("Created Record in Database -> ", spmanager.Name)
 
 	http.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir("images"))))
 	http.HandleFunc("/dashboard", dashboard)

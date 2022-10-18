@@ -1,0 +1,24 @@
+{{ define "content" }}
+<section style="background-color: #508bfc;">
+    <div class="container py-5">
+        <div class="card" style="position: relative; align-content: flex-center; width: 14rem;">
+            <div class="card-body">
+                <h5 class="card-text">Name: {{ .User.Name.First }} {{ .User.Name.Last }}</h5>
+                <h5 class="card-text">Role: {{ .User.Role }} </h5>
+                <h5 class="card-text">Date: {{ .Date }} </h5>
+            </div>
+        </div>
+        <button type="button" class="btn me-4 mt-4 btn-info position-absolute top-0 end-0 logout-btn"
+                style="background-color:white; color:#508bfc;"">
+            <a href="/logout" style="text-decoration: none;">Logout</a>
+        </button>
+        <div class="card mt-4 position-absolute top-0 start-50 translate-middle-x">
+            <div class="card-body">
+            <h2 class="card-title">Sessions Unmanaged</h2>
+            </div>
+        </div>
+        {{ template "session-content" .User }}
+    </div>
+</div>
+
+{{ end }}
