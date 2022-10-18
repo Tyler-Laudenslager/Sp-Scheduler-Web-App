@@ -28,24 +28,28 @@ func main() {
 		return
 	}
 	session := Session{}.Create("11/25/2022", "11:00AM", "1H", "Sacred Heart", "Check-Up")
+	session.PatientsNeeded = 6
 	err = session.MakeRecord(db)
 	if err != nil {
 		fmt.Println("Error Making Session Record 1: ", err)
 	}
 	fmt.Println("Created Session -> ", session.Information)
 	session2 := Session{}.Create("12/25/2022", "12:00AM", "2H", "Anderson", "Follow-Up")
+	session2.PatientsNeeded = 4
 	err = session2.MakeRecord(db)
 	if err != nil {
 		fmt.Println("Error Making Session Record 2: ", err)
 	}
 	fmt.Println("Created Session -> ", session2.Information)
 	session3 := Session{}.Create("1/25/2023", "1:00PM", "3H", "Allentown", "Skills Workshop")
+	session3.PatientsNeeded = 2
 	err = session3.MakeRecord(db)
 	if err != nil {
 		fmt.Println("Error Making Session Record 3: ", err)
 	}
 	fmt.Println("Created Session -> ", session3.Information)
 	session4 := Session{}.Create("2/25/2024", "2:00PM", "4H", "Anderson", "ED Skills Assessment")
+	session4.PatientsNeeded = 3
 	err = session4.MakeRecord(db)
 	if err != nil {
 		fmt.Println("Error Making Session Record 4: ", err)

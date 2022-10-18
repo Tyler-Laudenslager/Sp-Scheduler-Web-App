@@ -12,4 +12,5 @@ type SpSessionsBox []*Session
 type DashboardContent struct {
 	Date string
 	User interface{}
+	Role string
 }

@@ -60,10 +60,12 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		spmanager.SessionsUnmanaged = session_records_manager
+		dashboard_content.Role = "Manager"
 		dashboard_content.User = spmanager
 		isSpManager = true
 	} else {
 		spuser.SessionsAvailable = session_records
+		dashboard_content.Role = "SP"
 		dashboard_content.User = spuser
 	}
 	if !isSpManager {
