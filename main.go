@@ -13,10 +13,7 @@ var (
 	store = sessions.NewCookieStore(key)
 )
 
-func main() {
-	server := http.Server{
-		Addr: "127.0.0.1:6600",
-	}
+func init() {
 	hashedPassword, err := HashPassword("letmein")
 	if err != nil {
 		fmt.Println("Error Hashing Password")
@@ -85,6 +82,12 @@ func main() {
 		return
 	}
 	fmt.Println("Created Record in Database -> ", spmanager.Name)
+}
+
+func main() {
+	server := http.Server{
+		Addr: "127.0.0.1:6600",
+	}
 
 	http.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir("images"))))
 	http.HandleFunc("/dashboard", dashboard)

@@ -65,7 +65,7 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 		isSpManager = true
 	} else {
 		spuser.SessionsAvailable = session_records
-		dashboard_content.Role = "SP"
+		dashboard_content.Role = "Standardized Patient"
 		dashboard_content.User = spuser
 	}
 	if !isSpManager {
