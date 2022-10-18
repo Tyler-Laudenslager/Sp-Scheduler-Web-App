@@ -76,30 +76,28 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 }
 
 func authenticate(w http.ResponseWriter, r *http.Request) {
-	var spmanager SpManager
-	isSpManager := false
 	session, _ := store.Get(r, "sessionAuthSPCalendar")
 	username := r.PostFormValue("userid")
 	password := r.PostFormValue("password")
 	spuser, err := GetSpUserRecord(username, db)
 	if err != nil {
-		spmanager, err = GetSpManagerRecord(username, db)
+		spmanager, err := GetSpManagerRecord(username, db)
 		if err != nil {
 			http.Redirect(w, r, "/login", httpRedirectResponse)
 		}
-		isSpManager = true
-	}
-	if !isSpManager && !CheckPasswordHash(password, spuser.Password) {
-		http.Redirect(w, r, "/login", httpRedirectResponse)
-	} else {
-		if isSpManager && CheckPasswordHash(password, spmanager.Password) {
-			session.Values["authenticated"] = true
-			session.Values["username"] = spmanager.Username
-		} else {
-			session.Values["authenticated"] = true
-			session.Values["username"] = spuser.Username
+		if !CheckPasswordHash(password, spmanager.Password) {
+			http.Redirect(w, r, "/login", httpRedirectResponse)
 		}
+		session.Values["authenticated"] = true
+		session.Values["username"] = spmanager.Username
+	} else {
+		if !CheckPasswordHash(password, spuser.Password) {
+			http.Redirect(w, r, "/login", httpRedirectResponse)
+		}
+		session.Values["authenticated"] = true
+		session.Values["username"] = spuser.Username
 	}
+
 	if auth, ok := session.Values["authenticated"].(bool); !ok || !auth {
 		http.Redirect(w, r, "/login", httpRedirectResponse)
 	}
