@@ -62,11 +62,11 @@ func init() {
 	}
 
 	spmanager := SpManager{
-		Name:     *Name{}.Create("Thomas Avalon"),
-		Username: "tavalon",
+		Name:     *Name{}.Create("Emily Garey"),
+		Username: "egarey",
 		Role:     Manager,
 		Password: hashedPassword2,
-		Email:    "tavalon@duck.com",
+		Email:    "egarey@duck.com",
 	}
 
 	err = spuser.MakeRecord(db)
