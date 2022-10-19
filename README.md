@@ -4,8 +4,11 @@
         <h3>About</h3>
         <p>This respository contains all the documentation, source files, and resources needed to deploy 
             the Standardized Patient Scheduler Web Application.</p>
+        <p>Developed using MacOS Monterey 12.6 Apple M1</p>
+        <p>Go Programming Version -> go1.19.2 darwin/amd64</p>
+        <p>Postgresql Version -> 14.5</p>
         <h3>Purpose</h3>
-        <p>This web application was created with the intention to reduce time and complexity of assigning standardized patients within the </br>St. Luke's University Hospital Network to scheduled medical training sessions.</p>
+        <p>This web application was created with the intention to reduce time and complexity of assigning standardized patients within the St. Luke's University Hospital Network to scheduled medical training sessions.</p>
         <h3>Progress</h3>
         <p>Progress images can be accessed under <a href="https://github.com/Tyler-Laudenslager/Sp-Scheduler-Web-App/tree/main/images/progress">/images/progress/</a></p>
         <h3>Prototype Date:</h3>
