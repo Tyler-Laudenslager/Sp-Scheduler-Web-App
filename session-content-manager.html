@@ -1,12 +1,14 @@
 {{ define "session-content" }}
 
 <div class="vstack gap-2 d-flex align-items-center position: relative;">
-    <button type="button" class="mb-4 btn btn-primary btn-lrg position-abolute top-0 end-0">Create Session</button>
     {{ range .SessionsUnmanaged }}
     <div class="card" style="width: 40rem; background-color: #f7f8f7;">
         <div class="card-body">
-            <div class="vstack gap-1 d-flex align-items-center position-absolute top-50 end-0 translate-middle-y">
-                <button type="button" class="btn btn-outline-primary position: relative">Edit Info</button>
+            <div class="vstack me-2 gap-1 d-flex align-items-center position-absolute top-50 end-0 translate-middle-y">
+                <button type="button" class="btn btn-outline-primary position: relative">
+                    Additional Information
+                </button>
+                <button type="button" class="btn btn-outline-primary position: relative">Manage Info</button>
                 <button type="button" class="btn btn-outline-primary position: relative">Assign SPs</button>
                 <button type="button" class="btn btn-outline-danger position: relative">
                     Delete
@@ -19,7 +21,6 @@
             <h5 class="card-text">Time: {{ .Information.Time }}</h5>
             <h5 class="card-text">Duration: {{ .Information.Duration }}</h5>
             <h5 class="card-text">Location: {{ .Information.Location }}</h5>
-            <h5 class="card-text">Description: {{ .Information.Description }}</h5>
             <h5 class="card-text">SPs Needed: {{ .PatientsNeeded }}</h5>
         </div>
     </div>
