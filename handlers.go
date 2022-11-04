@@ -77,6 +77,126 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 	t.ExecuteTemplate(w, "html-boilerplate", dashboard_content)
 }
 
+func signupavailable(w http.ResponseWriter, r *http.Request) {
+	duplicate := false
+	session, _ := store.Get(r, "sessionAuthSPCalendar")
+	if auth, ok := session.Values["authenticated"].(bool); !ok || !auth {
+		http.Redirect(w, r, "/login", httpRedirectResponse)
+		return
+	}
+	spuser, err := GetSpUserRecord(session.Values["username"].(string), db)
+	if err != nil {
+		fmt.Println("Error: GetSpUserRecord in signupavailable", err)
+	}
+	sessionInfo := SessionInfo{
+		Date:        r.PostFormValue("Date"),
+		Time:        r.PostFormValue("Time"),
+		Duration:    r.PostFormValue("Duration"),
+		Location:    r.PostFormValue("Location"),
+		Description: r.PostFormValue("Description"),
+	}
+
+	availableSessionRecord, err := GetSessionRecord(&sessionInfo, db)
+	if err != nil {
+		fmt.Println("Error GetSessionRecord in signupavailable", err)
+	}
+	fmt.Println("Got Session Record: ", availableSessionRecord.Information)
+	if spuser.SessionsAssigned != nil {
+		for i := 0; i < len(spuser.SessionsAssigned); i++ {
+			if *availableSessionRecord.Information == *spuser.SessionsAssigned[i] {
+				fmt.Println("Duplicated Session Found!")
+				duplicate = true
+			}
+		}
+	}
+	if !duplicate {
+		spuser.SessionsAssigned = append(spuser.SessionsAssigned, availableSessionRecord.Information)
+		spuser.UpdateRecord(db)
+		spuser, err = GetSpUserRecord(session.Values["username"].(string), db)
+		if err != nil {
+			fmt.Println("Error: GetSpUserRecord in signupavailable", err)
+		}
+		fmt.Println("Sign Up Available Called")
+		fmt.Println("Date: ", r.PostFormValue("Date"))
+		fmt.Println("Time: ", r.PostFormValue("Time"))
+		fmt.Println("Duration: ", r.PostFormValue("Duration"))
+		fmt.Println("Location: ", r.PostFormValue("Location"))
+		if spuser.SessionsAssigned != nil {
+			fmt.Println("Sessions Assigned: ")
+			for i := 0; i < len(spuser.SessionsAssigned); i++ {
+				fmt.Println(*spuser.SessionsAssigned[i])
+			}
+		}
+		if spuser.SessionsUnavailable != nil {
+			fmt.Println("Sessions Unavailable: ")
+			for i := 0; i < len(spuser.SessionsUnavailable); i++ {
+				fmt.Println(*spuser.SessionsAssigned[i])
+			}
+		}
+	}
+	http.Redirect(w, r, "/dashboard", httpRedirectResponse)
+}
+
+func signupnotavailable(w http.ResponseWriter, r *http.Request) {
+	duplicate := false
+	session, _ := store.Get(r, "sessionAuthSPCalendar")
+	if auth, ok := session.Values["authenticated"].(bool); !ok || !auth {
+		http.Redirect(w, r, "/login", httpRedirectResponse)
+		return
+	}
+	spuser, err := GetSpUserRecord(session.Values["username"].(string), db)
+	if err != nil {
+		fmt.Println("Error: GetSpUserRecord in signupavailable", err)
+	}
+	sessionInfo := SessionInfo{
+		Date:        r.PostFormValue("Date"),
+		Time:        r.PostFormValue("Time"),
+		Duration:    r.PostFormValue("Duration"),
+		Location:    r.PostFormValue("Location"),
+		Description: r.PostFormValue("Description"),
+	}
+
+	notAvailableSessionRecord, err := GetSessionRecord(&sessionInfo, db)
+	if err != nil {
+		fmt.Println("Error GetSessionRecord in signupavailable", err)
+	}
+	fmt.Println("Got Session Record: ", notAvailableSessionRecord.Information)
+	if spuser.SessionsUnavailable != nil {
+		for i := 0; i < len(spuser.SessionsUnavailable); i++ {
+			if *notAvailableSessionRecord.Information == *spuser.SessionsUnavailable[i] {
+				fmt.Println("Duplicated Session Found!")
+				duplicate = true
+			}
+		}
+	}
+	if !duplicate {
+		spuser.SessionsUnavailable = append(spuser.SessionsUnavailable, notAvailableSessionRecord.Information)
+		spuser.UpdateRecord(db)
+		spuser, err = GetSpUserRecord(session.Values["username"].(string), db)
+		if err != nil {
+			fmt.Println("Error: GetSpUserRecord in signupavailable", err)
+		}
+		fmt.Println("Sign Up Not Available Called")
+		fmt.Println("Date: ", r.PostFormValue("Date"))
+		fmt.Println("Time: ", r.PostFormValue("Time"))
+		fmt.Println("Duration: ", r.PostFormValue("Duration"))
+		fmt.Println("Location: ", r.PostFormValue("Location"))
+		if spuser.SessionsAssigned != nil {
+			fmt.Println("Sessions Assigned: ")
+			for i := 0; i < len(spuser.SessionsAssigned); i++ {
+				fmt.Println(*spuser.SessionsAssigned[i])
+			}
+		}
+		if spuser.SessionsUnavailable != nil {
+			fmt.Println("Sessions Unavailable: ")
+			for i := 0; i < len(spuser.SessionsUnavailable); i++ {
+				fmt.Println(*spuser.SessionsUnavailable[i])
+			}
+		}
+	}
+	http.Redirect(w, r, "/dashboard", httpRedirectResponse)
+}
+
 func authenticate(w http.ResponseWriter, r *http.Request) {
 	session, _ := store.Get(r, "sessionAuthSPCalendar")
 	username := r.PostFormValue("userid")
