@@ -29,10 +29,64 @@
                 <h2 class="card-title">Session Scheduler</h2>
                 </div>
             </div>
-            <button type="button" class="mt-2 btn btn-info position-aboslute top-0 end-0">Create Session</button>
+            <button type="button" class="mt-2 btn btn-info position-aboslute top-0 end-0" data-bs-toggle="modal" data-bs-target="#myModal">
+                Create Session
+            </button>
         </div>
         {{ template "session-content" .User }}
     </div>
 </div>
+
+<!-- The Modal -->
+<div class="modal" id="myModal">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+  
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Create Session</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+  
+        <!-- Modal body -->
+        <div class="modal-body">
+            <form action="/createsession" method="post" enctype="application/x-www-form-urlencoded">
+                <div class="form-floating mb-2">
+                    <input type="text" name="title" class="form-control" placeholder="UserID">
+                    <label for="floatingInput">Title - Nurse Practice Session</label>
+                </div>
+                <div class="form-floating mb-2">
+                    <input type="text" name="date" class="form-control" placeholder="UserID">
+                    <label for="floatingInput">Date - 11/25/2025 (MM/DD/YYYY)</label>
+                </div>
+                <div class="form-floating mb-2">
+                    <input type="text" name="starttime" class="form-control" placeholder="UserID">
+                    <label for="floatingInput">Start Time - 11:00AM</label>
+                </div>
+                <div class="form-floating mb-2">
+                    <input type="text" name="endtime" class="form-control" placeholder="UserID">
+                    <label for="floatingInput">End Time - 2:00PM</label>
+                </div>
+                <div class="form-floating mb-2">
+                    <input type="text" name="location" class="form-control" placeholder="UserID">
+                    <label for="floatingInput">Location - 1110 St. Lukes Way (Address)</label>
+                </div>
+                <div class="form-floating mb-2">
+                    <input type="text" name="patientsneeded" class="form-control" placeholder="UserID">
+                    <label for="floatingInput">SPs Needed - 3 (Number)</label>
+                </div>
+                <div class="form-floating mb-2">
+                    <input type="text" name="description" class="form-control" placeholder="UserID">
+                    <label for="floatingInput">Description - Nurse Orientation</label>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-outline-success" data-bs-dismiss="modal">Create</button>
+                </div>
+            </form>
+        </div>
+  
+      </div>
+    </div>
+  </div>
 
 {{ end }}

@@ -91,6 +91,7 @@ func main() {
 	http.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir("images"))))
 	http.HandleFunc("/dashboard", dashboard)
 	http.HandleFunc("/json", sendjson)
+	http.HandleFunc("/createsession", createsession)
 	http.HandleFunc("/signupavailable", signupavailable)
 	http.HandleFunc("/signupnotavailable", signupnotavailable)
 	http.HandleFunc("/logout", logout)

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"text/template"
 	"time"
 )
@@ -75,6 +76,28 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 	}
 
 	t.ExecuteTemplate(w, "html-boilerplate", dashboard_content)
+}
+
+func createsession(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Create Session Called")
+	title := r.PostFormValue("title")
+	date := r.PostFormValue("date")
+	starttime := r.PostFormValue("starttime")
+	endtime := r.PostFormValue("endtime")
+	location := r.PostFormValue("location")
+	description := r.PostFormValue("description")
+	patientsneeded, err := strconv.Atoi(r.PostFormValue("patientsneeded"))
+	if err != nil {
+		fmt.Println("Error converting patients needed to integer")
+	}
+	newSession := Session{}.Create(title, date, starttime, endtime, location, description)
+	newSession.PatientsNeeded = patientsneeded
+	newSession.Display()
+	err = newSession.MakeRecord(db)
+	if err != nil {
+		fmt.Println("Error in Create Session Make Record : ", err)
+	}
+	http.Redirect(w, r, "/dashboard", httpRedirectResponse)
 }
 
 func signupavailable(w http.ResponseWriter, r *http.Request) {
