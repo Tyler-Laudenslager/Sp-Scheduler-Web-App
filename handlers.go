@@ -69,7 +69,7 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 		dashboard_content.User = spuser
 	}
 	if !isSpManager {
-		t, _ = template.ParseFiles("html-boilerplate.html", "dashboard-content.html", "session-content.html")
+		t, _ = template.ParseFiles("html-boilerplate.html", "dashboard-content.html", "session-content-available.html")
 	} else {
 		t, _ = template.ParseFiles("html-boilerplate.html", "dashboard-content-manager.html", "session-content-manager.html")
 	}
@@ -89,9 +89,10 @@ func signupavailable(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Error: GetSpUserRecord in signupavailable", err)
 	}
 	sessionInfo := SessionInfo{
+		Title:       r.PostFormValue("Title"),
 		Date:        r.PostFormValue("Date"),
-		Time:        r.PostFormValue("Time"),
-		Duration:    r.PostFormValue("Duration"),
+		StartTime:   r.PostFormValue("StartTime"),
+		EndTime:     r.PostFormValue("EndTime"),
 		Location:    r.PostFormValue("Location"),
 		Description: r.PostFormValue("Description"),
 	}
@@ -117,10 +118,12 @@ func signupavailable(w http.ResponseWriter, r *http.Request) {
 			fmt.Println("Error: GetSpUserRecord in signupavailable", err)
 		}
 		fmt.Println("Sign Up Available Called")
+		fmt.Println("Title: ", r.PostFormValue("Title"))
 		fmt.Println("Date: ", r.PostFormValue("Date"))
-		fmt.Println("Time: ", r.PostFormValue("Time"))
-		fmt.Println("Duration: ", r.PostFormValue("Duration"))
-		fmt.Println("Location: ", r.PostFormValue("Location"))
+		fmt.Println("Start Time: ", r.PostFormValue("StartTime"))
+		fmt.Println("End Time: ", r.PostFormValue("EndTime"))
+		fmt.Println("Duration: ", r.PostFormValue("StartTime"))
+		fmt.Println("Location: ", r.PostFormValue("EndTime"))
 		if spuser.SessionsAssigned != nil {
 			fmt.Println("Sessions Assigned: ")
 			for i := 0; i < len(spuser.SessionsAssigned); i++ {
@@ -149,9 +152,10 @@ func signupnotavailable(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Error: GetSpUserRecord in signupavailable", err)
 	}
 	sessionInfo := SessionInfo{
+		Title:       r.PostFormValue("Title"),
 		Date:        r.PostFormValue("Date"),
-		Time:        r.PostFormValue("Time"),
-		Duration:    r.PostFormValue("Duration"),
+		StartTime:   r.PostFormValue("StartTime"),
+		EndTime:     r.PostFormValue("EndTime"),
 		Location:    r.PostFormValue("Location"),
 		Description: r.PostFormValue("Description"),
 	}
@@ -228,12 +232,12 @@ func authenticate(w http.ResponseWriter, r *http.Request) {
 }
 
 func sendjson(w http.ResponseWriter, r *http.Request) {
-	bob_marcs := SpUser{}.Create(*Name{}.Create("Bob Marcs"), SP, Male, "bob@marcs.com")
-	susan_miller := SpUser{}.Create(*Name{}.Create("Susan Miller"), SP, Female, "susan@miller.com")
+	bob_marcs := SpUser{}.Create(*Name{}.Create("Bob Marcs"), "bmarcs", SP, "bob@marcs.com")
+	susan_miller := SpUser{}.Create(*Name{}.Create("Susan Miller"), "smiller", SP, "susan@miller.com")
 
 	andy_thomas := SpManager{}.Create(*Name{}.Create("Andy Thomas"), Manager, "andy@thomas.com")
 
-	session1 := Session{}.Create("11/15/2022", "11:00AM", "1H", "Anderson", "Check-Up")
+	session1 := Session{}.Create("Anderson Clinical Nurse Session", "11/15/2022", "11:00AM", "12:00PM", "Anderson", "Check-Up")
 
 	andy_thomas.AssignedPatients = append(andy_thomas.AssignedPatients, bob_marcs, susan_miller)
 	andy_thomas.SessionsManaged = append(andy_thomas.SessionsManaged, session1)

@@ -8,7 +8,8 @@ CREATE TABLE SpUsers (
 	name JSONB NOT NULL,
 	username varchar(30),
 	role INT4 NOT NULL,
-	sex  INT4 NOT NULL, 
+	totalsessionsassigned INT4,
+	sessionspool JSONB,
 	sessionsavailable JSONB,
 	sessionsunavailable JSONB,
 	sessionsassigned JSONB,
@@ -30,9 +31,10 @@ CREATE TABLE SpManagers (
 
 CREATE TABLE Sessions (
 	id SERIAL PRIMARY KEY,
+	title varchar(75) NOT NULL,
  	date varchar(50) NOT NULL,
-	time varchar(50) NOT NULL,
-	duration varchar(50) NOT NULL,
+	starttime varchar(50) NOT NULL,
+	endtime varchar(50) NOT NULL,
 	location varchar(50) NOT NULL,
 	description varchar(300),
 	Instructors JSONB,

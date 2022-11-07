@@ -13,11 +13,10 @@ func testSpUser(db *sql.DB) (err error) {
 		Role:     SP,
 		Email:    "robert@pike.com",
 		Password: "letmein",
-		Sex:      Male,
 	}
 
-	session := Session{}.Create("11/25/2022", "11:00AM", "1H", "Anderson", "Check-UP")
-	session2 := Session{}.Create("10/14/2022", "10:30AM", "1H", "Park Ave", "Follow-UP")
+	session := Session{}.Create("Anderson Check Up", "11/25/2022", "11:00AM", "12:00PM", "Anderson", "Check-UP")
+	session2 := Session{}.Create("Park Ave Follow-UP", "10/14/2022", "10:30AM", "11:00AM", "Park Ave", "Follow-UP")
 
 	spuser.SessionsAssigned = append(spuser.SessionsAssigned, session.Information, session2.Information)
 
@@ -78,11 +77,10 @@ func testSpManager(db *sql.DB) (err error) {
 		Role:     SP,
 		Email:    "robert@pike.com",
 		Password: "letmein",
-		Sex:      Male,
 	}
 
-	session := Session{}.Create("11/25/2022", "11:00AM", "1H", "Anderson", "Check-UP")
-	session2 := Session{}.Create("10/14/2022", "10:30AM", "1H", "Park Ave", "Follow-UP")
+	session := Session{}.Create("Anderson Check UP", "11/25/2022", "11:00AM", "12:00PM", "Anderson", "Check-UP")
+	session2 := Session{}.Create("Park Ave Follow Up", "10/14/2022", "10:30AM", "11:30AM", "Park Ave", "Follow-UP")
 
 	spuser.SessionsAssigned = append(spuser.SessionsAssigned, session.Information, session2.Information)
 
@@ -102,7 +100,7 @@ func testSpManager(db *sql.DB) (err error) {
 }
 
 func testSession(db *sql.DB) (err error) {
-	session := Session{}.Create("11/25/2022", "11:00AM", "1H", "Anderson", "Check-Up")
+	session := Session{}.Create("Anderson Check UP", "11/25/2022", "11:00AM", "12:00PM", "Anderson", "Check-Up")
 	err = session.MakeRecord(db)
 	if err != nil {
 		fmt.Println("Error Make Session: ", err)
@@ -132,10 +130,10 @@ func testSession(db *sql.DB) (err error) {
 }
 
 func testGetAllSessions(db *sql.DB) (err error) {
-	session := Session{}.Create("11/25/2022", "11:00AM", "1H", "Anderson", "Check-Up")
-	session2 := Session{}.Create("12/25/2022", "12:00AM", "2H", "Anderson", "Follow-Up")
-	session3 := Session{}.Create("1/25/2023", "1:00AM", "3H", "Anderson", "Invasion")
-	session4 := Session{}.Create("2/25/2024", "2:00AM", "4H", "Anderson", "Holy-Grail")
+	session := Session{}.Create("Andeson Check UP", "11/25/2022", "11:00AM", "12:00PM", "Anderson", "Check-Up")
+	session2 := Session{}.Create("Anderson Follow UP", "12/25/2022", "12:00PM", "2:00PM", "Anderson", "Follow-Up")
+	session3 := Session{}.Create("Anderson Alien Invasion", "1/25/2023", "1:00PM", "4:00PM", "Anderson", "Invasion")
+	session4 := Session{}.Create("Find Holy-Grail", "2/25/2024", "2:00PM", "6:00PM", "Anderson", "Holy-Grail")
 
 	session.MakeRecord(db)
 	session2.MakeRecord(db)

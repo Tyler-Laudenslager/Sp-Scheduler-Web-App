@@ -24,7 +24,12 @@ func (sp *SpUser) Display() {
 	fmt.Println("Password: ", sp.Password)
 	fmt.Println("Email: ", sp.Email)
 	fmt.Println("Role: ", sp.Role)
-	fmt.Println("Sex: ", sp.Sex)
+	fmt.Println("Total Sessions Assigned: ", sp.TotalSessionsAssigned)
+	fmt.Println("Sessions Pool: ")
+	for i := 0; i < len(sp.SessionsPool); i++ {
+		fmt.Println(*sp.SessionsPool[i])
+	}
+
 	fmt.Println("Sessions Assigned: ")
 	for i := 0; i < len(sp.SessionsAssigned); i++ {
 		fmt.Println(*sp.SessionsAssigned[i])
@@ -39,18 +44,19 @@ func (sp *SpUser) Display() {
 	}
 }
 func (sp *SpUser) MakeRecord(db *sql.DB) (err error) {
-	statement := "insert into spusers (name, username, role, email, sex, sessionsassigned, sessionsavailable, sessionsunavailable, password) values ($1, $2, $3, $4, $5, $6, $7, $8, $9) returning id"
+	statement := "insert into spusers (name, username, role, email, totalsessionsassigned, sessionspool, sessionsassigned, sessionsavailable, sessionsunavailable, password) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) returning id"
 	stmt, err := db.Prepare(statement)
 	if err != nil {
 		return
 	}
 	defer stmt.Close()
 
+	sessionsPoolByte, err := json.Marshal(&sp.SessionsPool)
 	sessionsAssignedByte, err := json.Marshal(&sp.SessionsAssigned)
 	sessionsAvailableByte, err := json.Marshal(&sp.SessionsAvailable)
 	sessionsUnavailableByte, err := json.Marshal(&sp.SessionsUnavailable)
 
-	err = stmt.QueryRow(sp.Name, sp.Username, sp.Role, sp.Email, sp.Sex, sessionsAssignedByte,
+	err = stmt.QueryRow(sp.Name, sp.Username, sp.Role, sp.Email, sp.TotalSessionsAssigned, sessionsPoolByte, sessionsAssignedByte,
 		sessionsAvailableByte, sessionsUnavailableByte, sp.Password).Scan(&sp.Id)
 
 	if err != nil {
@@ -61,17 +67,22 @@ func (sp *SpUser) MakeRecord(db *sql.DB) (err error) {
 func GetSpUserRecord(username string, db *sql.DB) (sp SpUser, err error) {
 	sp = SpUser{}
 
+	var sessionsPoolByte []byte
 	var sessionsAvailableByte []byte
 	var sessionsUnavailableByte []byte
 	var sessionsAssignedByte []byte
 
-	err = db.QueryRow("select Id, name, username, role, email, sex, sessionsassigned, "+
+	err = db.QueryRow("select Id, name, username, role, email, totalsessionsassigned, sessionspool, sessionsassigned, "+
 		"sessionsavailable, sessionsunavailable, password "+
 		"from spusers where username = $1 ", username).Scan(&sp.Id, &sp.Name, &sp.Username, &sp.Role, &sp.Email,
-		&sp.Sex, &sessionsAssignedByte,
+		&sp.TotalSessionsAssigned, &sessionsPoolByte, &sessionsAssignedByte,
 		&sessionsAvailableByte, &sessionsUnavailableByte,
 		&sp.Password)
 
+	if err != nil {
+		return
+	}
+	err = json.Unmarshal(sessionsPoolByte, &sp.SessionsPool)
 	if err != nil {
 		return
 	}
@@ -92,6 +103,10 @@ func GetSpUserRecord(username string, db *sql.DB) (sp SpUser, err error) {
 }
 func (sp *SpUser) UpdateRecord(db *sql.DB) (err error) {
 
+	sessionsPoolByte, err := json.Marshal(&sp.SessionsPool)
+	if err != nil {
+		return
+	}
 	sessionsAssignedByte, err := json.Marshal(&sp.SessionsAssigned)
 	if err != nil {
 		return
@@ -105,10 +120,10 @@ func (sp *SpUser) UpdateRecord(db *sql.DB) (err error) {
 		return
 	}
 
-	_, err = db.Exec("update spusers set sessionsavailable = $2, "+
-		"sessionsunavailable = $3, sessionsassigned = $4, "+
-		"password = $5, email = $6 where username = $1 ",
-		sp.Username, sessionsAvailableByte, sessionsUnavailableByte,
+	_, err = db.Exec("update spusers set sessionspool = $2, sessionsavailable = $3, "+
+		"sessionsunavailable = $4, sessionsassigned = $5, "+
+		"password = $6, email = $7 where username = $1 ",
+		sp.Username, sessionsPoolByte, sessionsAvailableByte, sessionsUnavailableByte,
 		sessionsAssignedByte, sp.Password, sp.Email)
 
 	return
@@ -216,9 +231,10 @@ func (sp *SpManager) DeleteRecord(db *sql.DB) (err error) {
 }
 
 func (s *Session) Display() {
+	fmt.Println("Title: ", s.Information.Title)
 	fmt.Println("Date: ", s.Information.Date)
-	fmt.Println("Time: ", s.Information.Time)
-	fmt.Println("Duration: ", s.Information.Duration)
+	fmt.Println("Start Time: ", s.Information.StartTime)
+	fmt.Println("End Time: ", s.Information.EndTime)
 	fmt.Println("Location: ", s.Information.Location)
 	fmt.Println("Description: ", s.Information.Description)
 	fmt.Println("Instructors: ")
@@ -246,7 +262,7 @@ func (s *Session) Display() {
 	}
 }
 func (s *Session) MakeRecord(db *sql.DB) (err error) {
-	statement := "insert into sessions (date, time, duration, location, description, instructors, patientsneeded, patientsassigned, patientsavailable, patientsunavailable, patientsnoresponse) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) returning id"
+	statement := "insert into sessions (title, date, starttime, endtime, location, description, instructors, patientsneeded, patientsassigned, patientsavailable, patientsunavailable, patientsnoresponse) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) returning id"
 	stmt, err := db.Prepare(statement)
 	if err != nil {
 		return
@@ -259,7 +275,7 @@ func (s *Session) MakeRecord(db *sql.DB) (err error) {
 	patientsUnavailableByte, err := json.Marshal(&s.PatientsUnavailable)
 	patientsNoResponse, err := json.Marshal(&s.PatientsNoResponse)
 
-	err = stmt.QueryRow(s.Information.Date, s.Information.Time, s.Information.Duration,
+	err = stmt.QueryRow(s.Information.Title, s.Information.Date, s.Information.StartTime, s.Information.EndTime,
 		s.Information.Location, s.Information.Description,
 		instructorsByte, s.PatientsNeeded,
 		patientsAssignedByte, patientsAvailableByte,
@@ -281,9 +297,10 @@ func GetSessionRecord(sinfo *SessionInfo, db *sql.DB) (s Session, err error) {
 	var patientsUnavailableByte []byte
 	var patientsNoResponseByte []byte
 
-	err = db.QueryRow("select id, date, time, duration, location, description, "+
+	err = db.QueryRow("select id, title, date, starttime, endtime, location, description, "+
 		"instructors, patientsneeded, patientsassigned, patientsavailable, patientsunavailable, patientsnoresponse "+
-		"from sessions where date = $1 and time = $2 and duration = $3 and location = $4 and description = $5 ", sinfo.Date, sinfo.Time, sinfo.Duration, sinfo.Location, sinfo.Description).Scan(&s.Id, &s.Information.Date, &s.Information.Time, &s.Information.Duration, &s.Information.Location,
+		"from sessions where title = $1 and date = $2 and starttime = $3 and endtime = $4 and location = $5 and description = $6 ", sinfo.Title, sinfo.Date, sinfo.StartTime, sinfo.EndTime, sinfo.Location, sinfo.Description).Scan(&s.Id,
+		&s.Information.Date, &s.Information.StartTime, &s.Information.EndTime, &s.Information.Location,
 		&s.Information.Description, &instructorsByte, &s.PatientsNeeded,
 		&patientsAssignedByte, &patientsAvailableByte, &patientsUnavailableByte, &patientsNoResponseByte)
 
@@ -335,10 +352,10 @@ func (s *Session) UpdateRecord(db *sql.DB) (err error) {
 	if err != nil {
 		return
 	}
-	_, err = db.Exec("update sessions set date = $2, "+
-		"time = $3, duration = $4, "+
-		"location = $5, description = $6, instructors = $7, patientsneeded = $8, patientsassigned = $9, patientsavailable = $10, patientsunavailable = $11, patientsnoresponse = $12 where id = $1",
-		s.Id, s.Information.Date, s.Information.Time, s.Information.Duration,
+	_, err = db.Exec("update sessions set title = $2, date = $3, "+
+		"starttime = $4, endtime = $5, "+
+		"location = $6, description = $7, instructors = $8, patientsneeded = $9, patientsassigned = $10, patientsavailable = $11, patientsunavailable = $12, patientsnoresponse = $13 where id = $1",
+		s.Id, s.Information.Date, s.Information.StartTime, s.Information.EndTime,
 		s.Information.Location, s.Information.Description,
 		instructorsByte, s.PatientsNeeded,
 		patientsAssignedByte, patientsAvailableByte,
@@ -352,14 +369,14 @@ func (s *Session) DeleteRecord(db *sql.DB) (err error) {
 }
 
 func GetAllSessionInfoRecords(db *sql.DB) (sessions []*SessionInfo, err error) {
-	rows, err := db.Query("select id, date, time, duration, location, description from sessions")
+	rows, err := db.Query("select id, title, date, starttime, endtime, location, description from sessions")
 	if err != nil {
 		return
 	}
 
 	for rows.Next() {
 		session := &Session{Information: &SessionInfo{}}
-		err = rows.Scan(&session.Id, &session.Information.Date, &session.Information.Time, &session.Information.Duration,
+		err = rows.Scan(&session.Id, &session.Information.Title, &session.Information.Date, &session.Information.StartTime, &session.Information.EndTime,
 			&session.Information.Location, &session.Information.Description)
 		if err != nil {
 			return
@@ -384,7 +401,7 @@ func GetAllSessionRecords(db *sql.DB) (sessions []*Session, err error) {
 		var patientsAvailableByte []byte
 		var patientsUnavailableByte []byte
 		var patientsNoResponseByte []byte
-		err = rows.Scan(&session.Id, &session.Information.Date, &session.Information.Time, &session.Information.Duration,
+		err = rows.Scan(&session.Id, &session.Information.Title, &session.Information.Date, &session.Information.StartTime, &session.Information.EndTime,
 			&session.Information.Location, &session.Information.Description, &instructorsByte, &session.PatientsNeeded,
 			&patientsAssignedByte, &patientsAvailableByte, &patientsUnavailableByte, &patientsNoResponseByte)
 		if err != nil {

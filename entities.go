@@ -74,16 +74,17 @@ func (i Instructor) Create(full_name string, title string) *Instructor {
 }
 
 type SpUser struct {
-	Id                  uint           `json:"Id"`
-	Name                Name           `json:"Name"`
-	Username            string         `json:"Username"`
-	Role                Role           `json:"Role"`
-	Sex                 Sex            `json:"Sex"`
-	SessionsAvailable   []*SessionInfo `json:"SessionsAvailable"`
-	SessionsUnavailable []*SessionInfo `json:"SessionsUnavailable"`
-	SessionsAssigned    []*SessionInfo `json:"SessionsAssigned"`
-	Password            string         `json:"Password"`
-	Email               string         `json:"Email"`
+	Id                    uint           `json:"Id"`
+	Name                  Name           `json:"Name"`
+	Username              string         `json:"Username"`
+	Role                  Role           `json:"Role"`
+	TotalSessionsAssigned uint32         `json:"TotalSessionsAssigned"`
+	SessionsPool          []*SessionInfo `json:"SessionsPool"`
+	SessionsAvailable     []*SessionInfo `json:"SessionsAvailable"`
+	SessionsUnavailable   []*SessionInfo `json:"SessionsUnavailable"`
+	SessionsAssigned      []*SessionInfo `json:"SessionsAssigned"`
+	Password              string         `json:"Password"`
+	Email                 string         `json:"Email"`
 }
 
 func (sp SpUser) Value() (driver.Value, error) {
@@ -99,16 +100,18 @@ func (sp *SpUser) Scan(value interface{}) error {
 	return json.Unmarshal(b, &sp)
 }
 
-func (spUser SpUser) Create(name Name, role Role, sex Sex, email string) *SpUser {
+func (spUser SpUser) Create(name Name, username string, role Role, email string) *SpUser {
 	return &SpUser{
-		Name:                name,
-		Role:                role,
-		Sex:                 sex,
-		SessionsAvailable:   make([]*SessionInfo, 0),
-		SessionsUnavailable: make([]*SessionInfo, 0),
-		SessionsAssigned:    make([]*SessionInfo, 0),
-		Password:            "",
-		Email:               email,
+		Name:                  name,
+		Username:              username,
+		Role:                  role,
+		TotalSessionsAssigned: 0,
+		SessionsPool:          make([]*SessionInfo, 0),
+		SessionsAvailable:     make([]*SessionInfo, 0),
+		SessionsUnavailable:   make([]*SessionInfo, 0),
+		SessionsAssigned:      make([]*SessionInfo, 0),
+		Password:              "",
+		Email:                 email,
 	}
 }
 
@@ -173,11 +176,13 @@ func (s *Session) Scan(value interface{}) error {
 	return json.Unmarshal(b, &s)
 }
 
-func (s Session) Create(date string, time string, duration string, location string, description string) *Session {
+func (s Session) Create(title string, date string, starttime string, endtime string, location string, description string) *Session {
 	return &Session{
-		Information: &SessionInfo{Date: date,
-			Time:        time,
-			Duration:    duration,
+		Information: &SessionInfo{
+			Title:       title,
+			Date:        date,
+			StartTime:   starttime,
+			EndTime:     endtime,
 			Location:    location,
 			Description: description},
 		Instructors:         []*Instructor{},
@@ -190,9 +195,10 @@ func (s Session) Create(date string, time string, duration string, location stri
 }
 
 type SessionInfo struct {
+	Title       string `json:"Title"`
 	Date        string `json:"Date"`
-	Time        string `json:"Time"`
-	Duration    string `json:"Duration"`
+	StartTime   string `json:"StartTime"`
+	EndTime     string `json:"EndTime"`
 	Location    string `json:"Location"`
 	Description string `json:"Description"`
 }

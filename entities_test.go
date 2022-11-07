@@ -30,18 +30,21 @@ func TestInstructorCreation(t *testing.T) {
 
 func TestSpUserCreation(t *testing.T) {
 	name := Name{}.Create("Bob Miller")
-	SpUserObj := SpUser{}.Create(*name, SP, Male, "bob@example.com")
+	SpUserObj := SpUser{}.Create(*name, "bmiller", SP, "bob@example.com")
 	if SpUserObj.Name.First != "Bob" {
 		t.Error("Expecting 'Bob' : Received", SpUserObj.Name.First)
 	}
 	if SpUserObj.Name.Last != "Miller" {
 		t.Error("Expecting 'Miller' : Received", SpUserObj.Name.Last)
 	}
+	if SpUserObj.Username != "bmiller" {
+		t.Error("Expecting 'bmiller' : Received", SpUserObj.Username)
+	}
 	if SpUserObj.Role != SP {
 		t.Error("Expecting 'SP' : Received", SpUserObj.Role)
 	}
-	if SpUserObj.Sex != Male {
-		t.Error("Expecting 'Male' : Received", SpUserObj.Sex)
+	if SpUserObj.TotalSessionsAssigned != 0 {
+		t.Error("Expecting '0' : Received", SpUserObj.TotalSessionsAssigned)
 	}
 	if SpUserObj.Password != "" {
 		t.Error("Expecting 'letmein' : Received", SpUserObj.Password)
@@ -56,6 +59,9 @@ func TestSpUserCreation(t *testing.T) {
 		t.Error("Expecting 'slice' : Received", SpUserObj.SessionsAvailable)
 	}
 	if reflect.TypeOf(SpUserObj.SessionsUnavailable).Kind() != reflect.Slice {
+		t.Error("Expecting 'slice' : Received", SpUserObj.SessionsUnavailable)
+	}
+	if reflect.TypeOf(SpUserObj.SessionsPool).Kind() != reflect.Slice {
 		t.Error("Expecting 'slice' : Received", SpUserObj.SessionsUnavailable)
 	}
 }
@@ -90,15 +96,18 @@ func TestSpManagerCreation(t *testing.T) {
 }
 
 func TestSessionCreation(t *testing.T) {
-	SessionObj := Session{}.Create("11/23/2022", "11:00AM", "1H", "Anderson", "Check-Up")
+	SessionObj := Session{}.Create("Anderson Clinical Nurse Session", "11/23/2022", "11:00AM", "12:00PM", "Anderson", "Check-Up")
+	if SessionObj.Information.Title != "Anderson Clinical Nurse Session" {
+		t.Error("Expected 'Anderson Clinical Nurse Session' : Received", SessionObj.Information.Title)
+	}
 	if SessionObj.Information.Date != "11/23/2022" {
 		t.Error("Expected '11/23/2022' : Received", SessionObj.Information.Date)
 	}
-	if SessionObj.Information.Time != "11:00AM" {
-		t.Error("Expected '11:00AM' : Received", SessionObj.Information.Time)
+	if SessionObj.Information.StartTime != "11:00AM" {
+		t.Error("Expected '11:00AM' : Received", SessionObj.Information.StartTime)
 	}
-	if SessionObj.Information.Duration != "1H" {
-		t.Error("Expected '1H' : Received", SessionObj.Information.Duration)
+	if SessionObj.Information.EndTime != "12:00PM" {
+		t.Error("Expected '12:00PM' : Received", SessionObj.Information.EndTime)
 	}
 	if SessionObj.Information.Location != "Anderson" {
 		t.Error("Expected 'Anderson' : Received", SessionObj.Information.Location)
@@ -128,17 +137,19 @@ func TestSessionCreation(t *testing.T) {
 }
 
 func TestSessionInfoCreation(t *testing.T) {
-	SessionObj := Session{}.Create("11/23/2022", "11:00AM", "1H", "Anderson", "Check-Up")
+	SessionObj := Session{}.Create("Anderson Clinical Nurse Session", "11/23/2022", "11:00AM", "12:00PM", "Anderson", "Check-Up")
 	SessionInfo := SessionObj.Information
-
+	if SessionInfo.Title != "Anderson Clinical Nurse Session" {
+		t.Error("Expected 'Anderson Clinical Nurse Session' : Received", SessionObj.Information.Title)
+	}
 	if SessionInfo.Date != "11/23/2022" {
 		t.Error("Expected '11/23/2022' : Received", SessionInfo.Date)
 	}
-	if SessionInfo.Time != "11:00AM" {
-		t.Error("Expected '11:00AM' : Received", SessionInfo.Time)
+	if SessionInfo.StartTime != "11:00AM" {
+		t.Error("Expected '11:00AM' : Received", SessionObj.Information.StartTime)
 	}
-	if SessionInfo.Duration != "1H" {
-		t.Error("Expected '1H' : Received", SessionInfo.Duration)
+	if SessionInfo.EndTime != "12:00PM" {
+		t.Error("Expected '12:00PM' : Received", SessionObj.Information.EndTime)
 	}
 	if SessionInfo.Location != "Anderson" {
 		t.Error("Expected 'Anderson' : Received", SessionInfo.Location)
