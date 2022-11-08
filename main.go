@@ -24,14 +24,15 @@ func init() {
 		fmt.Println("Error Hashing Password")
 		return
 	}
-	session := Session{}.Create("Sacred Heart Check-UP", "11/25/2022", "11:00AM", "12:00PM", "Sacred Heart", "Check-Up")
+	session := Session{}.Create("Sacred Heart Check-UP", "11/25/2022", "11:00AM", "12:00PM", "SacredHeart", "Check-Up")
 	session.PatientsNeeded = 6
+	session.Instructors = append(session.Instructors, Instructor{}.Create("Joe Thompson", "Director"))
 	err = session.MakeRecord(db)
 	if err != nil {
 		fmt.Println("Error Making Session Record 1: ", err)
 	}
 	fmt.Println("Created Session -> ", session.Information)
-	session2 := Session{}.Create("Anderson Follow UP", "12/25/2022", "12:00PM", "2:00PM", "Anderson", "Follow-Up")
+	session2 := Session{}.Create("Anderson Follow UP", "12/25/2022", "12:00PM", "2:00PM", "Warren", "Follow-Up")
 	session2.PatientsNeeded = 4
 	err = session2.MakeRecord(db)
 	if err != nil {
@@ -92,6 +93,7 @@ func main() {
 	http.HandleFunc("/dashboard", dashboard)
 	http.HandleFunc("/json", sendjson)
 	http.HandleFunc("/createsession", createsession)
+	http.HandleFunc("/updatesession", updatesession)
 	http.HandleFunc("/signupavailable", signupavailable)
 	http.HandleFunc("/signupnotavailable", signupnotavailable)
 	http.HandleFunc("/logout", logout)

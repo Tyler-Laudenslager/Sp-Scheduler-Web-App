@@ -300,7 +300,7 @@ func GetSessionRecord(sinfo *SessionInfo, db *sql.DB) (s Session, err error) {
 	err = db.QueryRow("select id, title, date, starttime, endtime, location, description, "+
 		"instructors, patientsneeded, patientsassigned, patientsavailable, patientsunavailable, patientsnoresponse "+
 		"from sessions where title = $1 and date = $2 and starttime = $3 and endtime = $4 and location = $5 and description = $6 ", sinfo.Title, sinfo.Date, sinfo.StartTime, sinfo.EndTime, sinfo.Location, sinfo.Description).Scan(&s.Id,
-		&s.Information.Date, &s.Information.StartTime, &s.Information.EndTime, &s.Information.Location,
+		&s.Information.Title, &s.Information.Date, &s.Information.StartTime, &s.Information.EndTime, &s.Information.Location,
 		&s.Information.Description, &instructorsByte, &s.PatientsNeeded,
 		&patientsAssignedByte, &patientsAvailableByte, &patientsUnavailableByte, &patientsNoResponseByte)
 
@@ -355,7 +355,7 @@ func (s *Session) UpdateRecord(db *sql.DB) (err error) {
 	_, err = db.Exec("update sessions set title = $2, date = $3, "+
 		"starttime = $4, endtime = $5, "+
 		"location = $6, description = $7, instructors = $8, patientsneeded = $9, patientsassigned = $10, patientsavailable = $11, patientsunavailable = $12, patientsnoresponse = $13 where id = $1",
-		s.Id, s.Information.Date, s.Information.StartTime, s.Information.EndTime,
+		s.Id, s.Information.Title, s.Information.Date, s.Information.StartTime, s.Information.EndTime,
 		s.Information.Location, s.Information.Description,
 		instructorsByte, s.PatientsNeeded,
 		patientsAssignedByte, patientsAvailableByte,

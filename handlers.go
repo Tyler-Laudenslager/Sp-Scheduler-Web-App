@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 	"text/template"
 	"time"
 )
@@ -12,6 +13,10 @@ import (
 const (
 	httpRedirectResponse = http.StatusFound
 )
+
+func formatTitle(title string) string {
+	return strings.Join(strings.Fields(strings.TrimSpace(title)), "")
+}
 
 func login(w http.ResponseWriter, r *http.Request) {
 	session, _ := store.Get(r, "sessionAuthSPCalendar")
@@ -69,10 +74,12 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 		dashboard_content.Role = "Standardized Patient"
 		dashboard_content.User = spuser
 	}
+	funcMap := template.FuncMap{"formatTitle": formatTitle}
+	t = template.New("html-boilerplate.html").Funcs(funcMap)
 	if !isSpManager {
-		t, _ = template.ParseFiles("html-boilerplate.html", "dashboard-content.html", "session-content-available.html")
+		t, _ = t.ParseFiles("html-boilerplate.html", "dashboard-content.html", "session-content-available.html")
 	} else {
-		t, _ = template.ParseFiles("html-boilerplate.html", "dashboard-content-manager.html", "session-content-manager.html")
+		t, _ = t.ParseFiles("html-boilerplate.html", "dashboard-content-manager.html", "session-content-manager.html")
 	}
 
 	t.ExecuteTemplate(w, "html-boilerplate", dashboard_content)
@@ -96,6 +103,52 @@ func createsession(w http.ResponseWriter, r *http.Request) {
 	err = newSession.MakeRecord(db)
 	if err != nil {
 		fmt.Println("Error in Create Session Make Record : ", err)
+	}
+	http.Redirect(w, r, "/dashboard", httpRedirectResponse)
+}
+
+func updatesession(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Update Session Called")
+	title := r.PostFormValue("title")
+	date := r.PostFormValue("date")
+	starttime := r.PostFormValue("starttime")
+	endtime := r.PostFormValue("endtime")
+	location := r.PostFormValue("location")
+	description := r.PostFormValue("description")
+	newtitle := r.PostFormValue("newtitle")
+	newdate := r.PostFormValue("newdate")
+	newstarttime := r.PostFormValue("newstarttime")
+	newendtime := r.PostFormValue("newendtime")
+	newlocation := r.PostFormValue("newlocation")
+	newdescription := r.PostFormValue("newdescription")
+	newpatientsneeded, err := strconv.Atoi(r.PostFormValue("newpatientsneeded"))
+	if err != nil {
+		fmt.Println("Error converting patients needed to integer")
+	}
+	sessionInfo := SessionInfo{
+		Title:       title,
+		Date:        date,
+		StartTime:   starttime,
+		EndTime:     endtime,
+		Location:    location,
+		Description: description,
+	}
+	foundSession, err := GetSessionRecord(&sessionInfo, db)
+	if err != nil {
+		fmt.Println("Error in Get Session Record in Update Session : ", err)
+	}
+	foundSession.Display()
+	foundSession.Information.Title = newtitle
+	foundSession.Information.Date = newdate
+	foundSession.Information.StartTime = newstarttime
+	foundSession.Information.EndTime = newendtime
+	foundSession.Information.Location = newlocation
+	foundSession.Information.Description = newdescription
+	foundSession.PatientsNeeded = newpatientsneeded
+
+	err = foundSession.UpdateRecord(db)
+	if err != nil {
+		fmt.Println("Error in Update Session Make Record : ", err)
 	}
 	http.Redirect(w, r, "/dashboard", httpRedirectResponse)
 }

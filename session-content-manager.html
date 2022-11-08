@@ -1,14 +1,15 @@
 {{ define "session-content" }}
-
 <div class="vstack gap-2 d-flex align-items-center position: relative;">
     {{ range .SessionsUnmanaged }}
     <div class="card" style="width: 40rem; background-color: #f7f8f7;">
         <div class="card-body">
             <div class="vstack me-2 gap-1 d-flex align-items-center position-absolute top-50 end-0 translate-middle-y">
-                <button type="button" class="btn btn-outline-primary position: relative">
+                <button type="button" class="btn btn-outline-primary position: relative" data-bs-toggle="modal" data-bs-target="#{{ .Information.Title | formatTitle }}info">
                     Additional Information
                 </button>
-                <button type="button" class="btn btn-outline-primary position: relative">Manage Info</button>
+                <button type="button" class="btn btn-outline-primary position: relative" data-bs-toggle="modal" data-bs-target="#{{ .Information.Title | formatTitle }}edit">
+                    Edit Info
+                </button>
                 <button type="button" class="btn btn-outline-primary position: relative">Assign SPs</button>
                 <button type="button" class="btn btn-outline-danger position: relative">
                     Delete
@@ -25,7 +26,94 @@
             <h5 class="card-text">SPs Needed: {{ .PatientsNeeded }}</h5>
         </div>
     </div>
+    <div class="modal" id="{{ .Information.Title | formatTitle }}edit">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+      
+            <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Edit Session Information</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+      
+            <!-- Modal body -->
+                <div class="modal-body">
+                    <form action="/updatesession" method="post" enctype="application/x-www-form-urlencoded">
+                        <input type="hidden" name="title" value="{{ .Information.Title }}">
+                        <input type="hidden" name="date" value="{{ .Information.Date }}">
+                        <input type="hidden" name="starttime" value="{{ .Information.StartTime }}">
+                        <input type="hidden" name="endtime" value="{{ .Information.EndTime }}">
+                        <input type="hidden" name="location" value="{{ .Information.Location }}">
+                        <input type="hidden" name="description" value="{{ .Information.Description }}">
+
+                    <div class="form-floating mb-2">
+                        <input type="text" name="newtitle" class="form-control" value="{{ .Information.Title }}">
+                        <label for="floatingInput">Title</label>
+                    </div>
+                    <div class="form-floating mb-2">
+                        <input type="text" name="newdate" class="form-control" value="{{ .Information.Date }}">
+                        <label for="floatingInput">Date</label>
+                    </div>
+                    <div class="form-floating mb-2">
+                        <input type="text" name="newstarttime" class="form-control" value="{{ .Information.StartTime }}">
+                        <label for="floatingInput">Start Time</label>
+                    </div>
+                    <div class="form-floating mb-2">
+                        <input type="text" name="newendtime" class="form-control" value="{{ .Information.EndTime }}">
+                        <label for="floatingInput">End Time</label>
+                    </div>
+                    <div class="form-floating mb-2">
+                        <input type="text" name="newlocation" class="form-control" value="{{ .Information.Location }}">
+                        <label for="floatingInput">Location</label>
+                    </div>
+                    <div class="form-floating mb-2">
+                        <input type="text" name="newpatientsneeded" class="form-control" value="{{ .PatientsNeeded }}">
+                        <label for="floatingInput">SPs Needed : {{ .PatientsNeeded }}</label>
+                    </div>
+                    <div class="form-floating mb-2">
+                        <input type="text" name="newdescription" class="form-control" value="{{ .Information.Description }}">
+                        <label for="floatingInput">Description : {{ .Information.Description }}</label>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-outline-success" data-bs-dismiss="modal">Update</button>
+                    </div>
+                </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal" id="{{ .Information.Title | formatTitle }}info">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+        
+              <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Session Information</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+        
+              <!-- Modal body -->
+                <div class="modal-body">
+                    <h5>Date : {{ .Information.Date }}</h5>
+                    <h5>Title : {{ .Information.Title }}</h5>
+                    <h5>Start Time : {{ .Information.StartTime }}</h5>
+                    <h5>End Time : {{ .Information.EndTime }}</h5>
+                    <h5>Location : {{ .Information.Location }}</h5>
+                    <h5>Description : </h5>
+                    <p>{{ .Information.Description }}</p>
+                    <h5>SPs Needed : {{ .PatientsNeeded }}</h5>
+                    <h5>Instructors : </h5>
+                    {{ range .Instructors }}
+                        <h5>&emsp;{{ .Name.First }} {{ .Name.Last }}</h5>
+                    {{ end }}
+                </div>
+  
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-outline-danger" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
     {{ end }}
 </div>
-
 {{ end }}
