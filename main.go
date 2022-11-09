@@ -89,11 +89,12 @@ func main() {
 		Addr: "127.0.0.1:6600",
 	}
 
-	http.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir("images"))))
+	http.Handle("/images/logos/", http.StripPrefix("/images/logos/", http.FileServer(http.Dir("./images/logos"))))
 	http.HandleFunc("/dashboard", dashboard)
 	http.HandleFunc("/json", sendjson)
 	http.HandleFunc("/createsession", createsession)
 	http.HandleFunc("/updatesession", updatesession)
+	http.HandleFunc("/deletesession", deletesession)
 	http.HandleFunc("/signupavailable", signupavailable)
 	http.HandleFunc("/signupnotavailable", signupnotavailable)
 	http.HandleFunc("/logout", logout)

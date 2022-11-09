@@ -153,6 +153,31 @@ func updatesession(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/dashboard", httpRedirectResponse)
 }
 
+func deletesession(w http.ResponseWriter, r *http.Request) {
+	title := r.PostFormValue("title")
+	date := r.PostFormValue("date")
+	starttime := r.PostFormValue("starttime")
+	endtime := r.PostFormValue("endtime")
+	location := r.PostFormValue("location")
+	description := r.PostFormValue("description")
+	sessionInfo := SessionInfo{
+		Title:       title,
+		Date:        date,
+		StartTime:   starttime,
+		EndTime:     endtime,
+		Location:    location,
+		Description: description,
+	}
+	foundSession, err := GetSessionRecord(&sessionInfo, db)
+	if err != nil {
+		fmt.Println("Error getting record in database", err)
+	}
+	err = foundSession.DeleteRecord(db)
+	if err != nil {
+		fmt.Println("Error deleting record in database", err)
+	}
+	http.Redirect(w, r, "/dashboard", httpRedirectResponse)
+}
 func signupavailable(w http.ResponseWriter, r *http.Request) {
 	duplicate := false
 	session, _ := store.Get(r, "sessionAuthSPCalendar")

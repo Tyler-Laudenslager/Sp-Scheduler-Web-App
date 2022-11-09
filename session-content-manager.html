@@ -11,7 +11,7 @@
                     Edit Info
                 </button>
                 <button type="button" class="btn btn-outline-primary position: relative">Assign SPs</button>
-                <button type="button" class="btn btn-outline-danger position: relative">
+                <button type="button" class="btn btn-outline-danger position: relative" data-bs-toggle="modal" data-bs-target="#{{ .Information.Title | formatTitle }}delete">
                     Delete
                     <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
                         <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"></path>
@@ -111,6 +111,33 @@
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-outline-danger" data-bs-dismiss="modal">Close</button>
                 </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal" id="{{ .Information.Title | formatTitle }}delete">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+        
+              <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Confirm Delete of Session</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+        
+              <!-- Modal body -->
+                <div class="modal-body">
+                    <form action="/deletesession" method="post" enctype="application/x-www-form-urlencoded">
+                        <input type="hidden" name="title" value="{{ .Information.Title }}">
+                        <input type="hidden" name="date" value="{{ .Information.Date }}">
+                        <input type="hidden" name="starttime" value="{{ .Information.StartTime }}">
+                        <input type="hidden" name="endtime" value="{{ .Information.EndTime }}">
+                        <input type="hidden" name="location" value="{{ .Information.Location }}">
+                        <input type="hidden" name="description" value="{{ .Information.Description }}">
+                        <button type="submit" class="btn btn-outline-danger" data-bs-dismiss="modal">Yes</button>
+                        <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">No</button>
+                    </form>
+                </div>
+              
             </div>
         </div>
     </div>
