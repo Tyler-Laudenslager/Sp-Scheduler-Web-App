@@ -86,7 +86,6 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 }
 
 func createsession(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Create Session Called")
 	title := r.PostFormValue("title")
 	date := r.PostFormValue("date")
 	starttime := r.PostFormValue("starttime")
@@ -99,7 +98,6 @@ func createsession(w http.ResponseWriter, r *http.Request) {
 	}
 	newSession := Session{}.Create(title, date, starttime, endtime, location, description)
 	newSession.PatientsNeeded = patientsneeded
-	newSession.Display()
 	err = newSession.MakeRecord(db)
 	if err != nil {
 		fmt.Println("Error in Create Session Make Record : ", err)
@@ -108,7 +106,6 @@ func createsession(w http.ResponseWriter, r *http.Request) {
 }
 
 func updatesession(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Update Session Called")
 	title := r.PostFormValue("title")
 	date := r.PostFormValue("date")
 	starttime := r.PostFormValue("starttime")
@@ -137,7 +134,6 @@ func updatesession(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println("Error in Get Session Record in Update Session : ", err)
 	}
-	foundSession.Display()
 	foundSession.Information.Title = newtitle
 	foundSession.Information.Date = newdate
 	foundSession.Information.StartTime = newstarttime
