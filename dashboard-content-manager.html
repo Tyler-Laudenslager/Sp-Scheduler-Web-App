@@ -10,9 +10,9 @@
         </div>
         <div class="row position-absolute top-0 end-0">
             <div class="col-lg-6">
-                <button type="button" class="btn btn-lrg me-1 mt-4 btn-info position: relative"
+                <button type="button" class="btn btn-lrg me-1 mt-4 btn-info position: relative" data-bs-toggle="modal" data-bs-target="#UserSettings"
                         style="background-color: white; color: #4581ef;">
-                    <a href="/settings" style="text-decoration: none;">User Settings</a>
+                    User Settings
                 </button>
             </button>
             </div>
@@ -34,6 +34,39 @@
             </button>
         </div>
         {{ template "session-content" .User }}
+    </div>
+</div>
+
+<div class="modal" id="UserSettings">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+    
+          <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">User Settings</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+    
+          <!-- Modal body -->
+            <div class="modal-body">
+                <div class="vstack">
+                    <button type="button" class="btn btn-primary mb-2">
+                        Change Password
+                    </button> 
+                    <button type="button" class="btn btn-primary mb-2">
+                        Change Email
+                    </button>  
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">
+                    Close
+                </button>
+            </div>
+
+          
+        </div>
     </div>
 </div>
 
