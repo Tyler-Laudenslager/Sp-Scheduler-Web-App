@@ -389,7 +389,7 @@ func GetAllSessionInfoRecords(db *sql.DB) (sessions []*SessionInfo, err error) {
 
 func GetAllSessionRecords(db *sql.DB) (sessions []*Session, err error) {
 	rows, err := db.Query("select id, title, date, starttime, endtime, location, description, instructors, patientsneeded, " +
-		"patientsavailable, patientsassigned, patientsunavailable, patientsnoresponse" + " from sessions")
+		"patientsassigned, patientsavailable, patientsunavailable, patientsnoresponse" + " from sessions")
 	if err != nil {
 		return
 	}

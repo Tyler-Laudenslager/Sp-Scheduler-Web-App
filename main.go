@@ -95,6 +95,7 @@ func main() {
 	http.HandleFunc("/createsession", createsession)
 	http.HandleFunc("/updatesession", updatesession)
 	http.HandleFunc("/deletesession", deletesession)
+	http.HandleFunc("/assignsp", assignsp)
 	http.HandleFunc("/signupavailable", signupavailable)
 	http.HandleFunc("/signupnotavailable", signupnotavailable)
 	http.HandleFunc("/logout", logout)

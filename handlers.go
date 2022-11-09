@@ -70,7 +70,7 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 		dashboard_content.User = spmanager
 		isSpManager = true
 	} else {
-		spuser.SessionsAvailable = session_records
+		spuser.SessionsPool = session_records
 		dashboard_content.Role = "Standardized Patient"
 		dashboard_content.User = spuser
 	}
@@ -149,6 +149,56 @@ func updatesession(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/dashboard", httpRedirectResponse)
 }
 
+func assignsp(w http.ResponseWriter, r *http.Request) {
+	fmt.Println()
+	fmt.Println("Assign SPs Called")
+	title := r.PostFormValue("title")
+	date := r.PostFormValue("date")
+	starttime := r.PostFormValue("starttime")
+	endtime := r.PostFormValue("endtime")
+	location := r.PostFormValue("location")
+	description := r.PostFormValue("description")
+	sessionInfo := SessionInfo{
+		Title:       title,
+		Date:        date,
+		StartTime:   starttime,
+		EndTime:     endtime,
+		Location:    location,
+		Description: description,
+	}
+	foundSession, err := GetSessionRecord(&sessionInfo, db)
+	if err != nil {
+		fmt.Println("Error getting record in database", err)
+	}
+	foundSession.PatientsAssigned = make([]*SpUser, 0)
+
+	for i := 0; i < len(foundSession.PatientsAvailable); i++ {
+		patient := *foundSession.PatientsAvailable[i]
+		fmt.Println(patient.Username)
+		fmt.Println("Form Value", r.PostFormValue(patient.Username))
+		if r.PostFormValue(patient.Username) == "true" {
+			foundSession.PatientsAssigned = append(foundSession.PatientsAssigned, &patient)
+		}
+	}
+
+	err = foundSession.UpdateRecord(db)
+	if err != nil {
+		fmt.Println("Error updating record in assign sp", err)
+	}
+
+	foundSession, err = GetSessionRecord(&sessionInfo, db)
+	if err != nil {
+		fmt.Println("Error getting record in database", err)
+	}
+	fmt.Println("Patients Assigned to Session")
+	for _, su := range foundSession.PatientsAssigned {
+		fmt.Println(su.Username)
+	}
+
+	http.Redirect(w, r, "/dashboard", httpRedirectResponse)
+
+}
+
 func deletesession(w http.ResponseWriter, r *http.Request) {
 	title := r.PostFormValue("title")
 	date := r.PostFormValue("date")
@@ -212,16 +262,16 @@ func signupavailable(w http.ResponseWriter, r *http.Request) {
 	for i := 0; i < len(availableSessionRecord.PatientsAvailable); i++ {
 		fmt.Println(availableSessionRecord.PatientsAvailable[i].Name.First, availableSessionRecord.PatientsAvailable[i].Name.Last)
 	}
-	if spuser.SessionsAssigned != nil {
-		for i := 0; i < len(spuser.SessionsAssigned); i++ {
-			if *availableSessionRecord.Information == *spuser.SessionsAssigned[i] {
+	if spuser.SessionsAvailable != nil {
+		for i := 0; i < len(spuser.SessionsAvailable); i++ {
+			if *availableSessionRecord.Information == *spuser.SessionsAvailable[i] {
 				fmt.Println("Duplicated Session Found!")
 				duplicate = true
 			}
 		}
 	}
 	if !duplicate {
-		spuser.SessionsAssigned = append(spuser.SessionsAssigned, availableSessionRecord.Information)
+		spuser.SessionsAvailable = append(spuser.SessionsAvailable, availableSessionRecord.Information)
 		spuser.UpdateRecord(db)
 		spuser, err = GetSpUserRecord(session.Values["username"].(string), db)
 		if err != nil {
@@ -234,10 +284,10 @@ func signupavailable(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("End Time: ", r.PostFormValue("EndTime"))
 		fmt.Println("Duration: ", r.PostFormValue("StartTime"))
 		fmt.Println("Location: ", r.PostFormValue("EndTime"))
-		if spuser.SessionsAssigned != nil {
-			fmt.Println("Sessions Assigned: ")
-			for i := 0; i < len(spuser.SessionsAssigned); i++ {
-				fmt.Println(*spuser.SessionsAssigned[i])
+		if spuser.SessionsAvailable != nil {
+			fmt.Println("Sessions Available: ")
+			for i := 0; i < len(spuser.SessionsAvailable); i++ {
+				fmt.Println(*spuser.SessionsAvailable[i])
 			}
 		}
 		if spuser.SessionsUnavailable != nil {
