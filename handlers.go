@@ -199,6 +199,19 @@ func signupavailable(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Error GetSessionRecord in signupavailable", err)
 	}
 	fmt.Println("Got Session Record: ", availableSessionRecord.Information)
+	availableSessionRecord.PatientsAvailable = append(availableSessionRecord.PatientsAvailable, &spuser)
+	err = availableSessionRecord.UpdateRecord(db)
+	if err != nil {
+		fmt.Println("Error updating session record", err)
+	}
+	availableSessionRecord, err = GetSessionRecord(&sessionInfo, db)
+	if err != nil {
+		fmt.Println("Error GetSessionRecord in signupavailable", err)
+	}
+	fmt.Println("Patients Available Currently")
+	for i := 0; i < len(availableSessionRecord.PatientsAvailable); i++ {
+		fmt.Println(availableSessionRecord.PatientsAvailable[i].Name.First, availableSessionRecord.PatientsAvailable[i].Name.Last)
+	}
 	if spuser.SessionsAssigned != nil {
 		for i := 0; i < len(spuser.SessionsAssigned); i++ {
 			if *availableSessionRecord.Information == *spuser.SessionsAssigned[i] {
@@ -230,7 +243,7 @@ func signupavailable(w http.ResponseWriter, r *http.Request) {
 		if spuser.SessionsUnavailable != nil {
 			fmt.Println("Sessions Unavailable: ")
 			for i := 0; i < len(spuser.SessionsUnavailable); i++ {
-				fmt.Println(*spuser.SessionsAssigned[i])
+				fmt.Println(*spuser.SessionsUnavailable[i])
 			}
 		}
 	}

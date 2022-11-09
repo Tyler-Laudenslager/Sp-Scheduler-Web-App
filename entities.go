@@ -8,17 +8,11 @@ import (
 )
 
 type Role int
-type Sex int
 
 const (
 	SP Role = iota + 1
 	Manager
 	SuperUser
-)
-
-const (
-	Male Sex = iota + 1
-	Female
 )
 
 type Name struct {

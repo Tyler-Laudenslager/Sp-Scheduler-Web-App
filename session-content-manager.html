@@ -10,7 +10,7 @@
                 <button type="button" class="btn btn-outline-primary position: relative" data-bs-toggle="modal" data-bs-target="#{{ .Information.Title | formatTitle }}edit">
                     Edit Info
                 </button>
-                <button type="button" class="btn btn-outline-primary position: relative">Assign SPs</button>
+                <button type="button" class="btn btn-outline-primary position: relative" data-bs-toggle="modal" data-bs-target="#{{ .Information.Title | formatTitle}}assignsp">Assign SPs</button>
                 <button type="button" class="btn btn-outline-danger position: relative" data-bs-toggle="modal" data-bs-target="#{{ .Information.Title | formatTitle }}delete">
                     Delete
                     <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
@@ -104,7 +104,7 @@
                     <h5>SPs Needed : {{ .PatientsNeeded }}</h5>
                     <h5>Instructors : </h5>
                     {{ range .Instructors }}
-                        <h5>&emsp;{{ .Name.First }} {{ .Name.Last }}</h5>
+                        <h6>&emsp;{{ .Name.First }} {{ .Name.Last }}</h6>
                     {{ end }}
                 </div>
   
@@ -136,6 +136,42 @@
                         <button type="submit" class="btn btn-outline-danger" data-bs-dismiss="modal">Yes</button>
                         <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">No</button>
                     </form>
+                </div>
+              
+            </div>
+        </div>
+    </div>
+    <div class="modal" id="{{ .Information.Title | formatTitle }}assignsp">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+        
+              <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Assign SPs to Session</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+        
+              <!-- Modal body -->
+                <div class="modal-body">
+                    <form action="/assignsp" method="post" enctype="application/x-www-form-urlencoded">
+                        <input type="hidden" name="title" value="{{ .Information.Title }}">
+                        <input type="hidden" name="date" value="{{ .Information.Date }}">
+                        <input type="hidden" name="starttime" value="{{ .Information.StartTime }}">
+                        <input type="hidden" name="endtime" value="{{ .Information.EndTime }}">
+                        <input type="hidden" name="location" value="{{ .Information.Location }}">
+                        <input type="hidden" name="description" value="{{ .Information.Description }}">
+                        {{ range .PatientsAssigned }}
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                            <label class="form-check-label" for="flexCheckDefault">
+                                {{ .Name.First }} {{ .Name.Last }}
+                            </label>
+                        </div>
+                        {{ end }}
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-outline-primary" data-bs-dismiss="modal">Assign SPs</button>
                 </div>
               
             </div>
