@@ -70,9 +70,23 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 		dashboard_content.User = spmanager
 		isSpManager = true
 	} else {
-		if spuser.SessionsPool == nil {
-			spuser.SessionsPool = session_records
+		spuser.SessionsPool = make([]*SessionInfo, 0)
+		sessions_viewed := append(spuser.SessionsAvailable, spuser.SessionsUnavailable...)
+		for _, session_info := range session_records {
+			viewed_session := false
+			for _, session_viewed_info := range sessions_viewed {
+				if session_info.Title == session_viewed_info.Title {
+					viewed_session = true
+					break
+				}
+			}
+			if !viewed_session {
+				spuser.SessionsPool = append(spuser.SessionsPool, session_info)
+			} else {
+				continue
+			}
 		}
+
 		err = spuser.UpdateRecord(db)
 		if err != nil {
 			fmt.Println("Error updating record")
