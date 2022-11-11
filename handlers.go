@@ -279,15 +279,14 @@ func signupavailable(w http.ResponseWriter, r *http.Request) {
 		}
 		for i := 0; i < len(spuser.SessionsUnavailable); i++ {
 			if spuser.SessionsUnavailable[i].Title == sessionInfo.Title {
-				spuser.SessionsPool = append(spuser.SessionsUnavailable[:i], spuser.SessionsUnavailable[i+1:]...)
+				spuser.SessionsUnavailable = append(spuser.SessionsUnavailable[:i], spuser.SessionsUnavailable[i+1:]...)
 			}
-		}
-		err = spuser.UpdateRecord(db)
-		if err != nil {
-			fmt.Println("Error updating record in signupavailable: ", err)
 		}
 		spuser.SessionsAvailable = append(spuser.SessionsAvailable, availableSessionRecord.Information)
 		spuser.UpdateRecord(db)
+		if err != nil {
+			fmt.Println("Error updating record in signupavailable: ", err)
+		}
 		spuser, err = GetSpUserRecord(session.Values["username"].(string), db)
 		if err != nil {
 			fmt.Println("Error: GetSpUserRecord in signupavailable", err)
@@ -336,15 +335,14 @@ func signupnotavailable(w http.ResponseWriter, r *http.Request) {
 		}
 		for i := 0; i < len(spuser.SessionsAvailable); i++ {
 			if spuser.SessionsAvailable[i].Title == sessionInfo.Title {
-				spuser.SessionsPool = append(spuser.SessionsAvailable[:i], spuser.SessionsAvailable[i+1:]...)
+				spuser.SessionsAvailable = append(spuser.SessionsAvailable[:i], spuser.SessionsAvailable[i+1:]...)
 			}
-		}
-		err = spuser.UpdateRecord(db)
-		if err != nil {
-			fmt.Println("Error updating record in signupavailable: ", err)
 		}
 		spuser.SessionsUnavailable = append(spuser.SessionsUnavailable, notAvailableSessionRecord.Information)
 		spuser.UpdateRecord(db)
+		if err != nil {
+			fmt.Println("Error updating record in signupavailable: ", err)
+		}
 		spuser, err = GetSpUserRecord(session.Values["username"].(string), db)
 		if err != nil {
 			fmt.Println("Error: GetSpUserRecord in signupavailable", err)
