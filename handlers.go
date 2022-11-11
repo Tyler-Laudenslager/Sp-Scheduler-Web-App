@@ -70,7 +70,13 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 		dashboard_content.User = spmanager
 		isSpManager = true
 	} else {
-		spuser.SessionsPool = session_records
+		if spuser.SessionsPool == nil {
+			spuser.SessionsPool = session_records
+		}
+		err = spuser.UpdateRecord(db)
+		if err != nil {
+			fmt.Println("Error updating record")
+		}
 		dashboard_content.Role = "Standardized Patient"
 		dashboard_content.User = spuser
 	}
@@ -248,7 +254,6 @@ func signupavailable(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println("Error GetSessionRecord in signupavailable", err)
 	}
-	fmt.Println("Got Session Record: ", availableSessionRecord.Information)
 	availableSessionRecord.PatientsAvailable = append(availableSessionRecord.PatientsAvailable, &spuser)
 	err = availableSessionRecord.UpdateRecord(db)
 	if err != nil {
@@ -258,44 +263,36 @@ func signupavailable(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println("Error GetSessionRecord in signupavailable", err)
 	}
-	fmt.Println("Patients Available Currently")
-	for i := 0; i < len(availableSessionRecord.PatientsAvailable); i++ {
-		fmt.Println(availableSessionRecord.PatientsAvailable[i].Name.First, availableSessionRecord.PatientsAvailable[i].Name.Last)
-	}
+
 	if spuser.SessionsAvailable != nil {
 		for i := 0; i < len(spuser.SessionsAvailable); i++ {
 			if *availableSessionRecord.Information == *spuser.SessionsAvailable[i] {
-				fmt.Println("Duplicated Session Found!")
 				duplicate = true
 			}
 		}
 	}
 	if !duplicate {
+		for i := 0; i < len(spuser.SessionsPool); i++ {
+			if spuser.SessionsPool[i].Title == sessionInfo.Title {
+				spuser.SessionsPool = append(spuser.SessionsPool[:i], spuser.SessionsPool[i+1:]...)
+			}
+		}
+		for i := 0; i < len(spuser.SessionsUnavailable); i++ {
+			if spuser.SessionsUnavailable[i].Title == sessionInfo.Title {
+				spuser.SessionsPool = append(spuser.SessionsUnavailable[:i], spuser.SessionsUnavailable[i+1:]...)
+			}
+		}
+		err = spuser.UpdateRecord(db)
+		if err != nil {
+			fmt.Println("Error updating record in signupavailable: ", err)
+		}
 		spuser.SessionsAvailable = append(spuser.SessionsAvailable, availableSessionRecord.Information)
 		spuser.UpdateRecord(db)
 		spuser, err = GetSpUserRecord(session.Values["username"].(string), db)
 		if err != nil {
 			fmt.Println("Error: GetSpUserRecord in signupavailable", err)
 		}
-		fmt.Println("Sign Up Available Called")
-		fmt.Println("Title: ", r.PostFormValue("Title"))
-		fmt.Println("Date: ", r.PostFormValue("Date"))
-		fmt.Println("Start Time: ", r.PostFormValue("StartTime"))
-		fmt.Println("End Time: ", r.PostFormValue("EndTime"))
-		fmt.Println("Duration: ", r.PostFormValue("StartTime"))
-		fmt.Println("Location: ", r.PostFormValue("EndTime"))
-		if spuser.SessionsAvailable != nil {
-			fmt.Println("Sessions Available: ")
-			for i := 0; i < len(spuser.SessionsAvailable); i++ {
-				fmt.Println(*spuser.SessionsAvailable[i])
-			}
-		}
-		if spuser.SessionsUnavailable != nil {
-			fmt.Println("Sessions Unavailable: ")
-			for i := 0; i < len(spuser.SessionsUnavailable); i++ {
-				fmt.Println(*spuser.SessionsUnavailable[i])
-			}
-		}
+
 	}
 	http.Redirect(w, r, "/dashboard", httpRedirectResponse)
 }
@@ -324,38 +321,33 @@ func signupnotavailable(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println("Error GetSessionRecord in signupavailable", err)
 	}
-	fmt.Println("Got Session Record: ", notAvailableSessionRecord.Information)
 	if spuser.SessionsUnavailable != nil {
 		for i := 0; i < len(spuser.SessionsUnavailable); i++ {
 			if *notAvailableSessionRecord.Information == *spuser.SessionsUnavailable[i] {
-				fmt.Println("Duplicated Session Found!")
 				duplicate = true
 			}
 		}
 	}
 	if !duplicate {
+		for i := 0; i < len(spuser.SessionsPool); i++ {
+			if spuser.SessionsPool[i].Title == sessionInfo.Title {
+				spuser.SessionsPool = append(spuser.SessionsPool[:i], spuser.SessionsPool[i+1:]...)
+			}
+		}
+		for i := 0; i < len(spuser.SessionsAvailable); i++ {
+			if spuser.SessionsAvailable[i].Title == sessionInfo.Title {
+				spuser.SessionsPool = append(spuser.SessionsAvailable[:i], spuser.SessionsAvailable[i+1:]...)
+			}
+		}
+		err = spuser.UpdateRecord(db)
+		if err != nil {
+			fmt.Println("Error updating record in signupavailable: ", err)
+		}
 		spuser.SessionsUnavailable = append(spuser.SessionsUnavailable, notAvailableSessionRecord.Information)
 		spuser.UpdateRecord(db)
 		spuser, err = GetSpUserRecord(session.Values["username"].(string), db)
 		if err != nil {
 			fmt.Println("Error: GetSpUserRecord in signupavailable", err)
-		}
-		fmt.Println("Sign Up Not Available Called")
-		fmt.Println("Date: ", r.PostFormValue("Date"))
-		fmt.Println("Time: ", r.PostFormValue("Time"))
-		fmt.Println("Duration: ", r.PostFormValue("Duration"))
-		fmt.Println("Location: ", r.PostFormValue("Location"))
-		if spuser.SessionsAssigned != nil {
-			fmt.Println("Sessions Assigned: ")
-			for i := 0; i < len(spuser.SessionsAssigned); i++ {
-				fmt.Println(*spuser.SessionsAssigned[i])
-			}
-		}
-		if spuser.SessionsUnavailable != nil {
-			fmt.Println("Sessions Unavailable: ")
-			for i := 0; i < len(spuser.SessionsUnavailable); i++ {
-				fmt.Println(*spuser.SessionsUnavailable[i])
-			}
 		}
 	}
 	http.Redirect(w, r, "/dashboard", httpRedirectResponse)
