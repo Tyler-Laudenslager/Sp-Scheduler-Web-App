@@ -42,5 +42,6 @@ CREATE TABLE Sessions (
 	PatientsAvailable JSONB,
 	PatientsAssigned JSONB,
 	PatientsUnavailable JSONB,
-	PatientsNoResponse JSONB
+	PatientsNoResponse JSONB,
+	ShowSession BOOL NOT NULL
 );

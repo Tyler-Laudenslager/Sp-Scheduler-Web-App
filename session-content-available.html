@@ -3,6 +3,7 @@
 <div class="vstack gap-2 d-flex align-items-center position: relative;">
     {{ if .User.SessionsPool }}
     {{ range .User.SessionsPool }}
+    {{ if .ShowSession }}
     <div class="card" style="width: 40rem; background-color: #f7f8f7;">
         <div class="card-body">
             <div class="vstack me-2 gap-2 d-flex align-items-center position-absolute top-50 end-0 translate-middle-y">
@@ -43,6 +44,7 @@
             <h5 class="card-text">Description: {{ .Description }}</h5>
         </div>
     </div>
+    {{ end }}
     {{ end }}
     {{ end }}
     {{ if .User.SessionsAvailable }}

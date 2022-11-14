@@ -178,7 +178,8 @@ func (s Session) Create(title string, date string, starttime string, endtime str
 			StartTime:   starttime,
 			EndTime:     endtime,
 			Location:    location,
-			Description: description},
+			Description: description,
+			ShowSession: true},
 		Instructors:         []*Instructor{},
 		PatientsNeeded:      0,
 		PatientsAssigned:    []*SpUser{},
@@ -195,6 +196,7 @@ type SessionInfo struct {
 	EndTime     string `json:"EndTime"`
 	Location    string `json:"Location"`
 	Description string `json:"Description"`
+	ShowSession bool   `json:"ShowSession"`
 }
 
 func (si SessionInfo) Value() (driver.Value, error) {

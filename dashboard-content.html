@@ -49,7 +49,7 @@
                         Change Password
                     </button> 
                     <button type="button" class="btn btn-primary mb-2" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#ChangeEmail">
-                        Change Email
+                        Change Email Address
                     </button>  
                 </div>
             </div>
@@ -78,12 +78,12 @@
             <div class="modal-body">
                 <form action="/changepassword" method="post" enctype="application/x-www-form-urlencoded">
                     <div class="form-floating mb-2">
-                        <input type="text" name="oldpassword" class="form-control" value="">
-                        <label for="floatingInput">Old Password</label>
+                        <input type="password" name="newpassword" class="form-control" value="">
+                        <label for="floatingInput">New Password</label>
                     </div>
                     <div class="form-floating mb-2">
-                        <input type="text" name="newpassword" class="form-control" value="">
-                        <label for="floatingInput">New Password</label>
+                        <input type="password" name="newpasswordconfirmed" class="form-control" value="">
+                        <label for="floatingInput">Confirm New Password</label>
                     </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-outline-success" data-bs-dismiss="modal">
@@ -104,15 +104,16 @@
     
           <!-- Modal Header -->
             <div class="modal-header">
-                <h4 class="modal-title">Change Email</h4>
+                <h4 class="modal-title">Change Email Address</h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
     
           <!-- Modal body -->
             <div class="modal-body">
+                <h6>Current Email Address:&emsp;{{ .User.Email }}</h6>
                 <form action="/changeemail" method="post" enctype="application/x-www-form-urlencoded">
                 <div class="form-floating mb-2">
-                    <input type="text" name="newpassword" class="form-control" value="">
+                    <input type="text" name="newemail" class="form-control" value="">
                     <label for="floatingInput">New Email</label>
                 </div>
                 <div class="modal-footer">

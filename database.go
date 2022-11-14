@@ -260,9 +260,10 @@ func (s *Session) Display() {
 	for i := 0; i < len(s.PatientsNoResponse); i++ {
 		fmt.Println(*s.PatientsNoResponse[i])
 	}
+	fmt.Println("Seen :", s.Information.ShowSession)
 }
 func (s *Session) MakeRecord(db *sql.DB) (err error) {
-	statement := "insert into sessions (title, date, starttime, endtime, location, description, instructors, patientsneeded, patientsassigned, patientsavailable, patientsunavailable, patientsnoresponse) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) returning id"
+	statement := "insert into sessions (title, date, starttime, endtime, location, description, instructors, patientsneeded, patientsassigned, patientsavailable, patientsunavailable, patientsnoresponse, showsession) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) returning id"
 	stmt, err := db.Prepare(statement)
 	if err != nil {
 		return
@@ -280,7 +281,7 @@ func (s *Session) MakeRecord(db *sql.DB) (err error) {
 		instructorsByte, s.PatientsNeeded,
 		patientsAssignedByte, patientsAvailableByte,
 		patientsUnavailableByte,
-		patientsNoResponse).Scan(&s.Id)
+		patientsNoResponse, s.Information.ShowSession).Scan(&s.Id)
 
 	if err != nil {
 		return
@@ -298,11 +299,11 @@ func GetSessionRecord(sinfo *SessionInfo, db *sql.DB) (s Session, err error) {
 	var patientsNoResponseByte []byte
 
 	err = db.QueryRow("select id, title, date, starttime, endtime, location, description, "+
-		"instructors, patientsneeded, patientsassigned, patientsavailable, patientsunavailable, patientsnoresponse "+
+		"instructors, patientsneeded, patientsassigned, patientsavailable, patientsunavailable, patientsnoresponse, showsession "+
 		"from sessions where title = $1 and date = $2 and starttime = $3 and endtime = $4 and location = $5 and description = $6 ", sinfo.Title, sinfo.Date, sinfo.StartTime, sinfo.EndTime, sinfo.Location, sinfo.Description).Scan(&s.Id,
 		&s.Information.Title, &s.Information.Date, &s.Information.StartTime, &s.Information.EndTime, &s.Information.Location,
 		&s.Information.Description, &instructorsByte, &s.PatientsNeeded,
-		&patientsAssignedByte, &patientsAvailableByte, &patientsUnavailableByte, &patientsNoResponseByte)
+		&patientsAssignedByte, &patientsAvailableByte, &patientsUnavailableByte, &patientsNoResponseByte, &s.Information.ShowSession)
 
 	if err != nil {
 		return
@@ -354,12 +355,12 @@ func (s *Session) UpdateRecord(db *sql.DB) (err error) {
 	}
 	_, err = db.Exec("update sessions set title = $2, date = $3, "+
 		"starttime = $4, endtime = $5, "+
-		"location = $6, description = $7, instructors = $8, patientsneeded = $9, patientsassigned = $10, patientsavailable = $11, patientsunavailable = $12, patientsnoresponse = $13 where id = $1",
+		"location = $6, description = $7, instructors = $8, patientsneeded = $9, patientsassigned = $10, patientsavailable = $11, patientsunavailable = $12, patientsnoresponse = $13 , showsession = $14 where id = $1",
 		s.Id, s.Information.Title, s.Information.Date, s.Information.StartTime, s.Information.EndTime,
 		s.Information.Location, s.Information.Description,
 		instructorsByte, s.PatientsNeeded,
 		patientsAssignedByte, patientsAvailableByte,
-		patientsUnavailableByte, patientsNoResponseByte)
+		patientsUnavailableByte, patientsNoResponseByte, s.Information.ShowSession)
 
 	return
 }
@@ -369,7 +370,7 @@ func (s *Session) DeleteRecord(db *sql.DB) (err error) {
 }
 
 func GetAllSessionInfoRecords(db *sql.DB) (sessions []*SessionInfo, err error) {
-	rows, err := db.Query("select id, title, date, starttime, endtime, location, description from sessions")
+	rows, err := db.Query("select id, title, date, starttime, endtime, location, description, showsession from sessions")
 	if err != nil {
 		return
 	}
@@ -377,7 +378,7 @@ func GetAllSessionInfoRecords(db *sql.DB) (sessions []*SessionInfo, err error) {
 	for rows.Next() {
 		session := &Session{Information: &SessionInfo{}}
 		err = rows.Scan(&session.Id, &session.Information.Title, &session.Information.Date, &session.Information.StartTime, &session.Information.EndTime,
-			&session.Information.Location, &session.Information.Description)
+			&session.Information.Location, &session.Information.Description, &session.Information.ShowSession)
 		if err != nil {
 			return
 		}
@@ -389,7 +390,7 @@ func GetAllSessionInfoRecords(db *sql.DB) (sessions []*SessionInfo, err error) {
 
 func GetAllSessionRecords(db *sql.DB) (sessions []*Session, err error) {
 	rows, err := db.Query("select id, title, date, starttime, endtime, location, description, instructors, patientsneeded, " +
-		"patientsassigned, patientsavailable, patientsunavailable, patientsnoresponse" + " from sessions")
+		"patientsassigned, patientsavailable, patientsunavailable, patientsnoresponse, showsession" + " from sessions")
 	if err != nil {
 		return
 	}
@@ -403,7 +404,7 @@ func GetAllSessionRecords(db *sql.DB) (sessions []*Session, err error) {
 		var patientsNoResponseByte []byte
 		err = rows.Scan(&session.Id, &session.Information.Title, &session.Information.Date, &session.Information.StartTime, &session.Information.EndTime,
 			&session.Information.Location, &session.Information.Description, &instructorsByte, &session.PatientsNeeded,
-			&patientsAssignedByte, &patientsAvailableByte, &patientsUnavailableByte, &patientsNoResponseByte)
+			&patientsAssignedByte, &patientsAvailableByte, &patientsUnavailableByte, &patientsNoResponseByte, &session.Information.ShowSession)
 		if err != nil {
 			return
 		}

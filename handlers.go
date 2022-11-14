@@ -365,6 +365,80 @@ func signupnotavailable(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/dashboard", httpRedirectResponse)
 }
 
+func changeemail(w http.ResponseWriter, r *http.Request) {
+	session, _ := store.Get(r, "sessionAuthSPCalendar")
+	if auth, ok := session.Values["authenticated"].(bool); !ok || !auth {
+		http.Redirect(w, r, "/login", httpRedirectResponse)
+		return
+	}
+	spuser, err := GetSpUserRecord(session.Values["username"].(string), db)
+	if err != nil {
+		fmt.Println("Error: GetSpUserRecord in signupavailable", err)
+	}
+	newemail := r.PostFormValue("newemail")
+	spuser.Email = newemail
+	err = spuser.UpdateRecord(db)
+	if err != nil {
+		fmt.Println("Error updating user record in change email handler : ", err)
+	}
+	http.Redirect(w, r, "/dashboard", httpRedirectResponse)
+}
+
+func changepassword(w http.ResponseWriter, r *http.Request) {
+	session, _ := store.Get(r, "sessionAuthSPCalendar")
+	if auth, ok := session.Values["authenticated"].(bool); !ok || !auth {
+		http.Redirect(w, r, "/login", httpRedirectResponse)
+		return
+	}
+	spuser, err := GetSpUserRecord(session.Values["username"].(string), db)
+	if err != nil {
+		fmt.Println("Error: GetSpUserRecord in signupavailable", err)
+	}
+	newPassword := r.PostFormValue("newpassword")
+	newPasswordConfirmed := r.PostFormValue("newpasswordconfirmed")
+	if newPassword == newPasswordConfirmed {
+		hashedPassword, err := HashPassword(newPassword)
+		if err != nil {
+			fmt.Println("Error Hashing Password")
+			http.Redirect(w, r, "/dashboard", httpRedirectResponse)
+		}
+		spuser.Password = hashedPassword
+	}
+	err = spuser.UpdateRecord(db)
+	if err != nil {
+		fmt.Println("error updating user record in change password", err)
+	}
+	fmt.Println("New Password is :", newPassword)
+	http.Redirect(w, r, "/dashboard", httpRedirectResponse)
+
+}
+
+func toggleshowsession(w http.ResponseWriter, r *http.Request) {
+	sessionInfo := SessionInfo{
+		Title:       r.PostFormValue("title"),
+		Date:        r.PostFormValue("date"),
+		StartTime:   r.PostFormValue("starttime"),
+		EndTime:     r.PostFormValue("endtime"),
+		Location:    r.PostFormValue("location"),
+		Description: r.PostFormValue("description"),
+	}
+
+	availableSessionRecord, err := GetSessionRecord(&sessionInfo, db)
+	if err != nil {
+		fmt.Println("Error GetSessionRecord in signupavailable", err)
+	}
+	if availableSessionRecord.Information.ShowSession {
+		availableSessionRecord.Information.ShowSession = false
+	} else {
+		availableSessionRecord.Information.ShowSession = true
+	}
+	err = availableSessionRecord.UpdateRecord(db)
+	if err != nil {
+		fmt.Println("Error Updating Session Record in Toggle Show Session : ", err)
+	}
+	http.Redirect(w, r, "/dashboard", httpRedirectResponse)
+}
+
 func authenticate(w http.ResponseWriter, r *http.Request) {
 	session, _ := store.Get(r, "sessionAuthSPCalendar")
 	username := r.PostFormValue("userid")

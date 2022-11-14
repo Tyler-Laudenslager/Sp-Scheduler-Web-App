@@ -15,6 +15,7 @@ var (
 
 func init() {
 	hashedPassword, err := HashPassword("letmein")
+	fmt.Println("hashed password :", hashedPassword)
 	if err != nil {
 		fmt.Println("Error Hashing Password")
 		return
@@ -98,6 +99,9 @@ func main() {
 	http.HandleFunc("/assignsp", assignsp)
 	http.HandleFunc("/signupavailable", signupavailable)
 	http.HandleFunc("/signupnotavailable", signupnotavailable)
+	http.HandleFunc("/changeemail", changeemail)
+	http.HandleFunc("/changepassword", changepassword)
+	http.HandleFunc("/toggleshowsession", toggleshowsession)
 	http.HandleFunc("/logout", logout)
 	http.HandleFunc("/authenticate", authenticate)
 	http.HandleFunc("/", login)
