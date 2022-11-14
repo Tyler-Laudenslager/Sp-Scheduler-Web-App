@@ -117,6 +117,7 @@ func createsession(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Error converting patients needed to integer")
 	}
 	newSession := Session{}.Create(title, date, starttime, endtime, location, description)
+	newSession.Information.ShowSession = false
 	newSession.PatientsNeeded = patientsneeded
 	err = newSession.MakeRecord(db)
 	if err != nil {
