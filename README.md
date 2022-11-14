@@ -12,8 +12,8 @@
         <h3>Progress</h3>
         <p>Progress images can be accessed under <a href="https://github.com/Tyler-Laudenslager/Sp-Scheduler-Web-App/tree/main/images/progress">/images/progress/</a></p>
         <h3>Prototype Date:</h3>
-        &#8195;December 2023</br>
-        spcalendar.com
+        &#8195;December 2023</br></br>
+           <a href="http://www.spcalendar.com">spcalendar.com</a>
         <h3>Technology Stack:</h3>
         &#8195;Front-End&#8195;&#8195;&#8195;&#8195; ->&#8195;&#8195;<a href="https://getbootstrap.com/">Bootstrap v5</a></br></br>
         &#8195;Back-End &#8195;&#8195;&#8195;&#8195; ->&#8195;&#8195;<a href="https://go.dev">Go Programming</a></br></br>
