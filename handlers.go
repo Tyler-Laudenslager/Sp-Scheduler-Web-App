@@ -269,8 +269,15 @@ func signupavailable(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println("Error GetSessionRecord in signupavailable", err)
 	}
-	availableSessionRecord.PatientsAvailable = append(availableSessionRecord.PatientsAvailable, &spuser)
-	err = availableSessionRecord.UpdateRecord(db)
+	for _, su := range availableSessionRecord.PatientsAvailable {
+		if su.Name.First == spuser.Name.First && su.Name.Last == spuser.Name.Last {
+			duplicate = true
+		}
+	}
+	if !duplicate {
+		availableSessionRecord.PatientsAvailable = append(availableSessionRecord.PatientsAvailable, &spuser)
+		err = availableSessionRecord.UpdateRecord(db)
+	}
 	if err != nil {
 		fmt.Println("Error updating session record", err)
 	}
@@ -278,7 +285,7 @@ func signupavailable(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println("Error GetSessionRecord in signupavailable", err)
 	}
-
+	duplicate = false
 	if spuser.SessionsAvailable != nil {
 		for i := 0; i < len(spuser.SessionsAvailable); i++ {
 			if *availableSessionRecord.Information == *spuser.SessionsAvailable[i] {
