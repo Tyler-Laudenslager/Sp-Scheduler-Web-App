@@ -66,6 +66,11 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		spmanager.SessionsUnmanaged = session_records_manager
+		spuser_records, err := GetAllSpUserRecords(db)
+		spmanager.AssignedPatients = spuser_records
+		if err != nil {
+			fmt.Println("Error Get All User records in dashboard: ", err)
+		}
 		dashboard_content.Role = "Manager"
 		dashboard_content.User = spmanager
 		isSpManager = true
@@ -515,4 +520,28 @@ func sendjson(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(output)
+}
+
+func createSPRecord(w http.ResponseWriter, r *http.Request) {
+	name := r.PostFormValue("name")
+	email := r.PostFormValue("email")
+	password := r.PostFormValue("password")
+
+	split_name := strings.Split(strings.ToLower(name), " ")
+	first_initial := string(split_name[0][0])
+	last_name := string(split_name[1])
+	username := first_initial + last_name
+	spuser := SpUser{}.Create(*Name{}.Create(name), username, SP, email)
+	fmt.Println("Password: ", password)
+	hashedPassword, err := HashPassword(password)
+	spuser.Password = hashedPassword
+	if err != nil {
+		fmt.Println("Password Hash Gone Wrong in Create SP Record: ", err)
+	}
+	err = spuser.MakeRecord(db)
+	if err != nil {
+		fmt.Println("Error creating record in database in CreateSPRecord: ", err)
+	}
+	fmt.Println("Create new SP User : ", spuser.Username)
+	http.Redirect(w, r, "/dashboard", httpRedirectResponse)
 }

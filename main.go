@@ -25,6 +25,11 @@ func init() {
 		fmt.Println("Error Hashing Password")
 		return
 	}
+	hashedPassword3, err := HashPassword("letmeinalso")
+	if err != nil {
+		fmt.Println("Error Hashing Password")
+		return
+	}
 	session := Session{}.Create("Sacred Heart Check-UP", "11/25/2022", "11:00AM", "12:00PM", "SacredHeart", "Check-Up")
 	session.PatientsNeeded = 6
 	session.Instructors = append(session.Instructors, Instructor{}.Create("Joe Thompson", "Director"))
@@ -62,6 +67,14 @@ func init() {
 		Email:    "rpike@duck.com",
 	}
 
+	spuser2 := SpUser{
+		Name:     *Name{}.Create("Charles Darwin"),
+		Username: "cdarwin",
+		Role:     SP,
+		Password: hashedPassword3,
+		Email:    "cdarwin@duck.com",
+	}
+
 	spmanager := SpManager{
 		Name:     *Name{}.Create("Emily Garey"),
 		Username: "egarey",
@@ -77,6 +90,21 @@ func init() {
 	}
 	fmt.Println("Created Record in Database -> ", spuser.Name)
 
+	err = spuser2.MakeRecord(db)
+	if err != nil {
+		fmt.Println("Error Making Record -> ", err)
+		return
+	}
+	fmt.Println("Created Record in Database -> ", spuser2.Name)
+
+	spmanager.AssignedPatients, err = GetAllSpUserRecords(db)
+	if err != nil {
+		fmt.Println("Error in Init Get All Sp User Records: ", err)
+	}
+	fmt.Println("Assigned Patients")
+	for _, su := range spmanager.AssignedPatients {
+		fmt.Println(su.Name)
+	}
 	err = spmanager.MakeRecord(db)
 	if err != nil {
 		fmt.Println("Error Making Record -> ", err)
@@ -101,6 +129,7 @@ func main() {
 	http.HandleFunc("/signupnotavailable", signupnotavailable)
 	http.HandleFunc("/changeemail", changeemail)
 	http.HandleFunc("/changepassword", changepassword)
+	http.HandleFunc("/createSPRecord", createSPRecord)
 	http.HandleFunc("/toggleshowsession", toggleshowsession)
 	http.HandleFunc("/logout", logout)
 	http.HandleFunc("/authenticate", authenticate)

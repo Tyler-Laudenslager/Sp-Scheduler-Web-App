@@ -101,6 +101,54 @@ func GetSpUserRecord(username string, db *sql.DB) (sp SpUser, err error) {
 	}
 	return
 }
+
+func GetAllSpUserRecords(db *sql.DB) (spusers []*SpUser, err error) {
+
+	rows, err := db.Query("select Id, name, username, role, email, totalsessionsassigned, sessionspool, sessionsassigned, " +
+		"sessionsavailable, sessionsunavailable, password " +
+		"from spusers")
+
+	if err != nil {
+		return
+	}
+
+	for rows.Next() {
+		sp := &SpUser{}
+		var sessionsPoolByte []byte
+		var sessionsAvailableByte []byte
+		var sessionsUnavailableByte []byte
+		var sessionsAssignedByte []byte
+
+		err = rows.Scan(&sp.Id, &sp.Name, &sp.Username, &sp.Role, &sp.Email,
+			&sp.TotalSessionsAssigned, &sessionsPoolByte, &sessionsAssignedByte,
+			&sessionsAvailableByte, &sessionsUnavailableByte,
+			&sp.Password)
+		if err != nil {
+			return
+		}
+		err = json.Unmarshal(sessionsPoolByte, &sp.SessionsPool)
+		if err != nil {
+			return
+		}
+
+		err = json.Unmarshal(sessionsAssignedByte, &sp.SessionsAssigned)
+		if err != nil {
+			return
+		}
+		err = json.Unmarshal(sessionsAvailableByte, &sp.SessionsAvailable)
+		if err != nil {
+			return
+		}
+		err = json.Unmarshal(sessionsUnavailableByte, &sp.SessionsUnavailable)
+		if err != nil {
+			return
+		}
+		spusers = append(spusers, sp)
+	}
+	rows.Close()
+	return
+}
+
 func (sp *SpUser) UpdateRecord(db *sql.DB) (err error) {
 
 	sessionsPoolByte, err := json.Marshal(&sp.SessionsPool)

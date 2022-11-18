@@ -8,20 +8,20 @@
                 <h5 class="card-text">Date: {{ .Date }} </h5>
             </div>
         </div>
-        <div class="row position-absolute top-0 end-0">
-            <div class="col-lg-6">
+        <div class="col position-absolute top-0 end-0">
+                <button type="button" class="btn btn-lrg me-1 mt-4 btn-info position: relative" data-bs-toggle="modal" data-bs-target="#ManageSPs"
+                        style="background-color: white; color: #4581ef;">
+                    Manage SPs
+                </button>
                 <button type="button" class="btn btn-lrg me-1 mt-4 btn-info position: relative" data-bs-toggle="modal" data-bs-target="#UserSettings"
                         style="background-color: white; color: #4581ef;">
                     User Settings
                 </button>
-            </button>
-            </div>
-            <div class="col">
                 <button type="button" class="btn me-4 mt-4 btn-info position: relative logout-btn"
                         style="background-color:white; color:#4581ef;">
                     <a href="/logout" style="text-decoration: none;">Logout</a>
                 </button>
-            </div>
+            
         </div>
         <div class="vstack gap-2 d-flex align-items-center position-absolute top-0 start-50 translate-middle-x">
             <div class="card mt-4 position: relative">
@@ -189,4 +189,166 @@
     </div>
   </div>
 
+  <div class="modal" id="ManageSPs">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+    
+          <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Manage Standardized Patient Records</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+    
+          <!-- Modal body -->
+            <div class="modal-body">
+                <div class="vstack">
+                    <button type="button" class="btn btn-success mb-2" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#CreateSPRecord">
+                        Create Record
+                    </button> 
+                    <button type="button" class="btn btn-primary mb-2" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#RetrieveSPRecord">
+                        Retrieve Record
+                    </button> 
+                    <button type="button" class="btn btn-primary mb-2" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#UpdateSPRecord">
+                        Update Record
+                    </button>
+                    <button type="button" class="btn btn-danger mb-2" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#DeleteSPRecord">
+                        Delete Record
+                    </button>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="CreateSPRecord">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+    
+          <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Create Standardized Patient Record</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+    
+          <!-- Modal body -->
+            <div class="modal-body">
+                <form action="/createSPRecord" method="post" enctype="application/x-www-form-urlencoded">
+                    <div class="form-floating mb-2">
+                        <input type="text" name="name" class="form-control" value="Lizzy Thompson">
+                        <label for="floatingInput">Name</label>
+                    </div>
+                    <div class="form-floating mb-2">
+                        <input type="text" name="email" class="form-control" value="lizzy.thompson@gmail.com">
+                        <label for="floatingInput">Email</label>
+                    </div>
+                    <div class="form-floating mb-2">
+                        <input type="text" name="password" class="form-control" value="lxpt766!@*">
+                        <label for="floatingInput">Password</label>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-outline-success" data-bs-dismiss="modal">Create</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="RetrieveSPRecord">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+    
+          <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Retrieve Standardized Patient Record</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+    
+          <!-- Modal body -->
+            <div class="modal-body">
+                <form action="/retrieveSPRecord" method="post" enctype="application/x-www-form-urlencoded">
+                    <p6>Assigned Patients:</p6>
+                    {{ if .User.AssignedPatients }}
+                    {{ range .User.AssignedPatients }}
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="{{ .Username }}" value="true" id="flexCheckDefault">
+                            <label class="form-check-label" for="flexCheckDefault">
+                                {{ .Name.First }} {{ .Name.Last }}
+                            </label>
+                        </div>
+                    {{ end }}
+                    {{ end }}
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-outline-success" data-bs-dismiss="modal">
+                            Submit
+                        </button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            Close
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="UpdateSPRecord">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+    
+          <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Update Standardized Patient Record</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+    
+          <!-- Modal body -->
+            <div class="modal-body">
+                <form action="/retrieveSPRecord" method="post" enctype="application/x-www-form-urlencoded">
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-outline-success" data-bs-dismiss="modal">
+                            Submit
+                        </button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            Close
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="DeleteSPRecord">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+    
+          <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Delete Standardized Patient Record</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+    
+          <!-- Modal body -->
+            <div class="modal-body">
+                <form action="/retrieveSPRecord" method="post" enctype="application/x-www-form-urlencoded">
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-outline-success" data-bs-dismiss="modal">
+                            Submit
+                        </button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            Close
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 {{ end }}
