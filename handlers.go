@@ -23,7 +23,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 	if auth, ok := session.Values["authenticated"].(bool); ok && auth {
 		http.Redirect(w, r, "/dashboard", httpRedirectResponse)
 	}
-	t, _ := template.ParseFiles("html-boilerplate.html", "login-content.html")
+	t, _ := template.ParseFiles("templates/html-boilerplate.html", "templates/login-content.html")
 	t.ExecuteTemplate(w, "html-boilerplate", "")
 }
 
@@ -100,11 +100,11 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 		dashboard_content.User = spuser
 	}
 	funcMap := template.FuncMap{"formatTitle": formatTitle}
-	t = template.New("html-boilerplate.html").Funcs(funcMap)
+	t = template.New("templates/html-boilerplate.html").Funcs(funcMap)
 	if !isSpManager {
-		t, _ = t.ParseFiles("html-boilerplate.html", "dashboard-content.html", "session-content-available.html")
+		t, _ = t.ParseFiles("templates/html-boilerplate.html", "templates/dashboard-content.html", "templates/user-settings.html", "templates/session-content-available.html")
 	} else {
-		t, _ = t.ParseFiles("html-boilerplate.html", "dashboard-content-manager.html", "session-content-manager.html")
+		t, _ = t.ParseFiles("templates/html-boilerplate.html", "templates/dashboard-content-manager.html", "templates/user-settings.html", "templates/session-content-manager.html")
 	}
 
 	t.ExecuteTemplate(w, "html-boilerplate", dashboard_content)
