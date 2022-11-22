@@ -15,12 +15,12 @@
         &#8195;December 2023</br>
         <h3>Prototype Website:</h3>
         &#8195;<a href="http://spcalendar.com">spcalendar.com</a>
-        &#8195;<h5>Standardized Patient Account:</h5>
-        &#8195;&#8195;<h6>Username: rpike</h6>
-        &#8195;&#8195;<h6>Password: letmein</h6>
-        &#8195;<h5>Manager Account:</h5>
-        &#8195;&#8195;<h6>Username: egarey</h6>
-        &#8195;&#8195;<h6>Password: rxpt221!@#</h6>
+        &#8195;<p>Standardized Patient Account:</p>
+        &#8195;&#8195;<p>Username: rpike</p>
+        &#8195;&#8195;<p>Password: letmein</p>
+        &#8195;<p>Manager Account:</p>
+        &#8195;&#8195;<p>Username: egarey</p>
+        &#8195;&#8195;<p>Password: rxpt221!@#</p>
         <h3>Technology Stack:</h3>
         &#8195;Front-End&#8195;&#8195;&#8195;&#8195; ->&#8195;&#8195;<a href="https://getbootstrap.com/">Bootstrap v5</a></br></br>
         &#8195;Back-End &#8195;&#8195;&#8195;&#8195; ->&#8195;&#8195;<a href="https://go.dev">Go Programming</a></br></br>
