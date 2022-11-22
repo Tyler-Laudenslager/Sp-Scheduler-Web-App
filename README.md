@@ -21,7 +21,7 @@
     </p><p>
             &emsp;Username: rpike
             &emsp;Password: letmein
-            </p>
+            </p></br>
          <p>
                 &emsp;<b>Manager Account</b>
     </p><p>
