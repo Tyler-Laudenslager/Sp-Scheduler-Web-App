@@ -16,7 +16,10 @@
         <h3>Prototype Website:</h3>
         &#8195;<a href="http://spcalendar.com">spcalendar.com</a>
         <h3>Login Credentials</h3>
-    &#8195;<h5>Username: rpike</h5></br>
+        <p>
+            &emsp;<h5>Username: rpike</h5>
+    &emsp;<h5>Password: letmein</h5>
+        </p>
         <h3>Technology Stack:</h3>
         &#8195;Front-End&#8195;&#8195;&#8195;&#8195; ->&#8195;&#8195;<a href="https://getbootstrap.com/">Bootstrap v5</a></br></br>
         &#8195;Back-End &#8195;&#8195;&#8195;&#8195; ->&#8195;&#8195;<a href="https://go.dev">Go Programming</a></br></br>
