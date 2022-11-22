@@ -189,7 +189,7 @@
     </div>
   </div>
 
-  <div class="modal" id="ManageSPs">
+<div class="modal" id="ManageSPs">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
     
@@ -208,9 +208,6 @@
                     <button type="button" class="btn btn-primary mb-2" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#RetrieveSPRecord">
                         Retrieve Record
                     </button> 
-                    <button type="button" class="btn btn-primary mb-2" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#UpdateSPRecord">
-                        Update Record
-                    </button>
                     <button type="button" class="btn btn-danger mb-2" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#DeleteSPRecord">
                         Delete Record
                     </button>
@@ -281,32 +278,6 @@
                         {{ end }}
                     </div>
                     {{ end }}
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="UpdateSPRecord">
-    <div class="modal-dialog">
-        <div class="modal-content">
-    
-          <!-- Modal Header -->
-            <div class="modal-header">
-                <h4 class="modal-title">Update Standardized Patient Record</h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-    
-          <!-- Modal body -->
-            <div class="modal-body">
-                {{ if .User.AssignedPatients }}
-                <div class="vstack gap-2 d-flex align-items-left position: relative;">
-                    {{ range .User.AssignedPatients }}
-                        <button type="button" class="btn btn-primary">
-                            {{ .Name.First }} {{ .Name.Last }}
-                        </button>
-                    {{ end }}
-                </div>
-                {{ end }}
             </div>
         </div>
     </div>
@@ -384,7 +355,7 @@
                 {{ if .User.AssignedPatients }}
                 <div class="vstack gap-2 d-flex align-items-left position: relative;">
                     {{ range .User.AssignedPatients }}
-                        <button type="button" class="btn btn-danger">
+                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#{{ .Name.First }}{{ .Name.Last }}delete">
                             {{ .Name.First }} {{ .Name.Last }}
                         </button>
                     {{ end }}
@@ -394,4 +365,32 @@
         </div>
     </div>
 </div>
+
+{{ if .User.AssignedPatients }}
+    {{ range .User.AssignedPatients }}
+<div class="modal" id="{{ .Name.First }}{{ .Name.Last }}delete">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+    
+          <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Confirm Deletion of {{ .Name.First }} {{ .Name.Last }}</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+    
+          <!-- Modal body -->
+            <div class="modal-body">
+                <form action="/deleteSPRecord" method="post" enctype="application/x-www-form-urlencoded">
+                    <input type="hidden" name="username" value="{{ .Username }}">
+                    <button type="submit" class="btn btn-outline-danger" data-bs-dismiss="modal">Yes</button>
+                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">No</button>
+                </form>
+            </div>
+          
+        </div>
+    </div>
+</div>
+    {{ end }}
+{{ end }}
+
 {{ end }}

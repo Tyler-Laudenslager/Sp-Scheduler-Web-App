@@ -130,6 +130,7 @@ func main() {
 	http.HandleFunc("/changeemail", changeemail)
 	http.HandleFunc("/changepassword", changepassword)
 	http.HandleFunc("/createSPRecord", createSPRecord)
+	http.HandleFunc("/deleteSPRecord", deleteSPRecord)
 	http.HandleFunc("/toggleshowsession", toggleshowsession)
 	http.HandleFunc("/logout", logout)
 	http.HandleFunc("/authenticate", authenticate)

@@ -176,8 +176,7 @@ func updatesession(w http.ResponseWriter, r *http.Request) {
 }
 
 func assignsp(w http.ResponseWriter, r *http.Request) {
-	fmt.Println()
-	fmt.Println("Assign SPs Called")
+
 	title := r.PostFormValue("title")
 	date := r.PostFormValue("date")
 	starttime := r.PostFormValue("starttime")
@@ -195,13 +194,12 @@ func assignsp(w http.ResponseWriter, r *http.Request) {
 	foundSession, err := GetSessionRecord(&sessionInfo, db)
 	if err != nil {
 		fmt.Println("Error getting record in database", err)
+		return
 	}
 	foundSession.PatientsAssigned = make([]*SpUser, 0)
 
 	for i := 0; i < len(foundSession.PatientsAvailable); i++ {
 		patient := *foundSession.PatientsAvailable[i]
-		fmt.Println(patient.Username)
-		fmt.Println("Form Value", r.PostFormValue(patient.Username))
 		if r.PostFormValue(patient.Username) == "true" {
 			foundSession.PatientsAssigned = append(foundSession.PatientsAssigned, &patient)
 		}
@@ -210,15 +208,28 @@ func assignsp(w http.ResponseWriter, r *http.Request) {
 	err = foundSession.UpdateRecord(db)
 	if err != nil {
 		fmt.Println("Error updating record in assign sp", err)
+		return
 	}
 
 	foundSession, err = GetSessionRecord(&sessionInfo, db)
 	if err != nil {
 		fmt.Println("Error getting record in database", err)
+		return
 	}
-	fmt.Println("Patients Assigned to Session")
-	for _, su := range foundSession.PatientsAssigned {
-		fmt.Println(su.Username)
+
+	for _, spuser := range foundSession.PatientsAssigned {
+		username := spuser.Username
+		spuserRecord, err := GetSpUserRecord(username, db)
+		if err != nil {
+			fmt.Println("Error Getting Record: ", err)
+			return
+		}
+		spuserRecord.SessionsAssigned = append(spuserRecord.SessionsAssigned, foundSession.Information)
+		err = spuserRecord.UpdateRecord(db)
+		if err != nil {
+			fmt.Println("Error Updating Record: ", err)
+			return
+		}
 	}
 
 	http.Redirect(w, r, "/dashboard", httpRedirectResponse)
@@ -532,7 +543,6 @@ func createSPRecord(w http.ResponseWriter, r *http.Request) {
 	last_name := string(split_name[1])
 	username := first_initial + last_name
 	spuser := SpUser{}.Create(*Name{}.Create(name), username, SP, email)
-	fmt.Println("Password: ", password)
 	hashedPassword, err := HashPassword(password)
 	spuser.Password = hashedPassword
 	if err != nil {
@@ -542,6 +552,21 @@ func createSPRecord(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println("Error creating record in database in CreateSPRecord: ", err)
 	}
-	fmt.Println("Create new SP User : ", spuser.Username)
+	http.Redirect(w, r, "/dashboard", httpRedirectResponse)
+}
+
+func deleteSPRecord(w http.ResponseWriter, r *http.Request) {
+	username := r.PostFormValue("username")
+	spuser, err := GetSpUserRecord(username, db)
+	if err != nil {
+		fmt.Println("Error Getting SP User Record: ", err)
+		return
+	}
+	err = spuser.DeleteRecord(db)
+	if err != nil {
+		fmt.Println("Error deleting SP user record: ", err)
+		return
+	}
+	fmt.Println("Deleted SP User Record: ", username)
 	http.Redirect(w, r, "/dashboard", httpRedirectResponse)
 }
