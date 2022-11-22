@@ -102,9 +102,9 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 	funcMap := template.FuncMap{"formatTitle": formatTitle}
 	t = template.New("templates/html-boilerplate.html").Funcs(funcMap)
 	if !isSpManager {
-		t, _ = t.ParseFiles("templates/html-boilerplate.html", "templates/dashboard-content.html", "templates/user-settings.html", "templates/session-content-available.html")
+		t, _ = t.ParseFiles("templates/html-boilerplate.html", "templates/dashboard-content.html", "templates/session-content-available.html", "templates/user-settings.html")
 	} else {
-		t, _ = t.ParseFiles("templates/html-boilerplate.html", "templates/dashboard-content-manager.html", "templates/user-settings.html", "templates/session-content-manager.html")
+		t, _ = t.ParseFiles("templates/html-boilerplate.html", "templates/dashboard-content-manager.html", "templates/session-content-manager.html")
 	}
 
 	t.ExecuteTemplate(w, "html-boilerplate", dashboard_content)

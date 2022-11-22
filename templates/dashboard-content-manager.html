@@ -261,45 +261,33 @@
 </div>
 
 <div class="modal fade" id="RetrieveSPRecord">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-scrollable">
         <div class="modal-content">
     
           <!-- Modal Header -->
             <div class="modal-header">
-                <h4 class="modal-title">Retrieve Standardized Patient Record</h4>
+                <h4 class="modal-title">Standardized Patient Information</h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
     
           <!-- Modal body -->
             <div class="modal-body">
-                <form action="/retrieveSPRecord" method="post" enctype="application/x-www-form-urlencoded">
-                    <p6>Assigned Patients:</p6>
                     {{ if .User.AssignedPatients }}
-                    {{ range .User.AssignedPatients }}
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="{{ .Username }}" value="true" id="flexCheckDefault">
-                            <label class="form-check-label" for="flexCheckDefault">
+                    <div class="vstack gap-2 d-flex align-items-left position: relative;">
+                        {{ range .User.AssignedPatients }}
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#{{ .Username }}Info">
                                 {{ .Name.First }} {{ .Name.Last }}
-                            </label>
-                        </div>
-                    {{ end }}
-                    {{ end }}
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-outline-success" data-bs-dismiss="modal">
-                            Submit
-                        </button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                            Close
-                        </button>
+                            </button>
+                        {{ end }}
                     </div>
-                </form>
+                    {{ end }}
             </div>
         </div>
     </div>
 </div>
 
 <div class="modal fade" id="UpdateSPRecord">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog">
         <div class="modal-content">
     
           <!-- Modal Header -->
@@ -310,23 +298,79 @@
     
           <!-- Modal body -->
             <div class="modal-body">
-                <form action="/retrieveSPRecord" method="post" enctype="application/x-www-form-urlencoded">
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-outline-success" data-bs-dismiss="modal">
-                            Submit
+                {{ if .User.AssignedPatients }}
+                <div class="vstack gap-2 d-flex align-items-left position: relative;">
+                    {{ range .User.AssignedPatients }}
+                        <button type="button" class="btn btn-primary">
+                            {{ .Name.First }} {{ .Name.Last }}
                         </button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                            Close
-                        </button>
-                    </div>
-                </form>
+                    {{ end }}
+                </div>
+                {{ end }}
             </div>
         </div>
     </div>
 </div>
 
+{{ if .User.AssignedPatients }}
+    {{ range .User.AssignedPatients }}
+        <div class="modal fade" id="{{ .Username }}Info">
+            <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+                <div class="modal-content">
+    
+                    <!-- Modal Header -->
+                    <div class="modal-header">
+                        <h4 class="modal-title">Information on {{ .Name.First }} {{ .Name.Last }}</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+    
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        <h6>Username: {{ .Username }}</h6>
+                        <h6>Total Sessions Assigned: {{ .TotalSessionsAssigned }}</h6>
+                        <h6>Email: {{ .Email }}</h6>
+                        <h6>Sessions Assigned:</h6>
+                        {{ if .SessionsAssigned }}
+                            {{ range .SessionsAssigned }}
+                                <p>&emsp; {{ .Title }} {{ .Date }}</p>
+                            {{ end }}
+                        {{ else }}
+                        <p>&emsp;None</p>
+                        {{ end }}
+                        <h6>Sessions Available:</h6>
+                        {{ if .SessionsAvailable }}
+                            {{ range .SessionsAvailable }}
+                                <p>&emsp; {{ .Title }} {{ .Date }}</p>
+                            {{ end }}
+                        {{ else }}
+                        <p>&emsp;None</p>
+                        {{ end }}
+                        <h6>Sessions Unavailable:</h6>
+                        {{ if .SessionsUnavailable }}
+                            {{ range .SessionsUnavailable }}
+                                <p>&emsp; {{ .Title }} {{ .Date }}</p>
+                            {{ end }}
+                        {{ else }}
+                        <p>&emsp;None</p>
+                        {{ end }}
+                        <h6>Sessions No Response:</h6>
+                        {{ if .SessionsPool }}
+                            {{ range .SessionsPool }}
+                                <p>&emsp; {{ .Title }} {{ .Date }}</p>
+                            {{ end }}
+                        {{ else }}
+                        <p>&emsp;None</p>
+                        {{ end }}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{ end }}
+{{ end }}
+
 <div class="modal fade" id="DeleteSPRecord">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog">
         <div class="modal-content">
     
           <!-- Modal Header -->
@@ -337,16 +381,15 @@
     
           <!-- Modal body -->
             <div class="modal-body">
-                <form action="/retrieveSPRecord" method="post" enctype="application/x-www-form-urlencoded">
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-outline-success" data-bs-dismiss="modal">
-                            Submit
+                {{ if .User.AssignedPatients }}
+                <div class="vstack gap-2 d-flex align-items-left position: relative;">
+                    {{ range .User.AssignedPatients }}
+                        <button type="button" class="btn btn-danger">
+                            {{ .Name.First }} {{ .Name.Last }}
                         </button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                            Close
-                        </button>
-                    </div>
-                </form>
+                    {{ end }}
+                </div>
+                {{ end }}
             </div>
         </div>
     </div>
