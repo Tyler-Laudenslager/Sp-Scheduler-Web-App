@@ -1,6 +1,30 @@
 {{ define "session-content" }}
 
 <div class="vstack gap-2 d-flex align-items-center position: relative;">
+    {{ if .User.SessionsAssigned }}
+    {{ range .User.SessionsAssigned }}
+    {{ if .ShowSession }}
+    <div class="card border-success" style="width: 40rem; background-color: #f7f8f7;">
+        <div class="card-body">
+            <div class="vstack me-2 gap-2 d-flex align-items-center position-absolute top-50 end-0 translate-middle-y">
+                <div class="card text-white bg-success" style="width: 16rem;">
+                    <div class="card-body">
+                      <h5 class="card-title">Assigned!</h5>
+                      
+                    </div>
+                  </div>
+            </div>
+            <h5 class="card-text">Date: {{ .Date }}</h5>
+            <h5 class="card-text">Title: {{ .Title }}</h5>
+            <h5 class="card-text">Start Time: {{ .StartTime }}</h5>
+            <h5 class="card-text">End Time: {{ .EndTime }}</h5>
+            <h5 class="card-text">Location: {{ .Location }}</h5>
+            <h5 class="card-text">Description: {{ .Description }}</h5>
+        </div>
+    </div>
+    {{ end }}
+    {{ end }}
+    {{ end }}
     {{ if .User.SessionsPool }}
     {{ range .User.SessionsPool }}
     {{ if .ShowSession }}
@@ -49,6 +73,7 @@
     {{ end }}
     {{ if .User.SessionsAvailable }}
     {{ range .User.SessionsAvailable }}
+    {{ if .ShowSession }}
     <div class="card" style="width: 40rem; background-color: #f7f8f7;">
         <div class="card-body">
             <div class="vstack me-2 gap-2 d-flex align-items-center position-absolute top-50 end-0 translate-middle-y">
@@ -91,8 +116,10 @@
     </div>
     {{ end }}
     {{ end }}
+    {{ end }}
     {{ if .User.SessionsUnavailable }}
     {{ range .User.SessionsUnavailable }}
+    {{ if .ShowSession }}
     <div class="card" style="width: 40rem; background-color: #f7f8f7;">
         <div class="card-body">
             <div class="vstack me-2 gap-2 d-flex align-items-center position-absolute top-50 end-0 translate-middle-y">
@@ -133,6 +160,7 @@
             <h5 class="card-text">Description: {{ .Description }}</h5>
         </div>
     </div>
+    {{ end }}
     {{ end }}
     {{ end }}
     

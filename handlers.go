@@ -77,6 +77,7 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 	} else {
 		spuser.SessionsPool = make([]*SessionInfo, 0)
 		sessions_viewed := append(spuser.SessionsAvailable, spuser.SessionsUnavailable...)
+		sessions_viewed = append(sessions_viewed, spuser.SessionsAssigned...)
 		for _, session_info := range session_records {
 			viewed_session := false
 			for _, session_viewed_info := range sessions_viewed {
@@ -225,6 +226,27 @@ func assignsp(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		spuserRecord.SessionsAssigned = append(spuserRecord.SessionsAssigned, foundSession.Information)
+		if len(spuserRecord.SessionsAvailable) > 0 {
+			for i := 0; i < len(spuserRecord.SessionsAvailable); i++ {
+				if spuserRecord.SessionsAvailable[i].Title == foundSession.Information.Title {
+					spuserRecord.SessionsAvailable = append(spuserRecord.SessionsAvailable[:i], spuserRecord.SessionsAvailable[i+1:]...)
+				}
+			}
+		}
+		if len(spuserRecord.SessionsPool) > 0 {
+			for i := 0; i < len(spuserRecord.SessionsPool); i++ {
+				if spuserRecord.SessionsPool[i].Title == foundSession.Information.Title {
+					spuserRecord.SessionsPool = append(spuserRecord.SessionsPool[:i], spuserRecord.SessionsPool[i+1:]...)
+				}
+			}
+		}
+		if len(spuserRecord.SessionsUnavailable) > 0 {
+			for i := 0; i < len(spuserRecord.SessionsUnavailable); i++ {
+				if spuserRecord.SessionsUnavailable[i].Title == foundSession.Information.Title {
+					spuserRecord.SessionsUnavailable = append(spuserRecord.SessionsUnavailable[:i], spuserRecord.SessionsUnavailable[i+1:]...)
+				}
+			}
+		}
 		err = spuserRecord.UpdateRecord(db)
 		if err != nil {
 			fmt.Println("Error Updating Record: ", err)
