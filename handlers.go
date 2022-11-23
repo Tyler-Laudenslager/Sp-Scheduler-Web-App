@@ -478,6 +478,21 @@ func toggleshowsession(w http.ResponseWriter, r *http.Request) {
 	} else {
 		availableSessionRecord.Information.ShowSession = true
 	}
+	allSpUsers, err := GetAllSpUserRecords(db)
+	if err != nil {
+		fmt.Println("Error Getting all SP User records: ", err)
+	}
+	for _, su := range allSpUsers {
+		allSessions := append(su.SessionsAssigned, su.SessionsAvailable...)
+		allSessions = append(allSessions, su.SessionsUnavailable...)
+		allSessions = append(allSessions, su.SessionsPool...)
+		for _, si := range allSessions {
+			if availableSessionRecord.Information.Title == si.Title {
+				si.ShowSession = availableSessionRecord.Information.ShowSession
+			}
+		}
+		su.UpdateRecord(db)
+	}
 	err = availableSessionRecord.UpdateRecord(db)
 	if err != nil {
 		fmt.Println("Error Updating Session Record in Toggle Show Session : ", err)
