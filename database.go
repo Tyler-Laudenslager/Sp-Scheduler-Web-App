@@ -170,9 +170,9 @@ func (sp *SpUser) UpdateRecord(db *sql.DB) (err error) {
 
 	_, err = db.Exec("update spusers set sessionspool = $2, sessionsavailable = $3, "+
 		"sessionsunavailable = $4, sessionsassigned = $5, "+
-		"password = $6, email = $7 where username = $1 ",
+		"password = $6, email = $7, totalsessionsassigned = $8 where username = $1 ",
 		sp.Username, sessionsPoolByte, sessionsAvailableByte, sessionsUnavailableByte,
-		sessionsAssignedByte, sp.Password, sp.Email)
+		sessionsAssignedByte, sp.Password, sp.Email, sp.TotalSessionsAssigned)
 
 	return
 }

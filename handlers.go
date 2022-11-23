@@ -197,25 +197,21 @@ func assignsp(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Error getting record in database", err)
 		return
 	}
-	foundSession.PatientsAssigned = make([]*SpUser, 0)
-
+	usersToRemove := make([]string, 0)
 	for i := 0; i < len(foundSession.PatientsAvailable); i++ {
 		patient := *foundSession.PatientsAvailable[i]
 		if r.PostFormValue(patient.Username) == "true" {
 			foundSession.PatientsAssigned = append(foundSession.PatientsAssigned, &patient)
+			usersToRemove = append(usersToRemove, patient.Username)
 		}
 	}
 
-	err = foundSession.UpdateRecord(db)
-	if err != nil {
-		fmt.Println("Error updating record in assign sp", err)
-		return
-	}
-
-	foundSession, err = GetSessionRecord(&sessionInfo, db)
-	if err != nil {
-		fmt.Println("Error getting record in database", err)
-		return
+	for _, username := range usersToRemove {
+		for i, su := range foundSession.PatientsAvailable {
+			if su.Username == username {
+				foundSession.PatientsAvailable = append(foundSession.PatientsAvailable[:i], foundSession.PatientsAvailable[i+1:]...)
+			}
+		}
 	}
 
 	for _, spuser := range foundSession.PatientsAssigned {
@@ -247,11 +243,19 @@ func assignsp(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 		}
+		spuserRecord.TotalSessionsAssigned = spuserRecord.TotalSessionsAssigned + 1
+		fmt.Println(spuserRecord.TotalSessionsAssigned)
 		err = spuserRecord.UpdateRecord(db)
 		if err != nil {
 			fmt.Println("Error Updating Record: ", err)
 			return
 		}
+	}
+
+	err = foundSession.UpdateRecord(db)
+	if err != nil {
+		fmt.Println("Error updating record in assign sp", err)
+		return
 	}
 
 	http.Redirect(w, r, "/dashboard", httpRedirectResponse)
