@@ -244,7 +244,6 @@ func assignsp(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 		spuserRecord.TotalSessionsAssigned = spuserRecord.TotalSessionsAssigned + 1
-		fmt.Println(spuserRecord.TotalSessionsAssigned)
 		err = spuserRecord.UpdateRecord(db)
 		if err != nil {
 			fmt.Println("Error Updating Record: ", err)
