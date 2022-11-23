@@ -51,6 +51,7 @@
             <h5 class="card-text">Start Time: {{ .Information.StartTime }}</h5>
             <h5 class="card-text">End Time: {{ .Information.EndTime }}</h5>
             <h5 class="card-text">Location: {{ .Information.Location }}</h5>
+            <h5 class="card-text">SPs Available: {{ .PatientsAvailable | len }}</h5>
             <h5 class="card-text">SPs Needed: {{ .PatientsNeeded }}</h5>
         </div>
     </div>
