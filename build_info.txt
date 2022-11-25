@@ -4,3 +4,9 @@ Assuming everything is setup properly run these commands:
 psql -U postgres -f sp_calendar_db_setup.sql -d sp_calendar
 go build -o sp_web_app
 ./sp_web_app
+
+
+To Find a Running Process:
+
+ps -ef | grep sp_web_app
+kill (#process)
