@@ -1,6 +1,6 @@
 {{ define "session-content" }}
 <div class="vstack gap-2 d-flex align-items-center position: relative;">
-    {{ range .SessionsUnmanaged }}
+    {{ range .SessionsUnmanaged | sortSessionByDate }}
     <div class="card" style="width: 40rem; background-color: #f7f8f7;">
         <div class="card-body">
             <div class="vstack me-2 gap-1 d-flex align-items-center position-absolute top-50 end-0 translate-middle-y">

@@ -158,6 +158,21 @@ type Session struct {
 	PatientsNoResponse  []*SpUser     `json:"PatientsNoResponse"`
 }
 
+type SessionContainer []*Session
+
+func (a SessionContainer) Len() int { return len(a) }
+func (a SessionContainer) Less(i, j int) bool {
+
+	iDate := a[i].Information.Date
+	jDate := a[j].Information.Date
+
+	iParsed, _ := time.Parse("01/02/2006", iDate)
+	jParsed, _ := time.Parse("01/02/2006", jDate)
+
+	return iParsed.Before(jParsed)
+}
+func (a SessionContainer) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
+
 func (s Session) Value() (driver.Value, error) {
 	return json.Marshal(s)
 }

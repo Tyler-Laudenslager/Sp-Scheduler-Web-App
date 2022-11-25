@@ -2,7 +2,7 @@
 
 <div class="vstack gap-2 d-flex align-items-center position: relative;">
     {{ if .User.SessionsAssigned }}
-    {{ range .User.SessionsAssigned | sortSessionByDate }}
+    {{ range .User.SessionsAssigned | sortSessionInfoByDate }}
     {{ if .ShowSession }}
     <div class="card border-success" style="width: 40rem; background-color: #f7f8f7;">
         <div class="card-body">
@@ -26,7 +26,7 @@
     {{ end }}
     {{ end }}
     {{ if .User.SessionsPool }}
-    {{ range .User.SessionsPool | sortSessionByDate }}
+    {{ range .User.SessionsPool | sortSessionInfoByDate }}
     {{ if .ShowSession }}
     <div class="card" style="width: 40rem; background-color: #f7f8f7;">
         <div class="card-body">
@@ -72,7 +72,7 @@
     {{ end }}
     {{ end }}
     {{ if .User.SessionsAvailable }}
-    {{ range .User.SessionsAvailable | sortSessionByDate }}
+    {{ range .User.SessionsAvailable | sortSessionInfoByDate }}
     {{ if .ShowSession }}
     <div class="card" style="width: 40rem; background-color: #f7f8f7;">
         <div class="card-body">
@@ -118,7 +118,7 @@
     {{ end }}
     {{ end }}
     {{ if .User.SessionsUnavailable }}
-    {{ range .User.SessionsUnavailable | sortSessionByDate }}
+    {{ range .User.SessionsUnavailable | sortSessionInfoByDate }}
     {{ if .ShowSession }}
     <div class="card" style="width: 40rem; background-color: #f7f8f7;">
         <div class="card-body">

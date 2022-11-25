@@ -25,8 +25,13 @@ func formatDate(date string) string {
 
 }
 
-func sortSessionByDate(a []*SessionInfo) []*SessionInfo {
+func sortSessionInfoByDate(a []*SessionInfo) []*SessionInfo {
 	sort.Sort(SessionInfoContainer(a[:]))
+	return a
+}
+
+func sortSessionByDate(a []*Session) []*Session {
+	sort.Sort(SessionContainer(a[:]))
 	return a
 }
 
@@ -111,7 +116,7 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 		dashboard_content.Role = "Standardized Patient"
 		dashboard_content.User = spuser
 	}
-	funcMap := template.FuncMap{"formatTitle": formatTitle, "formatDate": formatDate, "sortSessionByDate": sortSessionByDate}
+	funcMap := template.FuncMap{"formatTitle": formatTitle, "formatDate": formatDate, "sortSessionInfoByDate": sortSessionInfoByDate, "sortSessionByDate": sortSessionByDate}
 	t = template.New("templates/html-boilerplate.html").Funcs(funcMap)
 	if !isSpManager {
 		t, _ = t.ParseFiles("templates/html-boilerplate.html", "templates/dashboard-content.html", "templates/session-content-available.html", "templates/user-settings.html")
