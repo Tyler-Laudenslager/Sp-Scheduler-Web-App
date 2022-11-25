@@ -53,6 +53,7 @@
             <h5 class="card-text">Location: {{ .Information.Location }}</h5>
             <h5 class="card-text">SPs Available: {{ .PatientsAvailable | len }}</h5>
             <h5 class="card-text">SPs Needed: {{ .PatientsNeeded }}</h5>
+            <h5 class="card-text">SPs Assigned: {{ .PatientsAssigned | len }}</h5>
         </div>
     </div>
     <div class="modal" id="{{ .Information.Title | formatTitle }}edit">

@@ -251,6 +251,47 @@ func GetSpManagerRecord(username string, db *sql.DB) (sp SpManager, err error) {
 	}
 	return
 }
+
+func GetAllSpManagerRecords(db *sql.DB) (spmanagers []*SpManager, err error) {
+
+	rows, err := db.Query("select Id, name, username, role, email, " +
+		"assignedpatients, sessionsmanaged, sessionsunmanaged, password, email " +
+		"from spmanagers")
+
+	if err != nil {
+		return
+	}
+
+	for rows.Next() {
+		sp := &SpManager{}
+		var sessionsManagedByte []byte
+		var sessionsUnmanagedByte []byte
+		var assignedPatientsByte []byte
+
+		err = rows.Scan(&sp.Id, &sp.Name, &sp.Username, &sp.Role, &sp.Email,
+			&assignedPatientsByte, &sessionsManagedByte, &sessionsUnmanagedByte,
+			&sp.Password, &sp.Email)
+		if err != nil {
+			return
+		}
+		err = json.Unmarshal(assignedPatientsByte, &sp.AssignedPatients)
+		if err != nil {
+			return
+		}
+
+		err = json.Unmarshal(sessionsManagedByte, &sp.SessionsManaged)
+		if err != nil {
+			return
+		}
+		err = json.Unmarshal(sessionsUnmanagedByte, &sp.SessionsUnmanaged)
+		if err != nil {
+			return
+		}
+		spmanagers = append(spmanagers, sp)
+	}
+	rows.Close()
+	return
+}
 func (sp *SpManager) UpdateRecord(db *sql.DB) (err error) {
 	assignedPatientsByte, err := json.Marshal(&sp.AssignedPatients)
 	if err != nil {

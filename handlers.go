@@ -545,30 +545,42 @@ func authenticate(w http.ResponseWriter, r *http.Request) {
 }
 
 func sendjson(w http.ResponseWriter, r *http.Request) {
-	bob_marcs := SpUser{}.Create(*Name{}.Create("Bob Marcs"), "bmarcs", SP, "bob@marcs.com")
-	susan_miller := SpUser{}.Create(*Name{}.Create("Susan Miller"), "smiller", SP, "susan@miller.com")
+	session, _ := store.Get(r, "sessionAuthSPCalendar")
+	if auth, ok := session.Values["authenticated"].(bool); !ok || !auth {
+		http.Redirect(w, r, "/login", httpRedirectResponse)
+	}
+	_, err := GetSpManagerRecord(session.Values["username"].(string), db)
+	if err != nil {
+		http.Redirect(w, r, "/login", httpRedirectResponse)
+	}
+	SpUsersBox := make(SpUsersBox, 0)
+	SpManagersBox := make(SpManagersBox, 0)
+	SessionsBox := make(SpSessionsBox, 0)
 
-	andy_thomas := SpManager{}.Create(*Name{}.Create("Andy Thomas"), Manager, "andy@thomas.com")
+	allSpUsers, err := GetAllSpUserRecords(db)
+	if err != nil {
+		fmt.Println("Error getting all sp user records in json: ", err)
+	}
+	allManagers, err := GetAllSpManagerRecords(db)
+	if err != nil {
+		fmt.Println("Error getting all sp manager records in json: ", err)
+	}
+	allSessions, err := GetAllSessionRecords(db)
+	if err != nil {
+		fmt.Println("Error getting all session records in json: ", err)
+	}
 
-	session1 := Session{}.Create("Anderson Clinical Nurse Session", "11/15/2022", "11:00AM", "12:00PM", "Anderson", "Check-Up")
+	for _, spuser := range allSpUsers {
+		SpUsersBox = append(SpUsersBox, spuser)
+	}
 
-	andy_thomas.AssignedPatients = append(andy_thomas.AssignedPatients, bob_marcs, susan_miller)
-	andy_thomas.SessionsManaged = append(andy_thomas.SessionsManaged, session1)
+	for _, spmanager := range allManagers {
+		SpManagersBox = append(SpManagersBox, spmanager)
+	}
 
-	bob_marcs.SessionsAvailable = append(bob_marcs.SessionsAvailable, session1.Information)
-	bob_marcs.SessionsAssigned = append(bob_marcs.SessionsAssigned, session1.Information)
-
-	susan_miller.SessionsAvailable = append(susan_miller.SessionsAvailable, session1.Information)
-	susan_miller.SessionsAssigned = append(susan_miller.SessionsAssigned, session1.Information)
-
-	session1.PatientsAvailable = append(session1.PatientsAvailable, bob_marcs)
-	session1.PatientsAvailable = append(session1.PatientsAvailable, susan_miller)
-	session1.PatientsAssigned = append(session1.PatientsAssigned, bob_marcs)
-	session1.PatientsAssigned = append(session1.PatientsAssigned, susan_miller)
-
-	SpUsersBox := append(make(SpUsersBox, 0, 2), bob_marcs, susan_miller)
-	SpManagersBox := append(make(SpManagersBox, 0, 1), andy_thomas)
-	SessionsBox := append(make(SpSessionsBox, 0, 1), session1)
+	for _, session := range allSessions {
+		SessionsBox = append(SessionsBox, session)
+	}
 
 	HospitalCalendar := HospitalCalendar{
 		Users:    SpUsersBox,
