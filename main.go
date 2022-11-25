@@ -45,14 +45,14 @@ func init() {
 		fmt.Println("Error Making Session Record 2: ", err)
 	}
 	fmt.Println("Created Session -> ", session2.Information)
-	session3 := Session{}.Create("Allentown Skills Workshop", "1/25/2023", "1:00PM", "4:00PM", "Allentown", "Skills Workshop")
+	session3 := Session{}.Create("Allentown Skills Workshop", "01/25/2023", "1:00PM", "4:00PM", "Allentown", "Skills Workshop")
 	session3.PatientsNeeded = 2
 	err = session3.MakeRecord(db)
 	if err != nil {
 		fmt.Println("Error Making Session Record 3: ", err)
 	}
 	fmt.Println("Created Session -> ", session3.Information)
-	session4 := Session{}.Create("Anderson ED Skills", "2/25/2024", "2:00PM", "6:00PM", "Anderson", "ED Skills Assessment")
+	session4 := Session{}.Create("Anderson ED Skills", "02/25/2024", "2:00PM", "6:00PM", "Anderson", "ED Skills Assessment")
 	session4.PatientsNeeded = 3
 	err = session4.MakeRecord(db)
 	if err != nil {

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"sort"
 	"strconv"
 	"strings"
 	"text/template"
@@ -16,6 +17,17 @@ const (
 
 func formatTitle(title string) string {
 	return strings.Join(strings.Fields(strings.TrimSpace(title)), "")
+}
+
+func formatDate(date string) string {
+	timeT, _ := time.Parse("01/02/2006", date)
+	return string(timeT.Format("Monday, January 02, 2006"))
+
+}
+
+func sortSessionByDate(a []*SessionInfo) []*SessionInfo {
+	sort.Sort(SessionInfoContainer(a[:]))
+	return a
 }
 
 func login(w http.ResponseWriter, r *http.Request) {
@@ -46,7 +58,7 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 	var spmanager SpManager
 	isSpManager := false
 	dashboard_content := DashboardContent{
-		Date: time.Now().Format("01-02-2006"),
+		Date: time.Now().Format("Monday, January 02, 2006"),
 	}
 	session_records, err := GetAllSessionInfoRecords(db)
 	if err != nil {
@@ -92,7 +104,6 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 				continue
 			}
 		}
-
 		err = spuser.UpdateRecord(db)
 		if err != nil {
 			fmt.Println("Error updating record")
@@ -100,7 +111,7 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 		dashboard_content.Role = "Standardized Patient"
 		dashboard_content.User = spuser
 	}
-	funcMap := template.FuncMap{"formatTitle": formatTitle}
+	funcMap := template.FuncMap{"formatTitle": formatTitle, "formatDate": formatDate, "sortSessionByDate": sortSessionByDate}
 	t = template.New("templates/html-boilerplate.html").Funcs(funcMap)
 	if !isSpManager {
 		t, _ = t.ParseFiles("templates/html-boilerplate.html", "templates/dashboard-content.html", "templates/session-content-available.html", "templates/user-settings.html")

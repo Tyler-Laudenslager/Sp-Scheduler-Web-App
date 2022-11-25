@@ -2,7 +2,7 @@
 
 <div class="vstack gap-2 d-flex align-items-center position: relative;">
     {{ if .User.SessionsAssigned }}
-    {{ range .User.SessionsAssigned }}
+    {{ range .User.SessionsAssigned | sortSessionByDate }}
     {{ if .ShowSession }}
     <div class="card border-success" style="width: 40rem; background-color: #f7f8f7;">
         <div class="card-body">
@@ -14,7 +14,7 @@
                     </div>
                   </div>
             </div>
-            <h5 class="card-text">Date: {{ .Date }}</h5>
+            <h5 class="card-text">Date: {{ .Date | formatDate }}</h5>
             <h5 class="card-text">Title: {{ .Title }}</h5>
             <h5 class="card-text">Start Time: {{ .StartTime }}</h5>
             <h5 class="card-text">End Time: {{ .EndTime }}</h5>
@@ -26,7 +26,7 @@
     {{ end }}
     {{ end }}
     {{ if .User.SessionsPool }}
-    {{ range .User.SessionsPool }}
+    {{ range .User.SessionsPool | sortSessionByDate }}
     {{ if .ShowSession }}
     <div class="card" style="width: 40rem; background-color: #f7f8f7;">
         <div class="card-body">
@@ -60,7 +60,7 @@
                     </button> 
                 </form>
             </div>
-            <h5 class="card-text">Date: {{ .Date }}</h5>
+            <h5 class="card-text">Date: {{ .Date | formatDate }}</h5>
             <h5 class="card-text">Title: {{ .Title }}</h5>
             <h5 class="card-text">Start Time: {{ .StartTime }}</h5>
             <h5 class="card-text">End Time: {{ .EndTime }}</h5>
@@ -72,7 +72,7 @@
     {{ end }}
     {{ end }}
     {{ if .User.SessionsAvailable }}
-    {{ range .User.SessionsAvailable }}
+    {{ range .User.SessionsAvailable | sortSessionByDate }}
     {{ if .ShowSession }}
     <div class="card" style="width: 40rem; background-color: #f7f8f7;">
         <div class="card-body">
@@ -106,7 +106,7 @@
                     </button> 
                 </form>
             </div>
-            <h5 class="card-text">Date: {{ .Date }}</h5>
+            <h5 class="card-text">Date: {{ .Date | formatDate }}</h5>
             <h5 class="card-text">Title: {{ .Title }}</h5>
             <h5 class="card-text">Start Time: {{ .StartTime }}</h5>
             <h5 class="card-text">End Time: {{ .EndTime }}</h5>
@@ -118,7 +118,7 @@
     {{ end }}
     {{ end }}
     {{ if .User.SessionsUnavailable }}
-    {{ range .User.SessionsUnavailable }}
+    {{ range .User.SessionsUnavailable | sortSessionByDate }}
     {{ if .ShowSession }}
     <div class="card" style="width: 40rem; background-color: #f7f8f7;">
         <div class="card-body">
@@ -152,7 +152,7 @@
                     </button> 
                 </form>
             </div>
-            <h5 class="card-text">Date: {{ .Date }}</h5>
+            <h5 class="card-text">Date: {{ .Date | formatDate }}</h5>
             <h5 class="card-text">Title: {{ .Title }}</h5>
             <h5 class="card-text">Start Time: {{ .StartTime }}</h5>
             <h5 class="card-text">End Time: {{ .EndTime }}</h5>

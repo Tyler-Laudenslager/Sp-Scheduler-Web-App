@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"strings"
+	"time"
 )
 
 type Role int
@@ -198,6 +199,20 @@ type SessionInfo struct {
 	Description string `json:"Description"`
 	ShowSession bool   `json:"ShowSession"`
 }
+type SessionInfoContainer []*SessionInfo
+
+func (a SessionInfoContainer) Len() int { return len(a) }
+func (a SessionInfoContainer) Less(i, j int) bool {
+
+	iDate := a[i].Date
+	jDate := a[j].Date
+
+	iParsed, _ := time.Parse("01/02/2006", iDate)
+	jParsed, _ := time.Parse("01/02/2006", jDate)
+
+	return iParsed.Before(jParsed)
+}
+func (a SessionInfoContainer) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
 
 func (si SessionInfo) Value() (driver.Value, error) {
 	return json.Marshal(si)
