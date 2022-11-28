@@ -34,7 +34,7 @@
         &#8195;TLS Certs&#8195;&#8195;&#8195;&#8195; ->&#8195;&#8195;<a href="https://letsencrypt.org/">Let's Encrypt</a> </br></br>
         <h3>Resources Used</h3>
         <p>
-        Book -> <a href="https://www.manning.com/books/go-web-programming">Go Web Programming by Sau Sheong Chang &#emsp;&#128525</a>
+        Book -> <a href="https://www.manning.com/books/go-web-programming">Go Web Programming by Sau Sheong Chang &#8195;&#128525</a>
         </p>
         <p>
         Github Respository -> <a href="https://github.com/sausheong/gwp">Go Web Programming Source Files</a>
