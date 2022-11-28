@@ -296,6 +296,39 @@ func deletesession(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println("Error getting record in database", err)
 	}
+	allSpUsers, err := GetAllSpUserRecords(db)
+	for _, spuser := range allSpUsers {
+		for i, si := range spuser.SessionsAssigned {
+			if foundSession.Information.Title == si.Title {
+				spuser.SessionsAssigned = append(spuser.SessionsAssigned[:i], spuser.SessionsAssigned[i+1:]...)
+				break
+			}
+		}
+		for i, si := range spuser.SessionsPool {
+			if foundSession.Information.Title == si.Title {
+				spuser.SessionsPool = append(spuser.SessionsPool[:i], spuser.SessionsPool[i+1:]...)
+				break
+			}
+		}
+		for i, si := range spuser.SessionsAvailable {
+			if foundSession.Information.Title == si.Title {
+				spuser.SessionsAvailable = append(spuser.SessionsAvailable[:i], spuser.SessionsAvailable[i+1:]...)
+				break
+			}
+		}
+		for i, si := range spuser.SessionsUnavailable {
+			if foundSession.Information.Title == si.Title {
+				spuser.SessionsUnavailable = append(spuser.SessionsUnavailable[:i], spuser.SessionsUnavailable[i+1:]...)
+				break
+			}
+		}
+
+		err = spuser.UpdateRecord(db)
+		if err != nil {
+			fmt.Println("Error updating spuser record in delete session: ", err)
+			return
+		}
+	}
 	err = foundSession.DeleteRecord(db)
 	if err != nil {
 		fmt.Println("Error deleting record in database", err)
@@ -522,6 +555,7 @@ func toggleshowsession(w http.ResponseWriter, r *http.Request) {
 func authenticate(w http.ResponseWriter, r *http.Request) {
 	session, _ := store.Get(r, "sessionAuthSPCalendar")
 	username := r.PostFormValue("userid")
+	username = strings.ToLower(username)
 	password := r.PostFormValue("password")
 	spuser, err := GetSpUserRecord(username, db)
 	if err != nil {
