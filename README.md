@@ -33,7 +33,14 @@
         &#8195;Deployment&#8195;&#8195;&#8195; ->&#8195;&#8195;<a href="https://www.digitalocean.com/products/droplets">Digital Ocean Droplet</a></br></br>
         &#8195;TLS Certs&#8195;&#8195;&#8195;&#8195; ->&#8195;&#8195;<a href="https://letsencrypt.org/">Let's Encrypt</a> </br></br>
         <h3>Resources Used</h3>
-        <a href="https://www.manning.com/books/go-web-programming">Go Web Programming by Sau Sheong Chang</a>
+        <p>
+        Book -> <a href="https://www.manning.com/books/go-web-programming">Go Web Programming by Sau Sheong Chang</a>
+        </p>
+        </br>
+        <p>
+        Github Respository -> <a href="https://github.com/sausheong/gwp">Go Web Programming Source Files</a>
+        </br></br>
+        
         <p>Any questions / concerns concerning the contents of this repository can be directed to the project admin :</p></br> 
         <p>Email : <b>tyler.laudenslager@sluhn.org</b></p></br>
     </body>
