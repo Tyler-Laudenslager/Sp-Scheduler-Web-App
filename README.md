@@ -36,7 +36,6 @@
         <p>
         Book -> <a href="https://www.manning.com/books/go-web-programming">Go Web Programming by Sau Sheong Chang</a>
         </p>
-        </br>
         <p>
         Github Respository -> <a href="https://github.com/sausheong/gwp">Go Web Programming Source Files</a>
         </p>
