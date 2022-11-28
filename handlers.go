@@ -296,7 +296,7 @@ func deletesession(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println("Error getting record in database", err)
 	}
-	allSpUsers, err := GetAllSpUserRecords(db)
+	allSpUsers, _ := GetAllSpUserRecords(db)
 	for _, spuser := range allSpUsers {
 		for i, si := range spuser.SessionsAssigned {
 			if foundSession.Information.Title == si.Title {
