@@ -9,8 +9,6 @@
         <p>Postgresql Version -> 14.5</p>
         <h3>Purpose</h3>
         <p>This web application was created with the intention to reduce time and complexity of assigning standardized patients within the St. Luke's University Hospital Network to scheduled medical training sessions.</p>
-        <h3>Progress</h3>
-        <p>Progress images can be accessed under <a href="https://github.com/Tyler-Laudenslager/Sp-Scheduler-Web-App/tree/main/images/progress">/images/progress/</a></p>
         <h3>Prototype Date:</h3>
         &#8195;December 2023 - Alpha Version v1.0.0</br>
         <h3>Prototype Website:</h3>
