@@ -26,7 +26,7 @@
                 &emsp;<b>Manager Account</b>
     </p><p>
             &emsp;Username: egarey
-            &emsp;Password: rxpt221!@#
+            &emsp;Password: letmeinman
             </p>
         <h3>Technology Stack:</h3>
         &#8195;Front-End&#8195;&#8195;&#8195;&#8195; ->&#8195;&#8195;<a href="https://getbootstrap.com/">Bootstrap v5</a></br></br>
