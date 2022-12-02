@@ -213,57 +213,142 @@ func assignsp(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Error getting record in database", err)
 		return
 	}
-	usersToRemove := make([]string, 0)
+	usersToRemoveAvailable := make([]string, 0)
+	usersToRemoveAssigned := make([]string, 0)
+	usersToRemoveSelected := make([]string, 0)
+
 	for i := 0; i < len(foundSession.PatientsAvailable); i++ {
 		patient := *foundSession.PatientsAvailable[i]
-		if r.PostFormValue(patient.Username) == "true" {
+		if r.PostFormValue(patient.Username) == "savedselected" {
+			foundSession.PatientsSelected = append(foundSession.PatientsSelected, &patient)
+			usersToRemoveAvailable = append(usersToRemoveAvailable, patient.Username)
+		}
+	}
+	for i := 0; i < len(foundSession.PatientsSelected); i++ {
+		patient := *foundSession.PatientsSelected[i]
+		if r.PostFormValue(patient.Username) == "savedassigned" {
 			foundSession.PatientsAssigned = append(foundSession.PatientsAssigned, &patient)
-			usersToRemove = append(usersToRemove, patient.Username)
+			usersToRemoveSelected = append(usersToRemoveSelected, patient.Username)
+		}
+	}
+	for i := 0; i < len(foundSession.PatientsSelected); i++ {
+		patient := *foundSession.PatientsSelected[i]
+		if r.PostFormValue(patient.Username) == "removeselected" {
+			foundSession.PatientsAvailable = append(foundSession.PatientsAvailable, &patient)
+			usersToRemoveSelected = append(usersToRemoveSelected, patient.Username)
+		}
+	}
+	for i := 0; i < len(foundSession.PatientsAssigned); i++ {
+		patient := *foundSession.PatientsAssigned[i]
+		if r.PostFormValue(patient.Username) == "removeassigned" {
+			foundSession.PatientsAvailable = append(foundSession.PatientsAvailable, &patient)
+			usersToRemoveAssigned = append(usersToRemoveAssigned, patient.Username)
+		}
+	}
+	if len(usersToRemoveAvailable) > 0 {
+		for _, username := range usersToRemoveAvailable {
+			for i, su := range foundSession.PatientsAvailable {
+				if su.Username == username {
+					foundSession.PatientsAvailable = append(foundSession.PatientsAvailable[:i], foundSession.PatientsAvailable[i+1:]...)
+				}
+			}
+		}
+	}
+	if len(usersToRemoveSelected) > 0 {
+		for _, username := range usersToRemoveSelected {
+			for i, su := range foundSession.PatientsSelected {
+				if su.Username == username {
+					foundSession.PatientsSelected = append(foundSession.PatientsSelected[:i], foundSession.PatientsSelected[i+1:]...)
+				}
+			}
+		}
+	}
+	if len(usersToRemoveAssigned) > 0 {
+		for _, username := range usersToRemoveAssigned {
+			for i, su := range foundSession.PatientsAssigned {
+				if su.Username == username {
+					foundSession.PatientsAssigned = append(foundSession.PatientsAssigned[:i], foundSession.PatientsAssigned[i+1:]...)
+				}
+			}
+		}
+	}
+	if len(foundSession.PatientsAssigned) > 0 {
+		for _, spuser := range foundSession.PatientsAssigned {
+			username := spuser.Username
+			spuserRecord, err := GetSpUserRecord(username, db)
+			if err != nil {
+				fmt.Println("Error Getting Record: ", err)
+				return
+			}
+			spuserRecord.SessionsAssigned = append(spuserRecord.SessionsAssigned, foundSession.Information)
+			if len(spuserRecord.SessionsAvailable) > 0 {
+				for i := 0; i < len(spuserRecord.SessionsAvailable); i++ {
+					if spuserRecord.SessionsAvailable[i].Title == foundSession.Information.Title {
+						spuserRecord.SessionsAvailable = append(spuserRecord.SessionsAvailable[:i], spuserRecord.SessionsAvailable[i+1:]...)
+					}
+				}
+			}
+			if len(spuserRecord.SessionsPool) > 0 {
+				for i := 0; i < len(spuserRecord.SessionsPool); i++ {
+					if spuserRecord.SessionsPool[i].Title == foundSession.Information.Title {
+						spuserRecord.SessionsPool = append(spuserRecord.SessionsPool[:i], spuserRecord.SessionsPool[i+1:]...)
+					}
+				}
+			}
+			if len(spuserRecord.SessionsUnavailable) > 0 {
+				for i := 0; i < len(spuserRecord.SessionsUnavailable); i++ {
+					if spuserRecord.SessionsUnavailable[i].Title == foundSession.Information.Title {
+						spuserRecord.SessionsUnavailable = append(spuserRecord.SessionsUnavailable[:i], spuserRecord.SessionsUnavailable[i+1:]...)
+					}
+				}
+			}
+			spuserRecord.TotalSessionsAssigned = spuserRecord.TotalSessionsAssigned + 1
+			err = spuserRecord.UpdateRecord(db)
+			if err != nil {
+				fmt.Println("Error Updating Record: ", err)
+				return
+			}
 		}
 	}
 
-	for _, username := range usersToRemove {
-		for i, su := range foundSession.PatientsAvailable {
-			if su.Username == username {
-				foundSession.PatientsAvailable = append(foundSession.PatientsAvailable[:i], foundSession.PatientsAvailable[i+1:]...)
+	if len(foundSession.PatientsAvailable) > 0 {
+		for _, spuser := range foundSession.PatientsAvailable {
+			username := spuser.Username
+			spuserRecord, err := GetSpUserRecord(username, db)
+			if err != nil {
+				fmt.Println("Error Getting Record: ", err)
+				return
 			}
-		}
-	}
-
-	for _, spuser := range foundSession.PatientsAssigned {
-		username := spuser.Username
-		spuserRecord, err := GetSpUserRecord(username, db)
-		if err != nil {
-			fmt.Println("Error Getting Record: ", err)
-			return
-		}
-		spuserRecord.SessionsAssigned = append(spuserRecord.SessionsAssigned, foundSession.Information)
-		if len(spuserRecord.SessionsAvailable) > 0 {
-			for i := 0; i < len(spuserRecord.SessionsAvailable); i++ {
-				if spuserRecord.SessionsAvailable[i].Title == foundSession.Information.Title {
-					spuserRecord.SessionsAvailable = append(spuserRecord.SessionsAvailable[:i], spuserRecord.SessionsAvailable[i+1:]...)
+			spuserRecord.SessionsAvailable = append(spuserRecord.SessionsAvailable, foundSession.Information)
+			if len(spuserRecord.SessionsAssigned) > 0 {
+				for i := 0; i < len(spuserRecord.SessionsAssigned); i++ {
+					if spuserRecord.SessionsAssigned[i].Title == foundSession.Information.Title {
+						spuserRecord.SessionsAssigned = append(spuserRecord.SessionsAssigned[:i], spuserRecord.SessionsAssigned[i+1:]...)
+					}
 				}
 			}
-		}
-		if len(spuserRecord.SessionsPool) > 0 {
-			for i := 0; i < len(spuserRecord.SessionsPool); i++ {
-				if spuserRecord.SessionsPool[i].Title == foundSession.Information.Title {
-					spuserRecord.SessionsPool = append(spuserRecord.SessionsPool[:i], spuserRecord.SessionsPool[i+1:]...)
+			if len(spuserRecord.SessionsPool) > 0 {
+				for i := 0; i < len(spuserRecord.SessionsPool); i++ {
+					if spuserRecord.SessionsPool[i].Title == foundSession.Information.Title {
+						spuserRecord.SessionsPool = append(spuserRecord.SessionsPool[:i], spuserRecord.SessionsPool[i+1:]...)
+					}
 				}
 			}
-		}
-		if len(spuserRecord.SessionsUnavailable) > 0 {
-			for i := 0; i < len(spuserRecord.SessionsUnavailable); i++ {
-				if spuserRecord.SessionsUnavailable[i].Title == foundSession.Information.Title {
-					spuserRecord.SessionsUnavailable = append(spuserRecord.SessionsUnavailable[:i], spuserRecord.SessionsUnavailable[i+1:]...)
+			if len(spuserRecord.SessionsUnavailable) > 0 {
+				for i := 0; i < len(spuserRecord.SessionsUnavailable); i++ {
+					if spuserRecord.SessionsUnavailable[i].Title == foundSession.Information.Title {
+						spuserRecord.SessionsUnavailable = append(spuserRecord.SessionsUnavailable[:i], spuserRecord.SessionsUnavailable[i+1:]...)
+					}
 				}
 			}
-		}
-		spuserRecord.TotalSessionsAssigned = spuserRecord.TotalSessionsAssigned + 1
-		err = spuserRecord.UpdateRecord(db)
-		if err != nil {
-			fmt.Println("Error Updating Record: ", err)
-			return
+			if spuserRecord.TotalSessionsAssigned > 0 {
+				spuserRecord.TotalSessionsAssigned = spuserRecord.TotalSessionsAssigned - 1
+			}
+			err = spuserRecord.UpdateRecord(db)
+			if err != nil {
+				fmt.Println("Error Updating Record: ", err)
+				return
+			}
 		}
 	}
 
@@ -274,7 +359,6 @@ func assignsp(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Redirect(w, r, "/dashboard", httpRedirectResponse)
-
 }
 
 func deletesession(w http.ResponseWriter, r *http.Request) {

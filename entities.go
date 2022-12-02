@@ -153,6 +153,7 @@ type Session struct {
 	Instructors         []*Instructor `json:"Instructors"`
 	PatientsNeeded      int           `json:"PatientsNeeded"`
 	PatientsAssigned    []*SpUser     `json:"PatientsAssigned"`
+	PatientsSelected    []*SpUser     `json:"PatientsSelected"`
 	PatientsAvailable   []*SpUser     `json:"PatientsAvailable"`
 	PatientsUnavailable []*SpUser     `json:"PatientsUnavailable"`
 	PatientsNoResponse  []*SpUser     `json:"PatientsNoResponse"`
@@ -199,6 +200,7 @@ func (s Session) Create(title string, date string, starttime string, endtime str
 		Instructors:         []*Instructor{},
 		PatientsNeeded:      0,
 		PatientsAssigned:    []*SpUser{},
+		PatientsSelected:    []*SpUser{},
 		PatientsAvailable:   []*SpUser{},
 		PatientsUnavailable: []*SpUser{},
 		PatientsNoResponse:  []*SpUser{},

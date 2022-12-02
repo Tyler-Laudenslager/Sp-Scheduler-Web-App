@@ -213,33 +213,59 @@
                         <input type="hidden" name="description" value="{{ .Information.Description }}">
                         <h6>Available SPs:</h6>
                         {{ if .PatientsAvailable }}
+                        <span class="badge bg-success" style="font-size: 0.7rem">add selected to selected</span>
                         {{ range .PatientsAvailable }}
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="{{ .Username }}" value="true" id="flexCheckDefault">
-                            <label class="form-check-label" for="flexCheckDefault">
+                            <label class="mt-1">
+                                <input type="checkbox" name="{{ .Username }}" value="savedselected" class="form-check-input mt-1" autocomplete="off">
                                 {{ .Name.First }} {{ .Name.Last }}
                             </label>
-                        </div>
-                    </br>
-                        <button type="submit" class="btn btn-sm btn-outline-primary" data-bs-dismiss="modal">save</button>
+                        </div> 
                         {{ end }}
                         {{ else }}
-                            <h6>&emsp;None</h6>
+                            <h6>None</h6>
+                        {{ end }}
+                        <br>
+                        <h6>Selected SPs:</h6>
+                        {{ if .PatientsSelected }}
+                        <span class="badge bg-warning" style="font-size: 0.7rem">add selected to assigned</span>
+                        {{ range .PatientsSelected }}
+                        <div class="form-check">
+                            <label>
+                                <input type="checkbox" name="{{ .Username }}" value="savedassigned" class="form-check-input" autocomplete="off">
+                                {{ .Name.First }} {{ .Name.Last }}
+                            </label>
+                        </div> 
+                        {{ end }}
+                        <span class="badge bg-danger" style="font-size: 0.7rem">remove selected to available</span>
+                        {{ range .PatientsSelected }}
+                        <div class="form-check">
+                            <label>
+                                <input type="checkbox" name="{{ .Username }}" value="removeselected" class="form-check-input" autocomplete="off">
+                                {{ .Name.First }} {{ .Name.Last }}
+                            </label>
+                        </div> 
+                        {{ end }}
+                        {{ else }}
+                            <h6>None</h6>
                         {{ end }}
                         <br>
                         <h6>Assigned SPs:</h6>
                         {{ if .PatientsAssigned }}
+                        <span class="badge bg-danger" style="font-size: 0.7rem">remove selected to available</span>
                         {{ range .PatientsAssigned }}
-                        <p>&emsp;<button type="submit" class="btn btn-sm btn-danger py-0" style="font-size: 0.9em;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
-                                <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"></path>
-                            </svg></button>&emsp;{{ .Name.First }} {{ .Name.Last }}</p>
+                        <div class="form-check">
+                            <label>
+                                <input type="checkbox" name="{{ .Username }}" value="removeassigned" class="form-check-input" autocomplete="off">
+                                {{ .Name.First }} {{ .Name.Last }}
+                            </label>
+                        </div> 
                         {{ end }}
                         {{ else }}
-                            <h6>&emsp;None</h6>
+                            <h6>None</h6>
                         {{ end }}
                         <div class="modal-footer">
-                            <button type="submit" class="btn btn-outline-success" data-bs-dismiss="modal">Submit</button>
+                            <button type="submit" formaction="/assignsp" class="btn btn-outline-success" data-bs-dismiss="modal">Submit</button>
                         </div>
                     </form>
                 </div>
