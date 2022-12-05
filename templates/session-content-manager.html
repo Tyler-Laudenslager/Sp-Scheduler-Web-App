@@ -52,6 +52,7 @@
             <h5 class="card-text">End Time: {{ .Information.EndTime }}</h5>
             <h5 class="card-text">Location: {{ .Information.Location }}</h5>
             <h5 class="card-text">SPs Available: {{ .PatientsAvailable | len }}</h5>
+            <h5 class="card-text">SPs Selected: {{ .PatientsSelected | len }}</h5>
             <h5 class="card-text">SPs Needed: {{ .PatientsNeeded }}</h5>
             <h5 class="card-text">SPs Assigned: {{ .PatientsAssigned | len }}</h5>
         </div>
@@ -213,7 +214,7 @@
                         <input type="hidden" name="description" value="{{ .Information.Description }}">
                         <h6>Available SPs:</h6>
                         {{ if .PatientsAvailable }}
-                        <span class="badge bg-success" style="font-size: 0.7rem">add selected to selected</span>
+                        <span class="badge bg-primary" style="font-size: 0.7rem">add selected to selected</span>
                         {{ range .PatientsAvailable }}
                         <div class="form-check">
                             <label class="mt-1">
@@ -228,7 +229,7 @@
                         <br>
                         <h6>Selected SPs:</h6>
                         {{ if .PatientsSelected }}
-                        <span class="badge bg-warning" style="font-size: 0.7rem">add selected to assigned</span>
+                        <span class="badge bg-success" style="font-size: 0.7rem">add selected to assigned</span>
                         {{ range .PatientsSelected }}
                         <div class="form-check">
                             <label>
