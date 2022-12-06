@@ -12,6 +12,7 @@ CREATE TABLE SpUsers (
 	sessionspool JSONB,
 	sessionsavailable JSONB,
 	sessionsunavailable JSONB,
+	sessionsselected JSONB,
 	sessionsassigned JSONB,
 	password varchar(100),
 	email varchar(50) NOT NULL

@@ -280,11 +280,26 @@ func assignsp(w http.ResponseWriter, r *http.Request) {
 				fmt.Println("Error Getting Record: ", err)
 				return
 			}
-			spuserRecord.SessionsAssigned = append(spuserRecord.SessionsAssigned, foundSession.Information)
+			duplicate := false
+			for _, si := range spuserRecord.SessionsAssigned {
+				if si.Title == foundSession.Information.Title {
+					duplicate = true
+				}
+			}
+			if !duplicate {
+				spuserRecord.SessionsAssigned = append(spuserRecord.SessionsAssigned, foundSession.Information)
+			}
 			if len(spuserRecord.SessionsAvailable) > 0 {
 				for i := 0; i < len(spuserRecord.SessionsAvailable); i++ {
 					if spuserRecord.SessionsAvailable[i].Title == foundSession.Information.Title {
 						spuserRecord.SessionsAvailable = append(spuserRecord.SessionsAvailable[:i], spuserRecord.SessionsAvailable[i+1:]...)
+					}
+				}
+			}
+			if len(spuserRecord.SessionsSelected) > 0 {
+				for i := 0; i < len(spuserRecord.SessionsSelected); i++ {
+					if spuserRecord.SessionsSelected[i].Title == foundSession.Information.Title {
+						spuserRecord.SessionsSelected = append(spuserRecord.SessionsSelected[:i], spuserRecord.SessionsSelected[i+1:]...)
 					}
 				}
 			}
@@ -319,7 +334,15 @@ func assignsp(w http.ResponseWriter, r *http.Request) {
 				fmt.Println("Error Getting Record: ", err)
 				return
 			}
-			spuserRecord.SessionsAvailable = append(spuserRecord.SessionsAvailable, foundSession.Information)
+			duplicate := false
+			for _, si := range spuserRecord.SessionsAvailable {
+				if si.Title == foundSession.Information.Title {
+					duplicate = true
+				}
+			}
+			if !duplicate {
+				spuserRecord.SessionsAvailable = append(spuserRecord.SessionsAvailable, foundSession.Information)
+			}
 			if len(spuserRecord.SessionsAssigned) > 0 {
 				for i := 0; i < len(spuserRecord.SessionsAssigned); i++ {
 					if spuserRecord.SessionsAssigned[i].Title == foundSession.Information.Title {
@@ -341,6 +364,64 @@ func assignsp(w http.ResponseWriter, r *http.Request) {
 					}
 				}
 			}
+			if len(spuserRecord.SessionsSelected) > 0 {
+				for i := 0; i < len(spuserRecord.SessionsSelected); i++ {
+					if spuserRecord.SessionsSelected[i].Title == foundSession.Information.Title {
+						spuserRecord.SessionsSelected = append(spuserRecord.SessionsSelected[:i], spuserRecord.SessionsSelected[i+1:]...)
+					}
+				}
+			}
+			if spuserRecord.TotalSessionsAssigned > 0 {
+				spuserRecord.TotalSessionsAssigned = spuserRecord.TotalSessionsAssigned - 1
+			}
+			err = spuserRecord.UpdateRecord(db)
+			if err != nil {
+				fmt.Println("Error Updating Record: ", err)
+				return
+			}
+		}
+	}
+
+	if len(foundSession.PatientsSelected) > 0 {
+		for _, spuser := range foundSession.PatientsSelected {
+			username := spuser.Username
+			spuserRecord, err := GetSpUserRecord(username, db)
+			if err != nil {
+				fmt.Println("Error Getting Record: ", err)
+				return
+			}
+			spuserRecord.SessionsSelected = append(spuserRecord.SessionsSelected, foundSession.Information)
+
+			//delete any occurances of session from other session boxes
+			if len(spuserRecord.SessionsAvailable) > 0 {
+				for i := 0; i < len(spuserRecord.SessionsSelected); i++ {
+					if spuserRecord.SessionsAvailable[i].Title == foundSession.Information.Title {
+						spuserRecord.SessionsAvailable = append(spuserRecord.SessionsAvailable[:i], spuserRecord.SessionsAvailable[i+1:]...)
+					}
+				}
+			}
+			if len(spuserRecord.SessionsAssigned) > 0 {
+				for i := 0; i < len(spuserRecord.SessionsAssigned); i++ {
+					if spuserRecord.SessionsAssigned[i].Title == foundSession.Information.Title {
+						spuserRecord.SessionsAssigned = append(spuserRecord.SessionsAssigned[:i], spuserRecord.SessionsAssigned[i+1:]...)
+					}
+				}
+			}
+			if len(spuserRecord.SessionsPool) > 0 {
+				for i := 0; i < len(spuserRecord.SessionsPool); i++ {
+					if spuserRecord.SessionsPool[i].Title == foundSession.Information.Title {
+						spuserRecord.SessionsPool = append(spuserRecord.SessionsPool[:i], spuserRecord.SessionsPool[i+1:]...)
+					}
+				}
+			}
+			if len(spuserRecord.SessionsUnavailable) > 0 {
+				for i := 0; i < len(spuserRecord.SessionsUnavailable); i++ {
+					if spuserRecord.SessionsUnavailable[i].Title == foundSession.Information.Title {
+						spuserRecord.SessionsUnavailable = append(spuserRecord.SessionsUnavailable[:i], spuserRecord.SessionsUnavailable[i+1:]...)
+					}
+				}
+			}
+			// end
 			if spuserRecord.TotalSessionsAssigned > 0 {
 				spuserRecord.TotalSessionsAssigned = spuserRecord.TotalSessionsAssigned - 1
 			}

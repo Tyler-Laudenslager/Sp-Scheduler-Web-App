@@ -302,17 +302,9 @@
                     <!-- Modal body -->
                     <div class="modal-body">
                         <h6>Username: {{ .Username }}</h6>
-                        <h6>Total Sessions Assigned: {{ .TotalSessionsAssigned }}</h6>
+                        <h6>Total Sessions Assigned : {{ .TotalSessionsAssigned }}</h6>
                         <h6>Email: {{ .Email }}</h6>
-                        <h6>Sessions Assigned:</h6>
-                        {{ if .SessionsAssigned }}
-                            {{ range .SessionsAssigned }}
-                                <p>&emsp; {{ .Title }} {{ .Date }}</p>
-                            {{ end }}
-                        {{ else }}
-                        <p>&emsp;None</p>
-                        {{ end }}
-                        <h6>Sessions Available:</h6>
+                        <h6>Sessions Available | {{ .SessionsAvailable | len }}:</h6>
                         {{ if .SessionsAvailable }}
                             {{ range .SessionsAvailable }}
                                 <p>&emsp; {{ .Title }} {{ .Date }}</p>
@@ -320,7 +312,7 @@
                         {{ else }}
                         <p>&emsp;None</p>
                         {{ end }}
-                        <h6>Sessions Unavailable:</h6>
+                        <h6>Sessions Unavailable | {{ .SessionsUnavailable | len }}:</h6>
                         {{ if .SessionsUnavailable }}
                             {{ range .SessionsUnavailable }}
                                 <p>&emsp; {{ .Title }} {{ .Date }}</p>
@@ -328,15 +320,23 @@
                         {{ else }}
                         <p>&emsp;None</p>
                         {{ end }}
-                        <h6>Sessions No Response:</h6>
-                        {{ if .SessionsPool }}
-                            {{ range .SessionsPool }}
+                        <h6>Sessions Selected | {{ .SessionsSelected | len }}:</h6>
+                        {{ if .SessionsSelected }}
+                            {{ range .SessionsSelected }}
                                 <p>&emsp; {{ .Title }} {{ .Date }}</p>
                             {{ end }}
                         {{ else }}
                         <p>&emsp;None</p>
-                        {{ end }}
-
+                        {{ end }} 
+                        <h6>Sessions Assigned | {{ .SessionsAssigned | len }}:</h6>
+                        {{ if .SessionsAssigned }}
+                            {{ range .SessionsAssigned }}
+                                <p>&emsp; {{ .Title }} {{ .Date }}</p>
+                            {{ end }}
+                        {{ else }}
+                        <p>&emsp;None</p>
+                        {{ end }} 
+                        
                     </div>
                 </div>
             </div>

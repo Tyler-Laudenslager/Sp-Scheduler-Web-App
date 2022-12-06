@@ -77,6 +77,7 @@ type SpUser struct {
 	SessionsPool          []*SessionInfo `json:"SessionsPool"`
 	SessionsAvailable     []*SessionInfo `json:"SessionsAvailable"`
 	SessionsUnavailable   []*SessionInfo `json:"SessionsUnavailable"`
+	SessionsSelected      []*SessionInfo `json:"SessionsSelected"`
 	SessionsAssigned      []*SessionInfo `json:"SessionsAssigned"`
 	Password              string         `json:"Password"`
 	Email                 string         `json:"Email"`
@@ -104,6 +105,7 @@ func (spUser SpUser) Create(name Name, username string, role Role, email string)
 		SessionsPool:          make([]*SessionInfo, 0),
 		SessionsAvailable:     make([]*SessionInfo, 0),
 		SessionsUnavailable:   make([]*SessionInfo, 0),
+		SessionsSelected:      make([]*SessionInfo, 0),
 		SessionsAssigned:      make([]*SessionInfo, 0),
 		Password:              "",
 		Email:                 email,

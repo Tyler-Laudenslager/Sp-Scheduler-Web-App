@@ -53,8 +53,8 @@
             <h5 class="card-text">Location: {{ .Information.Location }}</h5>
             <h5 class="card-text">SPs Available: {{ .PatientsAvailable | len }}</h5>
             <h5 class="card-text">SPs Selected: {{ .PatientsSelected | len }}</h5>
-            <h5 class="card-text">SPs Needed: {{ .PatientsNeeded }}</h5>
             <h5 class="card-text">SPs Assigned: {{ .PatientsAssigned | len }}</h5>
+            <h5 class="card-text">SPs Needed: {{ .PatientsNeeded }}</h5>
         </div>
     </div>
     <div class="modal" id="{{ .Information.Title | formatTitle }}edit">
@@ -146,6 +146,14 @@
                     {{ else }}
                         <p>&emsp;None</p>
                     {{ end }}
+                    <h5>SPs Selected : </h5>
+                    {{ if .PatientsSelected }}
+                    {{ range .PatientsSelected }}
+                        <p>&emsp;{{ .Name.First }} {{ .Name.Last }}</p>
+                    {{ end }}
+                    {{ else }}
+                        <p>&emsp;None</p>
+                    {{ end }}
                     <h5>SPs Assigned : </h5>
                     {{ if .PatientsAssigned }}
                     {{ range .PatientsAssigned }}
@@ -154,10 +162,7 @@
                     {{ else }}
                         <p>&emsp;None</p>
                     {{ end }}
-                    <h5>Instructors : </h5>
-                    {{ range .Instructors }}
-                        <p>&emsp;{{ .Name.First }} {{ .Name.Last }}</p>
-                    {{ end }}
+                    
                 </div>
   
                 <div class="modal-footer">
