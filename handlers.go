@@ -721,6 +721,8 @@ func authenticate(w http.ResponseWriter, r *http.Request) {
 	session, _ := store.Get(r, "sessionAuthSPCalendar")
 	// 60 seconds * 60 minutes = 1 hour max age
 	session.Options.MaxAge = 60 * 60 // in seconds
+	session.Options.Secure = true
+
 	username := r.PostFormValue("userid")
 	username = strings.ToLower(username)
 	password := r.PostFormValue("password")
