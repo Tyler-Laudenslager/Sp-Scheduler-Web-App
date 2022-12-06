@@ -219,7 +219,7 @@
                         <input type="hidden" name="description" value="{{ .Information.Description }}">
                         <h6>Available SPs:</h6>
                         {{ if .PatientsAvailable }}
-                        <span class="badge bg-primary" style="font-size: 0.7rem">add selected to selected</span>
+                        <span class="badge bg-primary" style="font-size: 0.7rem">add to selected</span>
                         {{ range .PatientsAvailable }}
                         <div class="form-check">
                             <label class="mt-1">
@@ -234,7 +234,7 @@
                         <br>
                         <h6>Selected SPs:</h6>
                         {{ if .PatientsSelected }}
-                        <span class="badge bg-success" style="font-size: 0.7rem">add selected to assigned</span>
+                        <span class="badge bg-success" style="font-size: 0.7rem">add to assigned</span>
                         {{ range .PatientsSelected }}
                         <div class="form-check">
                             <label>
@@ -243,7 +243,7 @@
                             </label>
                         </div> 
                         {{ end }}
-                        <span class="badge bg-danger" style="font-size: 0.7rem">remove selected to available</span>
+                        <span class="badge bg-danger" style="font-size: 0.7rem">remove to available</span>
                         {{ range .PatientsSelected }}
                         <div class="form-check">
                             <label>
@@ -258,7 +258,7 @@
                         <br>
                         <h6>Assigned SPs:</h6>
                         {{ if .PatientsAssigned }}
-                        <span class="badge bg-danger" style="font-size: 0.7rem">remove selected to available</span>
+                        <span class="badge bg-danger" style="font-size: 0.7rem">remove to available</span>
                         {{ range .PatientsAssigned }}
                         <div class="form-check">
                             <label>
