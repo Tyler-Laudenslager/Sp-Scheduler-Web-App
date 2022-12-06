@@ -394,7 +394,7 @@ func assignsp(w http.ResponseWriter, r *http.Request) {
 
 			//delete any occurances of session from other session boxes
 			if len(spuserRecord.SessionsAvailable) > 0 {
-				for i := 0; i < len(spuserRecord.SessionsSelected); i++ {
+				for i := 0; i < len(spuserRecord.SessionsAvailable); i++ {
 					if spuserRecord.SessionsAvailable[i].Title == foundSession.Information.Title {
 						spuserRecord.SessionsAvailable = append(spuserRecord.SessionsAvailable[:i], spuserRecord.SessionsAvailable[i+1:]...)
 					}
