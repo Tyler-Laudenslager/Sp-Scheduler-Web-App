@@ -12,7 +12,7 @@
         <h3>Prototype Date:</h3>
         &#8195;December 2023 - Alpha Version v1.0.0</br>
         <h3>Prototype Website:</h3>
-        &#8195;<a href="https://spcalendar.com">spcalendar.com</a>
+        &#8195;<a href="https://sluhnspcalendar.com">St. Luke's SP Calendar</a>
         <h3>Login Credentials</h3>
             <p>
                 &emsp;<b>Standardized Patient Account</b>
