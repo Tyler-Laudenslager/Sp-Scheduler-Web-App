@@ -10,7 +10,7 @@
         <h3>Purpose</h3>
         <p>This web application was created with the intention to reduce time and complexity of assigning standardized patients within the St. Luke's University Hospital Network to scheduled medical training sessions.</p>
         <h3>Prototype Date:</h3>
-        &#8195;December 2023 - Alpha Version v1.0.0</br>
+        &#8195;December 2023 - Beta Version v1.0.0</br>
         <h3>Prototype Website:</h3>
         &#8195;<a href="https://sluhnspcalendar.com">St. Luke's SP Calendar</a>
         <h3>Login Credentials</h3>
