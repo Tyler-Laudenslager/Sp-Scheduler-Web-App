@@ -98,13 +98,8 @@
                         <label for="floatingInput">End Time</label>
                     </div>
                     <div class="form-floating mb-2">
-                        <select class="form-select" name="newlocation" id="locationselect">
-                            <option selected>{{ .Information.Location }}</option>
-                            <option value="Anderson">Anderson</option>
-                            <option value="Allentown">Allentown</option>
-                            <option value="Bethlehem">Bethlehem</option>
-                        </select>
-                        <label for="locationselect">Location</label>
+                        <input type="text" name="location" class="form-control" value="Bethlehem">
+                        <label for="floatingInput">Location</label>
                     </div>
                     <div class="form-floating mb-2">
                         <input type="text" name="newpatientsneeded" class="form-control" value="{{ .PatientsNeeded }}">
