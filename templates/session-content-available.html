@@ -1,6 +1,4 @@
 {{ define "session-content" }}
-
-<div class="vstack gap-2 d-flex align-items-center position: relative;">
     {{ if .User.SessionsAssigned }}
     {{ range .User.SessionsAssigned | sortSessionInfoByDate }}
     {{ if .ShowSession }}

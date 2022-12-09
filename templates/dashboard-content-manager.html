@@ -1,43 +1,62 @@
 {{ define "content" }}
 <section>
-    <div class="container py-5 position-abolute ">
-        <div class="card" style="position: relative; align-content: flex-center; width: 18rem;">
-            <div class="card-body">
-                <h5 class="card-text">Name: {{ .User.Name.First }} {{ .User.Name.Last }}</h5>
-                <h5 class="card-text">Role: {{ .Role }} </h5>
-                <h5 class="card-text">Date: {{ .Date }} </h5>
-            </div>
-        </div>
-        <div class="col position-absolute top-0 end-0">
-                <button type="button" class="btn btn-lrg me-1 mt-4 btn-info position: relative" data-bs-toggle="modal" data-bs-target="#ManageSPs"
-                        style="background-color: white; color: #4581ef;">
-                    Manage SPs
-                </button>
-                <button type="button" class="btn me-1 mt-4 btn-info position: relative logout-btn"
-                        style="background-color:white; color:#4581ef;">
-                    <a href="/json" target="_blank" style="text-decoration: none;">View All Data</a>
-                </button>
-                <button type="button" class="btn btn-lrg me-1 mt-4 btn-info position: relative" data-bs-toggle="modal" data-bs-target="#UserSettings"
-                        style="background-color: white; color: #4581ef;">
-                    User Settings
-                </button>
-                <button type="button" class="btn me-4 mt-4 btn-info position: relative logout-btn"
-                        style="background-color:white; color:#4581ef;">
-                    <a href="/logout" style="text-decoration: none;">Logout</a>
-                </button>
-            
-        </div>
+    <div class="container-fluid">
         <div class="vstack gap-2 d-flex align-items-center position-absolute top-0 start-50 translate-middle-x">
             <div class="card mt-4 position: relative">
                 <div class="card-body">
                 <h2 class="card-title">Session Scheduler</h2>
                 </div>
             </div>
-            <button type="button" class="mt-2 btn btn-info position-aboslute top-0 end-0" data-bs-toggle="modal" data-bs-target="#createSessionModal">
-                Create Session
-            </button>
+            <div class="card position relative">
+                <div class="card-body">
+                    <div class="row row-cols-auto">
+                        <div class="col"><h5 class="card-text">Name: {{ .User.Name.First }} {{ .User.Name.Last }}</h5></div>
+                        <div class="col"><h5 class="card-text">Role: {{ .Role }} </h5></div>
+                        <div class="col"><h5 class="card-text">Date: {{ .Date }}</h5></div>
+                    </div>
+                </div>
+            </div>
+            <div class="row row-cols-auto position relative">
+                <div class="col">
+                <button type="button" class="btn btn-info position: relative" data-bs-toggle="modal" data-bs-target="#ManageSPs"
+                        style="background-color: white; color: #4581ef;">
+                    Manage SPs
+                </button>
+                </div>
+                <div class="col">
+                <button type="button" class="btn btn-info position: relative logout-btn"
+                        style="background-color:white; color:#4581ef;">
+                    <a href="/json" target="_blank" style="text-decoration: none;">View All Data</a>
+                </button>
+                </div>
+                <div class="col">
+                <button type="button" class="btn btn-info position: relative" data-bs-toggle="modal" data-bs-target="#UserSettings"
+                        style="background-color: white; color: #4581ef;">
+                    User Settings
+                </button>
+                </div>
+                <div class="col">
+                <button type="button" class="btn btn-info position: relative logout-btn"
+                        style="background-color:white; color:#4581ef;">
+                    <a href="/logout" style="text-decoration: none;">Logout</a>
+                </button>
+                </div>
+            
+            </div>
+            <div class="row row-cols-auto">
+                <div class="col">
+                    <button type="button" class="mt-2 btn btn-info position relative" data-bs-toggle="modal" data-bs-target="#createSessionModal">
+                        Create Session
+                    </button>
+                </div>
+                <div class="col">
+                    <button type="button" class="mt-2 btn btn-info position relative">
+                        Order Sessions
+                    </button>
+                </div>
+            </div>
+            {{ template "session-content" .User }}
         </div>
-        {{ template "session-content" .User }}
     </div>
 </div>
 

@@ -1,34 +1,38 @@
 {{ define "content" }}
 <section style="background-color: #5d64f5;">
-    <div class="container py-5">
-        <div class="card" style="position: relative; align-content: flex-center; width: 18rem;">
-            <div class="card-body">
-                <h5 class="card-text">Name: {{ .User.Name.First }} {{ .User.Name.Last }}</h5>
-                <h5 class="card-text">Role: {{ .Role }} </h5>
-                <h5 class="card-text">Current Date: {{ .Date }} </h5>
+    <div class="container-fluid">
+        <div class="vstack gap-2 d-flex align-items-center position-absolute top-0 start-50 translate-middle-x">
+            <div class="card mt-4 position relative">
+                <div class="card-body">
+                <h2 class="card-title">Standardized Patient Calendar</h2>
+                </div>
             </div>
-        </div>
-        <div class="row position-absolute top-0 end-0">
-            <div class="col-lg-6">
-                <button type="button" class="btn btn-lrg me-1 mt-4 btn-info position: relative" data-bs-toggle="modal" data-bs-target="#UserSettings"
+            <div class="card position relative mt-2 mb-2">
+                <div class="card-body">
+                    <div class="row row-cols-auto">
+                        <div class="col"><h5 class="card-text">Name: {{ .User.Name.First }} {{ .User.Name.Last }}</h5></div>
+                        <div class="col"><h5 class="card-text">Role: {{ .Role }} </h5></div>
+                        <div class="col"><h5 class="card-text">Date: {{ .Date }}</h5></div>
+                    </div>
+                </div>
+            </div>
+            <div class="row row-cols-auto mt-1 mb-1">
+            <div class="col">
+                <button type="button" class="btn btn-lg btn-info position: relative" data-bs-toggle="modal" data-bs-target="#UserSettings"
                         style="background-color: white; color: #4581ef;">
                     User Settings
                 </button>
             </button>
             </div>
             <div class="col">
-                <button type="button" class="btn me-4 mt-4 btn-info position: relative logout-btn"
+                <button type="button" class="btn btn-lg btn-info position: relative logout-btn"
                         style="background-color:white; color:#4581ef;">
                     <a href="/logout" style="text-decoration: none;">Logout</a>
                 </button>
             </div>
-        </div>
-        <div class="card mt-4 position-absolute top-0 start-50 translate-middle-x">
-            <div class="card-body">
-            <h2 class="card-title">Standardized Patient Calendar</h2>
             </div>
+            {{ template "session-content" . }}
         </div>
-        {{ template "session-content" . }}
     </div>
 </div>
 
