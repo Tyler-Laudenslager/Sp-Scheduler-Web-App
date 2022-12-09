@@ -813,15 +813,29 @@ func createSPRecord(w http.ResponseWriter, r *http.Request) {
 	first_initial := string(split_name[0][0])
 	last_name := string(split_name[1])
 	username := first_initial + last_name
-	spuser := SpUser{}.Create(*Name{}.Create(name), username, SP, email)
-	hashedPassword, err := HashPassword(password)
-	spuser.Password = hashedPassword
+	spRecords, err := GetAllSpUserRecords(db)
 	if err != nil {
-		fmt.Println("Password Hash Gone Wrong in Create SP Record: ", err)
+		fmt.Println("Get all sp user records in createSPRecord: ", err)
+		return
 	}
-	err = spuser.MakeRecord(db)
-	if err != nil {
-		fmt.Println("Error creating record in database in CreateSPRecord: ", err)
+	duplicate := false
+	for _, su := range spRecords {
+		fmt.Println(su.Username, username)
+		if su.Username == username {
+			duplicate = true
+		}
+	}
+	if !duplicate {
+		spuser := SpUser{}.Create(*Name{}.Create(name), username, SP, email)
+		hashedPassword, err := HashPassword(password)
+		spuser.Password = hashedPassword
+		if err != nil {
+			fmt.Println("Password Hash Gone Wrong in Create SP Record: ", err)
+		}
+		err = spuser.MakeRecord(db)
+		if err != nil {
+			fmt.Println("Error creating record in database in CreateSPRecord: ", err)
+		}
 	}
 	http.Redirect(w, r, "/dashboard", httpRedirectResponse)
 }
