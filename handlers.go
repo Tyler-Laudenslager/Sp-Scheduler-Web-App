@@ -35,6 +35,14 @@ func sortSessionByDate(a []*Session) []*Session {
 	return a
 }
 
+func sortSessionByLocation(a []*Session) []*Session {
+	copySessions := a[:]
+	sort.Slice(copySessions, func(i, j int) bool {
+		return a[i].Information.Location < a[j].Information.Location
+	})
+	return copySessions
+}
+
 func login(w http.ResponseWriter, r *http.Request) {
 	session, _ := store.Get(r, "sessionAuthSPCalendar")
 	if auth, ok := session.Values["authenticated"].(bool); ok && auth {
@@ -81,6 +89,23 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			fmt.Println("Error Get All Session records in dashboard: ", err)
 			return
+		}
+		if r.PostFormValue("orderBy") == "byLocation" {
+			sort.Slice(session_records_manager, func(i int, j int) bool {
+				return session_records_manager[i].Information.Location < session_records_manager[j].Information.Location
+			})
+		}
+
+		if r.PostFormValue("orderBy") == "byDate" {
+			sort.Slice(session_records_manager, func(i int, j int) bool {
+				iDate := session_records_manager[i].Information.Date
+				jDate := session_records_manager[j].Information.Date
+
+				iParsed, _ := time.Parse("01/02/2006", iDate)
+				jParsed, _ := time.Parse("01/02/2006", jDate)
+
+				return iParsed.Before(jParsed)
+			})
 		}
 		spmanager.SessionsUnmanaged = session_records_manager
 		spuser_records, err := GetAllSpUserRecords(db)

@@ -50,9 +50,14 @@
                     </button>
                 </div>
                 <div class="col">
-                    <button type="button" class="mt-2 btn btn-info position relative">
-                        Order Sessions
-                    </button>
+                    <form action="/dashboard" class="mt-2 position relative" method="post" enctype="application/x-www-form-urlencoded">
+                    <input type="hidden" name="username" value="{{ .User.Username }}">
+                    <select name="orderBy" class="form-select" aria-label="Order Sessions" onchange="this.form.submit();" onfocus="this.selectedIndex = -1;">
+                        <option selected disabled>Order Sessions</option>
+                        <option value="byDate">Order By Date</option>
+                        <option value="byLocation">Order By Location</option>
+                    </select>
+                    </form>
                 </div>
             </div>
             {{ template "session-content" .User }}
@@ -649,3 +654,4 @@
 {{ end }}
 
 {{ end }}
+
