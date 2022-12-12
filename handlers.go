@@ -98,12 +98,16 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 			sort.Slice(session_records_manager, func(i int, j int) bool {
 				return session_records_manager[i].Information.Location < session_records_manager[j].Information.Location
 			})
+			dashboard_content.ByLocation = true
+			dashboard_content.ByDate = false
 		}
 
 		if session.Values["orderBy"].(string) == "byLocation" {
 			sort.Slice(session_records_manager, func(i int, j int) bool {
 				return session_records_manager[i].Information.Location < session_records_manager[j].Information.Location
 			})
+			dashboard_content.ByLocation = true
+			dashboard_content.ByDate = false
 		}
 
 		if r.PostFormValue("orderBy") == "byDate" {
@@ -116,6 +120,8 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 
 				return iParsed.Before(jParsed)
 			})
+			dashboard_content.ByLocation = false
+			dashboard_content.ByDate = true
 		}
 
 		if session.Values["orderBy"].(string) == "byDate" {
@@ -128,6 +134,8 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 
 				return iParsed.Before(jParsed)
 			})
+			dashboard_content.ByLocation = false
+			dashboard_content.ByDate = true
 		}
 		session.Save(r, w)
 		spmanager.SessionsUnmanaged = session_records_manager

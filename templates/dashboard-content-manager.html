@@ -52,11 +52,25 @@
                 <div class="col">
                     <form action="/dashboard" class="mt-2 position relative" method="post" enctype="application/x-www-form-urlencoded">
                     <input type="hidden" name="username" value="{{ .User.Username }}">
+                    {{ if .ByDate }}
+                    <select name="orderBy" class="form-select" aria-label="Order Sessions" onchange="this.form.submit();" onfocus="this.selectedIndex = -1;">
+                        <option disabled>Order Sessions</option>
+                        <option selected disabled value="byDate">Order By Date</option>
+                        <option value="byLocation">Order By Location</option>
+                    </select>
+                    {{ else if .ByLocation }}
+                    <select name="orderBy" class="form-select" aria-label="Order Sessions" onchange="this.form.submit();" onfocus="this.selectedIndex = -1;">
+                        <option disabled>Order Sessions</option>
+                        <option value="byDate">Order By Date</option>
+                        <option selected disabled value="byLocation">Order By Location</option>
+                    </select>
+                    {{ else }}
                     <select name="orderBy" class="form-select" aria-label="Order Sessions" onchange="this.form.submit();" onfocus="this.selectedIndex = -1;">
                         <option selected disabled>Order Sessions</option>
                         <option value="byDate">Order By Date</option>
                         <option value="byLocation">Order By Location</option>
                     </select>
+                    {{ end }}
                     </form>
                 </div>
             </div>
