@@ -90,7 +90,17 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 			fmt.Println("Error Get All Session records in dashboard: ", err)
 			return
 		}
+
+		if r.PostFormValue("orderBy") != "" {
+			session.Values["orderBy"] = r.PostFormValue("orderBy")
+		}
 		if r.PostFormValue("orderBy") == "byLocation" {
+			sort.Slice(session_records_manager, func(i int, j int) bool {
+				return session_records_manager[i].Information.Location < session_records_manager[j].Information.Location
+			})
+		}
+
+		if session.Values["orderBy"].(string) == "byLocation" {
 			sort.Slice(session_records_manager, func(i int, j int) bool {
 				return session_records_manager[i].Information.Location < session_records_manager[j].Information.Location
 			})
@@ -107,6 +117,19 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 				return iParsed.Before(jParsed)
 			})
 		}
+
+		if session.Values["orderBy"].(string) == "byDate" {
+			sort.Slice(session_records_manager, func(i int, j int) bool {
+				iDate := session_records_manager[i].Information.Date
+				jDate := session_records_manager[j].Information.Date
+
+				iParsed, _ := time.Parse("01/02/2006", iDate)
+				jParsed, _ := time.Parse("01/02/2006", jDate)
+
+				return iParsed.Before(jParsed)
+			})
+		}
+		session.Save(r, w)
 		spmanager.SessionsUnmanaged = session_records_manager
 		spuser_records, err := GetAllSpUserRecords(db)
 		spmanager.AssignedPatients = spuser_records
@@ -148,7 +171,6 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 	} else {
 		t, _ = t.ParseFiles("templates/html-boilerplate.html", "templates/dashboard-content-manager.html", "templates/session-content-manager.html")
 	}
-
 	t.ExecuteTemplate(w, "html-boilerplate", dashboard_content)
 }
 
