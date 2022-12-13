@@ -110,7 +110,7 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 			dashboard_content.ByDate = false
 		}
 
-		if session.Values["orderBy"].(string) == "byLocation" {
+		if session.Values["orderBy"] == "byLocation" {
 			sort.Slice(session_records_manager, func(i int, j int) bool {
 				return session_records_manager[i].Information.Location < session_records_manager[j].Information.Location
 			})
@@ -132,7 +132,7 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 			dashboard_content.ByDate = true
 		}
 
-		if session.Values["orderBy"].(string) == "byDate" {
+		if session.Values["orderBy"] == "byDate" {
 			sort.Slice(session_records_manager, func(i int, j int) bool {
 				iDate := session_records_manager[i].Information.Date
 				jDate := session_records_manager[j].Information.Date
@@ -201,7 +201,7 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 			dashboard_content.ByDate = false
 		}
 
-		if session.Values["orderBy"].(string) == "byLocation" {
+		if session.Values["orderBy"] == "byLocation" {
 			sort.Slice(spuser.SessionsSorted, func(i int, j int) bool {
 				return spuser.SessionsSorted[i].Location < spuser.SessionsSorted[j].Location
 			})
@@ -223,7 +223,7 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 			dashboard_content.ByDate = true
 		}
 
-		if session.Values["orderBy"].(string) == "byDate" {
+		if session.Values["orderBy"] == "byDate" {
 			sort.Slice(spuser.SessionsSorted, func(i int, j int) bool {
 				iDate := spuser.SessionsSorted[i].Date
 				jDate := spuser.SessionsSorted[j].Date
