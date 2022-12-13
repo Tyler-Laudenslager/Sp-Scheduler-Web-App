@@ -191,7 +191,6 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 			spuser.SessionsSorted = append(spuser.SessionsSorted, si)
 		}
 		if r.PostFormValue("orderBy") != "" {
-			fmt.Println(r.PostFormValue("orderBy"))
 			session.Values["orderBy"] = r.PostFormValue("orderBy")
 		}
 		if r.PostFormValue("orderBy") == "byLocation" {
