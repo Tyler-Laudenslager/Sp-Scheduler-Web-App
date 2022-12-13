@@ -1,6 +1,7 @@
 {{ define "session-content" }}
-    {{ if .User.SessionsAssigned }}
-    {{ range .User.SessionsAssigned | sortSessionInfoByDate }}
+    {{ if .User.SessionsSorted }}
+    {{ range .User.SessionsSorted }}
+    {{ if .Status | StatusAssigned }}
     {{ if .ShowSession }}
     <div class="card border-success" style="width: 40rem; background-color: #f7f8f7;">
         <div class="card-body">
@@ -22,9 +23,7 @@
     </div>
     {{ end }}
     {{ end }}
-    {{ end }}
-    {{ if .User.SessionsPool }}
-    {{ range .User.SessionsPool | sortSessionInfoByDate }}
+    {{ if .Status | StatusNoResponse }}
     {{ if .ShowSession }}
     <div class="card" style="width: 40rem; background-color: #f7f8f7;">
         <div class="card-body">
@@ -68,9 +67,7 @@
     </div>
     {{ end }}
     {{ end }}
-    {{ end }}
-    {{ if .User.SessionsAvailable }}
-    {{ range .User.SessionsAvailable | sortSessionInfoByDate }}
+    {{ if .Status | StatusAvailable }}
     {{ if .ShowSession }}
     <div class="card" style="width: 40rem; background-color: #f7f8f7;">
         <div class="card-body">
@@ -114,9 +111,7 @@
     </div>
     {{ end }}
     {{ end }}
-    {{ end }}
-    {{ if .User.SessionsUnavailable }}
-    {{ range .User.SessionsUnavailable | sortSessionInfoByDate }}
+    {{ if .Status | StatusUnavailable }}
     {{ if .ShowSession }}
     <div class="card" style="width: 40rem; background-color: #f7f8f7;">
         <div class="card-body">
@@ -160,8 +155,9 @@
     </div>
     {{ end }}
     {{ end }}
-    {{ end }}
     
+    {{ end }}
+    {{ end }}
 </div>
 
 {{ end }}

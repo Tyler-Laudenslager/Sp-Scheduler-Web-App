@@ -25,6 +25,22 @@ func formatDate(date string) string {
 
 }
 
+func StatusAssigned(status string) bool {
+	return status == "assigned"
+}
+
+func StatusNoResponse(status string) bool {
+	return status == "noresponse"
+}
+
+func StatusUnavailable(status string) bool {
+	return status == "unavailable"
+}
+
+func StatusAvailable(status string) bool {
+	return status == "available"
+}
+
 func sortSessionInfoByDate(a []*SessionInfo) []*SessionInfo {
 	sort.Sort(SessionInfoContainer(a[:]))
 	return a
@@ -33,14 +49,6 @@ func sortSessionInfoByDate(a []*SessionInfo) []*SessionInfo {
 func sortSessionByDate(a []*Session) []*Session {
 	sort.Sort(SessionContainer(a[:]))
 	return a
-}
-
-func sortSessionByLocation(a []*Session) []*Session {
-	copySessions := a[:]
-	sort.Slice(copySessions, func(i, j int) bool {
-		return a[i].Information.Location < a[j].Information.Location
-	})
-	return copySessions
 }
 
 func login(w http.ResponseWriter, r *http.Request) {
@@ -165,6 +173,71 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 				continue
 			}
 		}
+		spuser.SessionsSorted = make([]*SessionInfo, 0)
+		for _, si := range spuser.SessionsAssigned {
+			si.Status = "assigned"
+			spuser.SessionsSorted = append(spuser.SessionsSorted, si)
+		}
+		for _, si := range spuser.SessionsAvailable {
+			si.Status = "available"
+			spuser.SessionsSorted = append(spuser.SessionsSorted, si)
+		}
+		for _, si := range spuser.SessionsUnavailable {
+			si.Status = "unavailable"
+			spuser.SessionsSorted = append(spuser.SessionsSorted, si)
+		}
+		for _, si := range spuser.SessionsPool {
+			si.Status = "noresponse"
+			spuser.SessionsSorted = append(spuser.SessionsSorted, si)
+		}
+		if r.PostFormValue("orderBy") != "" {
+			fmt.Println(r.PostFormValue("orderBy"))
+			session.Values["orderBy"] = r.PostFormValue("orderBy")
+		}
+		if r.PostFormValue("orderBy") == "byLocation" {
+			sort.Slice(spuser.SessionsSorted, func(i int, j int) bool {
+				return spuser.SessionsSorted[i].Location < spuser.SessionsSorted[j].Location
+			})
+			dashboard_content.ByLocation = true
+			dashboard_content.ByDate = false
+		}
+
+		if session.Values["orderBy"].(string) == "byLocation" {
+			sort.Slice(spuser.SessionsSorted, func(i int, j int) bool {
+				return spuser.SessionsSorted[i].Location < spuser.SessionsSorted[j].Location
+			})
+			dashboard_content.ByLocation = true
+			dashboard_content.ByDate = false
+		}
+
+		if r.PostFormValue("orderBy") == "byDate" {
+			sort.Slice(spuser.SessionsSorted, func(i int, j int) bool {
+				iDate := spuser.SessionsSorted[i].Date
+				jDate := spuser.SessionsSorted[j].Date
+
+				iParsed, _ := time.Parse("01/02/2006", iDate)
+				jParsed, _ := time.Parse("01/02/2006", jDate)
+
+				return iParsed.Before(jParsed)
+			})
+			dashboard_content.ByLocation = false
+			dashboard_content.ByDate = true
+		}
+
+		if session.Values["orderBy"].(string) == "byDate" {
+			sort.Slice(spuser.SessionsSorted, func(i int, j int) bool {
+				iDate := spuser.SessionsSorted[i].Date
+				jDate := spuser.SessionsSorted[j].Date
+
+				iParsed, _ := time.Parse("01/02/2006", iDate)
+				jParsed, _ := time.Parse("01/02/2006", jDate)
+
+				return iParsed.Before(jParsed)
+			})
+			dashboard_content.ByLocation = false
+			dashboard_content.ByDate = true
+		}
+		session.Save(r, w)
 		err = spuser.UpdateRecord(db)
 		if err != nil {
 			fmt.Println("Error updating record")
@@ -172,7 +245,7 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 		dashboard_content.Role = "Standardized Patient"
 		dashboard_content.User = spuser
 	}
-	funcMap := template.FuncMap{"formatTitle": formatTitle, "formatDate": formatDate, "sortSessionInfoByDate": sortSessionInfoByDate, "sortSessionByDate": sortSessionByDate}
+	funcMap := template.FuncMap{"formatTitle": formatTitle, "formatDate": formatDate, "sortSessionInfoByDate": sortSessionInfoByDate, "sortSessionByDate": sortSessionByDate, "StatusAssigned": StatusAssigned, "StatusNoResponse": StatusNoResponse, "StatusAvailable": StatusAvailable, "StatusUnavailable": StatusUnavailable}
 	t = template.New("templates/html-boilerplate.html").Funcs(funcMap)
 	if !isSpManager {
 		t, _ = t.ParseFiles("templates/html-boilerplate.html", "templates/dashboard-content.html", "templates/session-content-available.html", "templates/user-settings.html")

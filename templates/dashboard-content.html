@@ -17,15 +17,39 @@
                 </div>
             </div>
             <div class="row row-cols-auto mt-1 mb-1">
+                <div class="col mb-2">
+                    <form action="/dashboard" class="position relative" method="post" enctype="application/x-www-form-urlencoded">
+                    <input type="hidden" name="username" value="{{ .User.Username }}">
+                    {{ if .ByDate }}
+                    <select name="orderBy" class="form-select" aria-label="Order Sessions" onchange="this.form.submit();" onfocus="this.selectedIndex = -1;">
+                        <option disabled>Order Sessions</option>
+                        <option selected disabled value="byDate">Order By Date</option>
+                        <option value="byLocation">Order By Location</option>
+                    </select>
+                    {{ else if .ByLocation }}
+                    <select name="orderBy" class="form-select" aria-label="Order Sessions" onchange="this.form.submit();" onfocus="this.selectedIndex = -1;">
+                        <option disabled>Order Sessions</option>
+                        <option value="byDate">Order By Date</option>
+                        <option selected disabled value="byLocation">Order By Location</option>
+                    </select>
+                    {{ else }}
+                    <select name="orderBy" class="form-select" aria-label="Order Sessions" onchange="this.form.submit();" onfocus="this.selectedIndex = -1;">
+                        <option selected disabled>Order Sessions</option>
+                        <option value="byDate">Order By Date</option>
+                        <option value="byLocation">Order By Location</option>
+                    </select>
+                    {{ end }}
+                    </form>
+            </div>
             <div class="col">
-                <button type="button" class="btn btn-lg btn-info position: relative" data-bs-toggle="modal" data-bs-target="#UserSettings"
+                <button type="button" class="btn btn-info position: relative" data-bs-toggle="modal" data-bs-target="#UserSettings"
                         style="background-color: white; color: #4581ef;">
                     User Settings
                 </button>
             </button>
             </div>
-            <div class="col">
-                <button type="button" class="btn btn-lg btn-info position: relative logout-btn"
+            <div class="col mb-2">
+                <button type="button" class="btn btn-info position: relative logout-btn"
                         style="background-color:white; color:#4581ef;">
                     <a href="/logout" style="text-decoration: none;">Logout</a>
                 </button>
