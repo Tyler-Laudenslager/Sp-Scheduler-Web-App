@@ -75,6 +75,7 @@ type SpUser struct {
 	Role                  Role           `json:"Role"`
 	TotalSessionsAssigned uint32         `json:"TotalSessionsAssigned"`
 	SessionsPool          []*SessionInfo `json:"SessionsPool"`
+	SessionsSorted        []*SessionInfo `json:"SessionsSorted"`
 	SessionsAvailable     []*SessionInfo `json:"SessionsAvailable"`
 	SessionsUnavailable   []*SessionInfo `json:"SessionsUnavailable"`
 	SessionsSelected      []*SessionInfo `json:"SessionsSelected"`
@@ -103,6 +104,7 @@ func (spUser SpUser) Create(name Name, username string, role Role, email string)
 		Role:                  role,
 		TotalSessionsAssigned: 0,
 		SessionsPool:          make([]*SessionInfo, 0),
+		SessionsSorted:        make([]*SessionInfo, 0),
 		SessionsAvailable:     make([]*SessionInfo, 0),
 		SessionsUnavailable:   make([]*SessionInfo, 0),
 		SessionsSelected:      make([]*SessionInfo, 0),
@@ -198,6 +200,7 @@ func (s Session) Create(title string, date string, starttime string, endtime str
 			EndTime:     endtime,
 			Location:    location,
 			Description: description,
+			Status:      "noresponse",
 			ShowSession: true},
 		Instructors:         []*Instructor{},
 		PatientsNeeded:      0,
@@ -216,6 +219,7 @@ type SessionInfo struct {
 	EndTime     string `json:"EndTime"`
 	Location    string `json:"Location"`
 	Description string `json:"Description"`
+	Status      string `json:"Status"`
 	ShowSession bool   `json:"ShowSession"`
 }
 type SessionInfoContainer []*SessionInfo

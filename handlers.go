@@ -25,6 +25,22 @@ func formatDate(date string) string {
 
 }
 
+func StatusAssigned(status string) bool {
+	return status == "assigned"
+}
+
+func StatusNoResponse(status string) bool {
+	return status == "noresponse"
+}
+
+func StatusUnavailable(status string) bool {
+	return status == "unavailable"
+}
+
+func StatusAvailable(status string) bool {
+	return status == "available"
+}
+
 func sortSessionInfoByDate(a []*SessionInfo) []*SessionInfo {
 	sort.Sort(SessionInfoContainer(a[:]))
 	return a
@@ -82,6 +98,54 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 			fmt.Println("Error Get All Session records in dashboard: ", err)
 			return
 		}
+
+		if r.PostFormValue("orderBy") != "" {
+			session.Values["orderBy"] = r.PostFormValue("orderBy")
+		}
+		if r.PostFormValue("orderBy") == "byLocation" {
+			sort.Slice(session_records_manager, func(i int, j int) bool {
+				return session_records_manager[i].Information.Location < session_records_manager[j].Information.Location
+			})
+			dashboard_content.ByLocation = true
+			dashboard_content.ByDate = false
+		}
+
+		if session.Values["orderBy"].(string) == "byLocation" {
+			sort.Slice(session_records_manager, func(i int, j int) bool {
+				return session_records_manager[i].Information.Location < session_records_manager[j].Information.Location
+			})
+			dashboard_content.ByLocation = true
+			dashboard_content.ByDate = false
+		}
+
+		if r.PostFormValue("orderBy") == "byDate" {
+			sort.Slice(session_records_manager, func(i int, j int) bool {
+				iDate := session_records_manager[i].Information.Date
+				jDate := session_records_manager[j].Information.Date
+
+				iParsed, _ := time.Parse("01/02/2006", iDate)
+				jParsed, _ := time.Parse("01/02/2006", jDate)
+
+				return iParsed.Before(jParsed)
+			})
+			dashboard_content.ByLocation = false
+			dashboard_content.ByDate = true
+		}
+
+		if session.Values["orderBy"].(string) == "byDate" {
+			sort.Slice(session_records_manager, func(i int, j int) bool {
+				iDate := session_records_manager[i].Information.Date
+				jDate := session_records_manager[j].Information.Date
+
+				iParsed, _ := time.Parse("01/02/2006", iDate)
+				jParsed, _ := time.Parse("01/02/2006", jDate)
+
+				return iParsed.Before(jParsed)
+			})
+			dashboard_content.ByLocation = false
+			dashboard_content.ByDate = true
+		}
+		session.Save(r, w)
 		spmanager.SessionsUnmanaged = session_records_manager
 		spuser_records, err := GetAllSpUserRecords(db)
 		spmanager.AssignedPatients = spuser_records
@@ -109,6 +173,70 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 				continue
 			}
 		}
+		spuser.SessionsSorted = make([]*SessionInfo, 0)
+		for _, si := range spuser.SessionsAssigned {
+			si.Status = "assigned"
+			spuser.SessionsSorted = append(spuser.SessionsSorted, si)
+		}
+		for _, si := range spuser.SessionsAvailable {
+			si.Status = "available"
+			spuser.SessionsSorted = append(spuser.SessionsSorted, si)
+		}
+		for _, si := range spuser.SessionsUnavailable {
+			si.Status = "unavailable"
+			spuser.SessionsSorted = append(spuser.SessionsSorted, si)
+		}
+		for _, si := range spuser.SessionsPool {
+			si.Status = "noresponse"
+			spuser.SessionsSorted = append(spuser.SessionsSorted, si)
+		}
+		if r.PostFormValue("orderBy") != "" {
+			session.Values["orderBy"] = r.PostFormValue("orderBy")
+		}
+		if r.PostFormValue("orderBy") == "byLocation" {
+			sort.Slice(spuser.SessionsSorted, func(i int, j int) bool {
+				return spuser.SessionsSorted[i].Location < spuser.SessionsSorted[j].Location
+			})
+			dashboard_content.ByLocation = true
+			dashboard_content.ByDate = false
+		}
+
+		if session.Values["orderBy"].(string) == "byLocation" {
+			sort.Slice(spuser.SessionsSorted, func(i int, j int) bool {
+				return spuser.SessionsSorted[i].Location < spuser.SessionsSorted[j].Location
+			})
+			dashboard_content.ByLocation = true
+			dashboard_content.ByDate = false
+		}
+
+		if r.PostFormValue("orderBy") == "byDate" {
+			sort.Slice(spuser.SessionsSorted, func(i int, j int) bool {
+				iDate := spuser.SessionsSorted[i].Date
+				jDate := spuser.SessionsSorted[j].Date
+
+				iParsed, _ := time.Parse("01/02/2006", iDate)
+				jParsed, _ := time.Parse("01/02/2006", jDate)
+
+				return iParsed.Before(jParsed)
+			})
+			dashboard_content.ByLocation = false
+			dashboard_content.ByDate = true
+		}
+
+		if session.Values["orderBy"].(string) == "byDate" {
+			sort.Slice(spuser.SessionsSorted, func(i int, j int) bool {
+				iDate := spuser.SessionsSorted[i].Date
+				jDate := spuser.SessionsSorted[j].Date
+
+				iParsed, _ := time.Parse("01/02/2006", iDate)
+				jParsed, _ := time.Parse("01/02/2006", jDate)
+
+				return iParsed.Before(jParsed)
+			})
+			dashboard_content.ByLocation = false
+			dashboard_content.ByDate = true
+		}
+		session.Save(r, w)
 		err = spuser.UpdateRecord(db)
 		if err != nil {
 			fmt.Println("Error updating record")
@@ -116,14 +244,13 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 		dashboard_content.Role = "Standardized Patient"
 		dashboard_content.User = spuser
 	}
-	funcMap := template.FuncMap{"formatTitle": formatTitle, "formatDate": formatDate, "sortSessionInfoByDate": sortSessionInfoByDate, "sortSessionByDate": sortSessionByDate}
+	funcMap := template.FuncMap{"formatTitle": formatTitle, "formatDate": formatDate, "sortSessionInfoByDate": sortSessionInfoByDate, "sortSessionByDate": sortSessionByDate, "StatusAssigned": StatusAssigned, "StatusNoResponse": StatusNoResponse, "StatusAvailable": StatusAvailable, "StatusUnavailable": StatusUnavailable}
 	t = template.New("templates/html-boilerplate.html").Funcs(funcMap)
 	if !isSpManager {
 		t, _ = t.ParseFiles("templates/html-boilerplate.html", "templates/dashboard-content.html", "templates/session-content-available.html", "templates/user-settings.html")
 	} else {
 		t, _ = t.ParseFiles("templates/html-boilerplate.html", "templates/dashboard-content-manager.html", "templates/session-content-manager.html")
 	}
-
 	t.ExecuteTemplate(w, "html-boilerplate", dashboard_content)
 }
 
@@ -813,15 +940,29 @@ func createSPRecord(w http.ResponseWriter, r *http.Request) {
 	first_initial := string(split_name[0][0])
 	last_name := string(split_name[1])
 	username := first_initial + last_name
-	spuser := SpUser{}.Create(*Name{}.Create(name), username, SP, email)
-	hashedPassword, err := HashPassword(password)
-	spuser.Password = hashedPassword
+	spRecords, err := GetAllSpUserRecords(db)
 	if err != nil {
-		fmt.Println("Password Hash Gone Wrong in Create SP Record: ", err)
+		fmt.Println("Get all sp user records in createSPRecord: ", err)
+		return
 	}
-	err = spuser.MakeRecord(db)
-	if err != nil {
-		fmt.Println("Error creating record in database in CreateSPRecord: ", err)
+	duplicate := false
+	for _, su := range spRecords {
+		fmt.Println(su.Username, username)
+		if su.Username == username {
+			duplicate = true
+		}
+	}
+	if !duplicate {
+		spuser := SpUser{}.Create(*Name{}.Create(name), username, SP, email)
+		hashedPassword, err := HashPassword(password)
+		spuser.Password = hashedPassword
+		if err != nil {
+			fmt.Println("Password Hash Gone Wrong in Create SP Record: ", err)
+		}
+		err = spuser.MakeRecord(db)
+		if err != nil {
+			fmt.Println("Error creating record in database in CreateSPRecord: ", err)
+		}
 	}
 	http.Redirect(w, r, "/dashboard", httpRedirectResponse)
 }

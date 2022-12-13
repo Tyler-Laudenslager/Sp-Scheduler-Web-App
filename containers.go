@@ -10,7 +10,9 @@ type SpManagersBox []*SpManager
 type SpSessionsBox []*Session
 
 type DashboardContent struct {
-	Date string
-	User interface{}
-	Role string
+	Date       string
+	User       interface{}
+	Role       string
+	ByDate     bool
+	ByLocation bool
 }

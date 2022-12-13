@@ -1,45 +1,304 @@
 {{ define "content" }}
 <section>
-    <div class="container py-5 position-abolute ">
-        <div class="card" style="position: relative; align-content: flex-center; width: 18rem;">
-            <div class="card-body">
-                <h5 class="card-text">Name: {{ .User.Name.First }} {{ .User.Name.Last }}</h5>
-                <h5 class="card-text">Role: {{ .Role }} </h5>
-                <h5 class="card-text">Date: {{ .Date }} </h5>
-            </div>
-        </div>
-        <div class="col position-absolute top-0 end-0">
-                <button type="button" class="btn btn-lrg me-1 mt-4 btn-info position: relative" data-bs-toggle="modal" data-bs-target="#ManageSPs"
-                        style="background-color: white; color: #4581ef;">
-                    Manage SPs
-                </button>
-                <button type="button" class="btn me-1 mt-4 btn-info position: relative logout-btn"
-                        style="background-color:white; color:#4581ef;">
-                    <a href="/json" target="_blank" style="text-decoration: none;">View All Data</a>
-                </button>
-                <button type="button" class="btn btn-lrg me-1 mt-4 btn-info position: relative" data-bs-toggle="modal" data-bs-target="#UserSettings"
-                        style="background-color: white; color: #4581ef;">
-                    User Settings
-                </button>
-                <button type="button" class="btn me-4 mt-4 btn-info position: relative logout-btn"
-                        style="background-color:white; color:#4581ef;">
-                    <a href="/logout" style="text-decoration: none;">Logout</a>
-                </button>
-            
-        </div>
+    <div class="container-fluid">
         <div class="vstack gap-2 d-flex align-items-center position-absolute top-0 start-50 translate-middle-x">
             <div class="card mt-4 position: relative">
                 <div class="card-body">
                 <h2 class="card-title">Session Scheduler</h2>
                 </div>
             </div>
-            <button type="button" class="mt-2 btn btn-info position-aboslute top-0 end-0" data-bs-toggle="modal" data-bs-target="#createSessionModal">
-                Create Session
-            </button>
+            <div class="card position relative">
+                <div class="card-body">
+                    <div class="row row-cols-auto">
+                        <div class="col"><h5 class="card-text">Name: {{ .User.Name.First }} {{ .User.Name.Last }}</h5></div>
+                        <div class="col"><h5 class="card-text">Role: {{ .Role }} </h5></div>
+                        <div class="col"><h5 class="card-text">Date: {{ .Date }}</h5></div>
+                    </div>
+                </div>
+            </div>
+            <div class="row row-cols-auto position relative">
+                <div class="col">
+                <button type="button" class="btn btn-info position: relative" data-bs-toggle="modal" data-bs-target="#ManageSPs"
+                        style="background-color: white; color: #4581ef;">
+                    Manage SPs
+                </button>
+                </div>
+                <div class="col">
+                <button type="button" class="btn btn-info position: relative logout-btn"
+                        style="background-color:white; color:#4581ef;">
+                    <a href="/json" target="_blank" style="text-decoration: none;">View All Data</a>
+                </button>
+                </div>
+                <div class="col">
+                <button type="button" class="btn btn-info position: relative" data-bs-toggle="modal" data-bs-target="#UserSettings"
+                        style="background-color: white; color: #4581ef;">
+                    User Settings
+                </button>
+                </div>
+                <div class="col">
+                <button type="button" class="btn btn-info position: relative logout-btn"
+                        style="background-color:white; color:#4581ef;">
+                    <a href="/logout" style="text-decoration: none;">Logout</a>
+                </button>
+                </div>
+            
+            </div>
+            <div class="row row-cols-auto">
+                <div class="col">
+                    <button type="button" class="mt-2 btn btn-info position relative" data-bs-toggle="modal" data-bs-target="#createSessionModal">
+                        Create Session
+                    </button>
+                </div>
+                <div class="col">
+                    <form action="/dashboard" class="mt-2 position relative" method="post" enctype="application/x-www-form-urlencoded">
+                    <input type="hidden" name="username" value="{{ .User.Username }}">
+                    {{ if .ByDate }}
+                    <select name="orderBy" class="form-select" aria-label="Order Sessions" onchange="this.form.submit();" onfocus="this.selectedIndex = -1;">
+                        <option disabled>Order Sessions</option>
+                        <option selected disabled value="byDate">Order By Date</option>
+                        <option value="byLocation">Order By Location</option>
+                    </select>
+                    {{ else if .ByLocation }}
+                    <select name="orderBy" class="form-select" aria-label="Order Sessions" onchange="this.form.submit();" onfocus="this.selectedIndex = -1;">
+                        <option disabled>Order Sessions</option>
+                        <option value="byDate">Order By Date</option>
+                        <option selected disabled value="byLocation">Order By Location</option>
+                    </select>
+                    {{ else }}
+                    <select name="orderBy" class="form-select" aria-label="Order Sessions" onchange="this.form.submit();" onfocus="this.selectedIndex = -1;">
+                        <option selected disabled>Order Sessions</option>
+                        <option value="byDate">Order By Date</option>
+                        <option value="byLocation">Order By Location</option>
+                    </select>
+                    {{ end }}
+                    </form>
+                </div>
+            </div>
+            {{ template "session-content" .User }}
         </div>
-        {{ template "session-content" .User }}
     </div>
 </div>
+{{ if .User.SessionsUnmanaged }}
+{{ range .User.SessionsUnmanaged }}
+    <div class="modal" id="{{ .Information.Title | formatTitle }}edit">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+      
+            <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Edit Session Information</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+      
+            <!-- Modal body -->
+                <div class="modal-body">
+                    <form action="/updatesession" method="post" enctype="application/x-www-form-urlencoded">
+                        <input type="hidden" name="title" value="{{ .Information.Title }}">
+                        <input type="hidden" name="date" value="{{ .Information.Date }}">
+                        <input type="hidden" name="starttime" value="{{ .Information.StartTime }}">
+                        <input type="hidden" name="endtime" value="{{ .Information.EndTime }}">
+                        <input type="hidden" name="location" value="{{ .Information.Location }}">
+                        <input type="hidden" name="description" value="{{ .Information.Description }}">
+
+                    <div class="form-floating mb-2">
+                        <input type="text" name="newtitle" class="form-control" value="{{ .Information.Title }}">
+                        <label for="floatingInput">Title</label>
+                    </div>
+                    <div class="form-floating mb-2">
+                        <input type="text" name="newdate" class="form-control" value="{{ .Information.Date }}">
+                        <label for="floatingInput">Date</label>
+                    </div>
+                    <div class="form-floating mb-2">
+                        <input type="text" name="newstarttime" class="form-control" value="{{ .Information.StartTime }}">
+                        <label for="floatingInput">Start Time</label>
+                    </div>
+                    <div class="form-floating mb-2">
+                        <input type="text" name="newendtime" class="form-control" value="{{ .Information.EndTime }}">
+                        <label for="floatingInput">End Time</label>
+                    </div>
+                    <div class="form-floating mb-2">
+                        <input type="text" name="newlocation" class="form-control" value="{{ .Information.Location }}">
+                        <label for="floatingInput">Location</label>
+                    </div>
+                    <div class="form-floating mb-2">
+                        <input type="text" name="newpatientsneeded" class="form-control" value="{{ .PatientsNeeded }}">
+                        <label for="floatingInput">SPs Needed : {{ .PatientsNeeded }}</label>
+                    </div>
+                    <div class="form-floating mb-2">
+                        <textarea name="newdescription" style="height: 12rem;" class="form-control">{{ .Information.Description }}</textarea>
+                        <label for="floatingInput">Description</label>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-outline-success" data-bs-dismiss="modal">Update</button>
+                    </div>
+                </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal" id="{{ .Information.Title | formatTitle }}info">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+        
+              <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Session Information</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+        
+              <!-- Modal body -->
+                <div class="modal-body">
+                    <h5>Date : {{ .Information.Date }}</h5>
+                    <h5>Title : {{ .Information.Title }}</h5>
+                    <h5>Start Time : {{ .Information.StartTime }}</h5>
+                    <h5>End Time : {{ .Information.EndTime }}</h5>
+                    <h5>Location : {{ .Information.Location }}</h5>
+                    <h5>Description : </h5>
+                    <p>&emsp;{{ .Information.Description }}</p>
+                    <h5>SPs Needed : {{ .PatientsNeeded }}</h5>
+                    <h5>SPs Available : </h5>
+                    {{ if .PatientsAvailable }}
+                    {{ range .PatientsAvailable }}
+                        <p>&emsp;{{ .Name.First }} {{ .Name.Last }}</p>
+                    {{ end }}
+                    {{ else }}
+                        <p>&emsp;None</p>
+                    {{ end }}
+                    <h5>SPs Selected : </h5>
+                    {{ if .PatientsSelected }}
+                    {{ range .PatientsSelected }}
+                        <p>&emsp;{{ .Name.First }} {{ .Name.Last }}</p>
+                    {{ end }}
+                    {{ else }}
+                        <p>&emsp;None</p>
+                    {{ end }}
+                    <h5>SPs Assigned : </h5>
+                    {{ if .PatientsAssigned }}
+                    {{ range .PatientsAssigned }}
+                        <p>&emsp;{{ .Name.First }} {{ .Name.Last }}</p>
+                    {{ end }}
+                    {{ else }}
+                        <p>&emsp;None</p>
+                    {{ end }}
+                    
+                </div>
+  
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal" id="{{ .Information.Title | formatTitle }}delete">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+        
+              <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Confirm Deletion of Session</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+        
+              <!-- Modal body -->
+                <div class="modal-body">
+                    <form action="/deletesession" method="post" enctype="application/x-www-form-urlencoded">
+                        <input type="hidden" name="title" value="{{ .Information.Title }}">
+                        <input type="hidden" name="date" value="{{ .Information.Date }}">
+                        <input type="hidden" name="starttime" value="{{ .Information.StartTime }}">
+                        <input type="hidden" name="endtime" value="{{ .Information.EndTime }}">
+                        <input type="hidden" name="location" value="{{ .Information.Location }}">
+                        <input type="hidden" name="description" value="{{ .Information.Description }}">
+                        <button type="submit" class="btn btn-outline-danger" data-bs-dismiss="modal">Yes</button>
+                        <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">No</button>
+                    </form>
+                </div>
+              
+            </div>
+        </div>
+    </div>
+    <div class="modal" id="{{ .Information.Title | formatTitle }}assignsp">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+        
+              <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Assign SPs to {{ .Information.Title }}</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+        
+              <!-- Modal body -->
+                <div class="modal-body">
+                    <form action="/assignsp" method="post" enctype="application/x-www-form-urlencoded">
+                        <input type="hidden" name="title" value="{{ .Information.Title }}">
+                        <input type="hidden" name="date" value="{{ .Information.Date }}">
+                        <input type="hidden" name="starttime" value="{{ .Information.StartTime }}">
+                        <input type="hidden" name="endtime" value="{{ .Information.EndTime }}">
+                        <input type="hidden" name="location" value="{{ .Information.Location }}">
+                        <input type="hidden" name="description" value="{{ .Information.Description }}">
+                        <h6>Available SPs:</h6>
+                        {{ if .PatientsAvailable }}
+                        <span class="badge bg-primary" style="font-size: 0.7rem">add to selected</span>
+                        {{ range .PatientsAvailable }}
+                        <div class="form-check">
+                            <label class="mt-1">
+                                <input type="checkbox" name="{{ .Username }}" value="savedselected" class="form-check-input mt-1" autocomplete="off">
+                                {{ .Name.First }} {{ .Name.Last }}
+                            </label>
+                        </div> 
+                        {{ end }}
+                        {{ else }}
+                            <h6>None</h6>
+                        {{ end }}
+                        <br>
+                        <h6>Selected SPs:</h6>
+                        {{ if .PatientsSelected }}
+                        <span class="badge bg-success" style="font-size: 0.7rem">add to assigned</span>
+                        {{ range .PatientsSelected }}
+                        <div class="form-check">
+                            <label>
+                                <input type="checkbox" name="{{ .Username }}" value="savedassigned" class="form-check-input" autocomplete="off">
+                                {{ .Name.First }} {{ .Name.Last }}
+                            </label>
+                        </div> 
+                        {{ end }}
+                        <span class="badge bg-danger" style="font-size: 0.7rem">remove to available</span>
+                        {{ range .PatientsSelected }}
+                        <div class="form-check">
+                            <label>
+                                <input type="checkbox" name="{{ .Username }}" value="removeselected" class="form-check-input" autocomplete="off">
+                                {{ .Name.First }} {{ .Name.Last }}
+                            </label>
+                        </div> 
+                        {{ end }}
+                        {{ else }}
+                            <h6>None</h6>
+                        {{ end }}
+                        <br>
+                        <h6>Assigned SPs:</h6>
+                        {{ if .PatientsAssigned }}
+                        <span class="badge bg-danger" style="font-size: 0.7rem">remove to available</span>
+                        {{ range .PatientsAssigned }}
+                        <div class="form-check">
+                            <label>
+                                <input type="checkbox" name="{{ .Username }}" value="removeassigned" class="form-check-input" autocomplete="off">
+                                {{ .Name.First }} {{ .Name.Last }}
+                            </label>
+                        </div> 
+                        {{ end }}
+                        {{ else }}
+                            <h6>None</h6>
+                        {{ end }}
+                        <div class="modal-footer">
+                            <button type="submit" formaction="/assignsp" class="btn btn-outline-success" data-bs-dismiss="modal">Submit</button>
+                        </div>
+                    </form>
+                </div>
+              
+            </div>
+        </div>
+    </div>
+{{ end }}
+{{ end }}
 
 <div class="modal" id="UserSettings">
     <div class="modal-dialog modal-dialog-centered">
@@ -193,7 +452,7 @@
     </div>
   </div>
 
-<div class="modal" id="ManageSPs">
+<div class="modal fade" id="ManageSPs">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
     
@@ -257,6 +516,10 @@
                     </div>
                 </form>
             </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-primary" data-bs-target="#ManageSPs" data-bs-toggle="modal" data-bs-dismiss="modal">Back</button>
+            </div>
         </div>
     </div>
 </div>
@@ -282,6 +545,9 @@
                         {{ end }}
                     </div>
                     {{ end }}
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" data-bs-target="#ManageSPs" data-bs-toggle="modal" data-bs-dismiss="modal">Back</button>
             </div>
         </div>
     </div>
@@ -366,6 +632,10 @@
                 </div>
                 {{ end }}
             </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-primary" data-bs-target="#ManageSPs" data-bs-toggle="modal" data-bs-dismiss="modal">Back</button>
+            </div>
         </div>
     </div>
 </div>
@@ -398,3 +668,4 @@
 {{ end }}
 
 {{ end }}
+
