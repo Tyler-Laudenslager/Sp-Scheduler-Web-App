@@ -1,6 +1,7 @@
 {{ define "session-content" }}
     {{ if .User.SessionsSorted }}
     {{ range .User.SessionsSorted }}
+    {{ if .Date | notPastSession }}
     {{ if .Status | StatusAssigned }}
     {{ if .ShowSession }}
     <div class="card border-success" style="width: 40rem; background-color: #f7f8f7;">
@@ -155,7 +156,7 @@
     </div>
     {{ end }}
     {{ end }}
-    
+    {{ end }}
     {{ end }}
     {{ end }}
 </div>

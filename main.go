@@ -30,7 +30,7 @@ func init() {
 		fmt.Println("Error Hashing Password")
 		return
 	}
-	session := Session{}.Create("Sacred Heart Check-UP", "11/25/2022", "11:00AM", "12:00PM", "SacredHeart", "Check-Up")
+	session := Session{}.Create("Sacred Heart Check-UP", "11/25/2022", "11:00AM", "12:00PM", "Sacred Heart", "Check-Up")
 	session.PatientsNeeded = 6
 	session.Instructors = append(session.Instructors, Instructor{}.Create("Joe Thompson", "Director"))
 	err = session.MakeRecord(db)

@@ -25,6 +25,24 @@ func formatDate(date string) string {
 
 }
 
+func pastSession(date string) bool {
+	sessionDate := date
+	currentDate := time.Now()
+
+	sessionDateParsed, _ := time.Parse("01/02/2006", sessionDate)
+
+	return sessionDateParsed.Before(currentDate)
+}
+
+func notPastSession(date string) bool {
+	sessionDate := date
+	currentDate := time.Now()
+
+	sessionDateParsed, _ := time.Parse("01/02/2006", sessionDate)
+
+	return sessionDateParsed.After(currentDate)
+}
+
 func StatusAssigned(status string) bool {
 	return status == "assigned"
 }
@@ -244,7 +262,7 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 		dashboard_content.Role = "Standardized Patient"
 		dashboard_content.User = spuser
 	}
-	funcMap := template.FuncMap{"formatTitle": formatTitle, "formatDate": formatDate, "sortSessionInfoByDate": sortSessionInfoByDate, "sortSessionByDate": sortSessionByDate, "StatusAssigned": StatusAssigned, "StatusNoResponse": StatusNoResponse, "StatusAvailable": StatusAvailable, "StatusUnavailable": StatusUnavailable}
+	funcMap := template.FuncMap{"formatTitle": formatTitle, "formatDate": formatDate, "sortSessionInfoByDate": sortSessionInfoByDate, "sortSessionByDate": sortSessionByDate, "StatusAssigned": StatusAssigned, "StatusNoResponse": StatusNoResponse, "StatusAvailable": StatusAvailable, "StatusUnavailable": StatusUnavailable, "pastSession": pastSession, "notPastSession": notPastSession}
 	t = template.New("templates/html-boilerplate.html").Funcs(funcMap)
 	if !isSpManager {
 		t, _ = t.ParseFiles("templates/html-boilerplate.html", "templates/dashboard-content.html", "templates/session-content-available.html", "templates/user-settings.html")
