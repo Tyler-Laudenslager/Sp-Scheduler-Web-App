@@ -4,6 +4,7 @@
     {{ if .Date | notPastSession }}
     {{ if .Status | StatusAssigned }}
     {{ if .ShowSession }}
+    <div class="col">
     <div class="card border-success" style="width: 40rem; background-color: #f7f8f7;">
         <div class="card-body">
             <div class="vstack me-2 gap-2 d-flex align-items-center position-absolute top-50 end-0 translate-middle-y">
@@ -22,10 +23,12 @@
             <h5 class="card-text">Description: {{ .Description }}</h5>
         </div>
     </div>
+    </div>
     {{ end }}
     {{ end }}
     {{ if .Status | StatusNoResponse }}
     {{ if .ShowSession }}
+    <div class="col">
     <div class="card" style="width: 40rem; background-color: #f7f8f7;">
         <div class="card-body">
             <div class="vstack me-2 gap-2 d-flex align-items-center position-absolute top-50 end-0 translate-middle-y">
@@ -66,10 +69,12 @@
             <h5 class="card-text">Description: {{ .Description }}</h5>
         </div>
     </div>
+    </div>
     {{ end }}
     {{ end }}
     {{ if .Status | StatusAvailable }}
     {{ if .ShowSession }}
+    <div class="col">
     <div class="card" style="width: 40rem; background-color: #f7f8f7;">
         <div class="card-body">
             <div class="vstack me-2 gap-2 d-flex align-items-center position-absolute top-50 end-0 translate-middle-y">
@@ -110,10 +115,12 @@
             <h5 class="card-text">Description: {{ .Description }}</h5>
         </div>
     </div>
+    </div>
     {{ end }}
     {{ end }}
     {{ if .Status | StatusUnavailable }}
     {{ if .ShowSession }}
+    <div class="col">
     <div class="card" style="width: 40rem; background-color: #f7f8f7;">
         <div class="card-body">
             <div class="vstack me-2 gap-2 d-flex align-items-center position-absolute top-50 end-0 translate-middle-y">
@@ -153,6 +160,7 @@
             <h5 class="card-text">Location: {{ .Location }}</h5>
             <h5 class="card-text">Description: {{ .Description }}</h5>
         </div>
+    </div>
     </div>
     {{ end }}
     {{ end }}
