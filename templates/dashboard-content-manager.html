@@ -74,7 +74,7 @@
                     </form>
                 </div>
             </div>
-            <ul class="listgroup mb-4">
+            <ul class="listgroup mb-4 mt-2">
             {{ template "session-content" .User }}
             </ul>
         </div>
@@ -128,7 +128,7 @@
         <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
-            <form action="/updatesession/" method="post" enctype="application/x-www-form-urlencoded">
+            <form action="/updatesession" method="post" enctype="application/x-www-form-urlencoded">
                 <input type="hidden" name="title" value="{{ .Information.Title }}">
                 <input type="hidden" name="date" value="{{ .Information.Date }}">
                 <input type="hidden" name="starttime" value="{{ .Information.StartTime }}">
@@ -165,76 +165,22 @@
                 <label for="floatingInput">Description</label>
             </div>
             <button type="submit" class="btn btn-outline-success" data-bs-dismiss="modal">Update</button>
-            
+            </form>
         </div>
     </div>
-    <!-- <div class="modal" id="{{ .Information.Title | formatTitle }}edit">
-        <div class="modal-dialog me-4 position-absolute top-50 end-0 translate-middle-y">
-            <div class="modal-content">
-      
-                <div class="modal-header">
-                    <h4 class="modal-title">Edit Session Information</h4>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-      
-                <div class="modal-body">
-                    <form action="/updatesession/" method="post" enctype="application/x-www-form-urlencoded">
-                        <input type="hidden" name="title" value="{{ .Information.Title }}">
-                        <input type="hidden" name="date" value="{{ .Information.Date }}">
-                        <input type="hidden" name="starttime" value="{{ .Information.StartTime }}">
-                        <input type="hidden" name="endtime" value="{{ .Information.EndTime }}">
-                        <input type="hidden" name="location" value="{{ .Information.Location }}">
-                        <input type="hidden" name="description" value="{{ .Information.Description }}">
-
-                    <div class="form-floating mb-2">
-                        <input type="text" name="newtitle" class="form-control" value="{{ .Information.Title }}">
-                        <label for="floatingInput">Title</label>
-                    </div>
-                    <div class="form-floating mb-2">
-                        <input type="text" name="newdate" class="form-control" value="{{ .Information.Date }}">
-                        <label for="floatingInput">Date</label>
-                    </div>
-                    <div class="form-floating mb-2">
-                        <input type="text" name="newstarttime" class="form-control" value="{{ .Information.StartTime }}">
-                        <label for="floatingInput">Start Time</label>
-                    </div>
-                    <div class="form-floating mb-2">
-                        <input type="text" name="newendtime" class="form-control" value="{{ .Information.EndTime }}">
-                        <label for="floatingInput">End Time</label>
-                    </div>
-                    <div class="form-floating mb-2">
-                        <input type="text" name="newlocation" class="form-control" value="{{ .Information.Location }}">
-                        <label for="floatingInput">Location</label>
-                    </div>
-                    <div class="form-floating mb-2">
-                        <input type="text" name="newpatientsneeded" class="form-control" value="{{ .PatientsNeeded }}">
-                        <label for="floatingInput">SPs Needed : {{ .PatientsNeeded }}</label>
-                    </div>
-                    <div class="form-floating mb-2">
-                        <textarea name="newdescription" style="height: 12rem;" class="form-control">{{ .Information.Description }}</textarea>
-                        <label for="floatingInput">Description</label>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-outline-success" data-bs-dismiss="modal">Update</button>
-                    </div>
-                </form>
-                </div>
-            </div>
-        </div>
-    </div> -->
     <div class="modal" id="{{ .Information.Title | formatTitle }}delete">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
         
               <!-- Modal Header -->
                 <div class="modal-header">
-                    <h4 class="modal-title">Confirm Deletion of Session<br/>{{ .Information.Title }}</h4>
+                    <h4 class="modal-title">Confirm Deletion of Session</h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
         
               <!-- Modal body -->
                 <div class="modal-body">
-                    <form action="/deletesession/" method="post" enctype="application/x-www-form-urlencoded">
+                    <form action="/deletesession" method="post" enctype="application/x-www-form-urlencoded">
                         <input type="hidden" name="title" value="{{ .Information.Title }}">
                         <input type="hidden" name="date" value="{{ .Information.Date }}">
                         <input type="hidden" name="starttime" value="{{ .Information.StartTime }}">
@@ -255,7 +201,7 @@
         <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
-            <form action="/assignsp/" method="post" enctype="application/x-www-form-urlencoded">
+            <form action="/assignsp" method="post" enctype="application/x-www-form-urlencoded">
                 <input type="hidden" name="title" value="{{ .Information.Title }}">
                 <input type="hidden" name="date" value="{{ .Information.Date }}">
                 <input type="hidden" name="starttime" value="{{ .Information.StartTime }}">
@@ -366,7 +312,7 @@
     
           <!-- Modal body -->
             <div class="modal-body">
-                <form action="/changepassword/" method="post" enctype="application/x-www-form-urlencoded">
+                <form action="/changepassword" method="post" enctype="application/x-www-form-urlencoded">
                     <div class="form-floating mb-2">
                         <input type="password" name="newpassword" class="form-control" value="">
                         <label for="floatingInput">New Password</label>
@@ -401,7 +347,7 @@
           <!-- Modal body -->
             <div class="modal-body">
                 <h6>Current Email Address:&emsp;{{ .User.Email }}</h6>
-                <form action="/changeemail/" method="post" enctype="application/x-www-form-urlencoded">
+                <form action="/changeemail" method="post" enctype="application/x-www-form-urlencoded">
                 <div class="form-floating mb-2">
                     <input type="text" name="newpassword" class="form-control" value="">
                     <label for="floatingInput">New Email</label>
@@ -435,7 +381,7 @@
   
         <!-- Modal body -->
         <div class="modal-body">
-            <form action="/createsession/" method="post" enctype="application/x-www-form-urlencoded">
+            <form action="/createsession" method="post" enctype="application/x-www-form-urlencoded">
                 <div class="form-floating mb-2">
                     <input type="text" name="title" class="form-control" value="Nurse Practice Session">
                     <label for="floatingInput">Title</label>
@@ -520,7 +466,7 @@
     
           <!-- Modal body -->
             <div class="modal-body">
-                <form action="/createSPRecord/" method="post" enctype="application/x-www-form-urlencoded">
+                <form action="/createSPRecord" method="post" enctype="application/x-www-form-urlencoded">
                     <div class="form-floating mb-2">
                         <input type="text" name="name" class="form-control" value="Lizzy Thompson">
                         <label for="floatingInput">Name</label>
@@ -676,7 +622,7 @@
     
           <!-- Modal body -->
             <div class="modal-body">
-                <form action="/deleteSPRecord/" method="post" enctype="application/x-www-form-urlencoded">
+                <form action="/deleteSPRecord" method="post" enctype="application/x-www-form-urlencoded">
                     <input type="hidden" name="username" value="{{ .Username }}">
                     <button type="submit" class="btn btn-outline-danger" data-bs-dismiss="modal">Yes</button>
                     <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">No</button>

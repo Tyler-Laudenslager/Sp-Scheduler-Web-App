@@ -503,6 +503,9 @@ func (s *Session) UpdateRecord(db *sql.DB) (err error) {
 }
 func (s *Session) DeleteRecord(db *sql.DB) (err error) {
 	_, err = db.Exec("delete from sessions where id = $1", s.Id)
+	if err != nil {
+		fmt.Println("Error Deleting Record: ", err)
+	}
 	return
 }
 

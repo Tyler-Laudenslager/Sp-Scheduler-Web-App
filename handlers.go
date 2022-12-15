@@ -688,7 +688,12 @@ func signupavailable(w http.ResponseWriter, r *http.Request) {
 	duplicate = false
 	if spuser.SessionsAvailable != nil {
 		for i := 0; i < len(spuser.SessionsAvailable); i++ {
-			if *availableSessionRecord.Information == *spuser.SessionsAvailable[i] {
+			if availableSessionRecord.Information.Title == spuser.SessionsAvailable[i].Title &&
+				availableSessionRecord.Information.Date == spuser.SessionsAvailable[i].Date &&
+				availableSessionRecord.Information.Location == spuser.SessionsAvailable[i].Location &&
+				availableSessionRecord.Information.StartTime == spuser.SessionsAvailable[i].StartTime &&
+				availableSessionRecord.Information.EndTime == spuser.SessionsAvailable[i].EndTime &&
+				availableSessionRecord.Information.Description == spuser.SessionsAvailable[i].Description {
 				duplicate = true
 			}
 		}
@@ -715,7 +720,9 @@ func signupavailable(w http.ResponseWriter, r *http.Request) {
 		}
 
 	}
-	http.Redirect(w, r, "/dashboard", httpRedirectResponse)
+	title := formatTitle(availableSessionRecord.Information.Title)
+
+	http.Redirect(w, r, "/dashboard#"+title, httpRedirectResponse)
 }
 
 func signupnotavailable(w http.ResponseWriter, r *http.Request) {
@@ -744,7 +751,12 @@ func signupnotavailable(w http.ResponseWriter, r *http.Request) {
 	}
 	if spuser.SessionsUnavailable != nil {
 		for i := 0; i < len(spuser.SessionsUnavailable); i++ {
-			if *notAvailableSessionRecord.Information == *spuser.SessionsUnavailable[i] {
+			if notAvailableSessionRecord.Information.Title == spuser.SessionsUnavailable[i].Title &&
+				notAvailableSessionRecord.Information.Date == spuser.SessionsUnavailable[i].Date &&
+				notAvailableSessionRecord.Information.Location == spuser.SessionsUnavailable[i].Location &&
+				notAvailableSessionRecord.Information.StartTime == spuser.SessionsUnavailable[i].StartTime &&
+				notAvailableSessionRecord.Information.EndTime == spuser.SessionsUnavailable[i].EndTime &&
+				notAvailableSessionRecord.Information.Description == spuser.SessionsUnavailable[i].Description {
 				duplicate = true
 			}
 		}
@@ -770,7 +782,8 @@ func signupnotavailable(w http.ResponseWriter, r *http.Request) {
 			fmt.Println("Error: GetSpUserRecord in signupavailable", err)
 		}
 	}
-	http.Redirect(w, r, "/dashboard", httpRedirectResponse)
+	title := formatTitle(notAvailableSessionRecord.Information.Title)
+	http.Redirect(w, r, "/dashboard#"+title, httpRedirectResponse)
 }
 
 func changeemail(w http.ResponseWriter, r *http.Request) {
