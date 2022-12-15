@@ -1,7 +1,7 @@
 {{ define "content" }}
 <section>
     <div class="container-fluid">
-        <div class="vstack gap-2 align-items-center position relative mb-4">
+        <div id="header" class="vstack gap-2 align-items-center position relative">
             <div class="card mt-4 position: relative">
                 <div class="card-body">
                 <h2 class="card-title">Session Scheduler</h2>
@@ -74,14 +74,16 @@
                     </form>
                 </div>
             </div>
+            <div class="vstack gap-2 align-items-center position relative mb-4">
             {{ template "session-content" .User }}
+            </div>
         </div>
     </div>
 </div>
 {{ if .User.SessionsUnmanaged }}
 {{ range .User.SessionsUnmanaged }}
     <div class="modal" id="{{ .Information.Title | formatTitle }}edit">
-        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-dialog me-4 position-absolute top-50 end-0 translate-middle-y">
             <div class="modal-content">
       
             <!-- Modal Header -->
@@ -136,8 +138,8 @@
             </div>
         </div>
     </div>
-    <div class="modal" id="{{ .Information.Title | formatTitle }}info">
-        <div class="modal-dialog modal-dialog-centered">
+    <div class="modal modal-lg" id="{{ .Information.Title | formatTitle }}info">
+        <div class="modal-dialog me-4 position-absolute top-50 end-0 translate-middle-y">
             <div class="modal-content">
         
               <!-- Modal Header -->
@@ -217,7 +219,7 @@
         </div>
     </div>
     <div class="modal" id="{{ .Information.Title | formatTitle }}assignsp">
-        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-dialog me-4 position-absolute top-50 end-0 translate-middle-y">
             <div class="modal-content">
         
               <!-- Modal Header -->
