@@ -583,8 +583,8 @@ func assignsp(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Error updating record in assign sp", err)
 		return
 	}
-
-	http.Redirect(w, r, "/dashboard", httpRedirectResponse)
+	title = formatTitle(title)
+	http.Redirect(w, r, "/dashboard#"+title, httpRedirectResponse)
 }
 
 func deletesession(w http.ResponseWriter, r *http.Request) {

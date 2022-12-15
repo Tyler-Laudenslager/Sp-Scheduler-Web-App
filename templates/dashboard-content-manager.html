@@ -74,27 +74,111 @@
                     </form>
                 </div>
             </div>
-            <div class="vstack gap-2 align-items-center position relative mb-4">
+            <ul class="listgroup mb-4">
             {{ template "session-content" .User }}
-            </div>
+            </ul>
         </div>
     </div>
 </div>
 {{ if .User.SessionsUnmanaged }}
 {{ range .User.SessionsUnmanaged }}
-    <div class="modal" id="{{ .Information.Title | formatTitle }}edit">
+    <div class="offcanvas offcanvas-end" id="{{ .Information.Title | formatTitle }}info" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" aria-labelledby="{{ .Information.Title | formatTitle }}info">
+        <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasScrollingLabel">Session Information</h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <h5>Date : {{ .Information.Date }}</h5>
+            <h5>Title : {{ .Information.Title }}</h5>
+            <h5>Start Time : {{ .Information.StartTime }}</h5>
+            <h5>End Time : {{ .Information.EndTime }}</h5>
+            <h5>Location : {{ .Information.Location }}</h5>
+            <h5>Description : </h5>
+            <p>&emsp;{{ .Information.Description }}</p>
+            <h5>SPs Needed : {{ .PatientsNeeded }}</h5>
+            <h5>SPs Available : </h5>
+            {{ if .PatientsAvailable }}
+            {{ range .PatientsAvailable }}
+                <p>&emsp;{{ .Name.First }} {{ .Name.Last }}</p>
+            {{ end }}
+            {{ else }}
+                <p>&emsp;None</p>
+            {{ end }}
+            <h5>SPs Selected : </h5>
+            {{ if .PatientsSelected }}
+            {{ range .PatientsSelected }}
+                <p>&emsp;{{ .Name.First }} {{ .Name.Last }}</p>
+            {{ end }}
+            {{ else }}
+                <p>&emsp;None</p>
+            {{ end }}
+            <h5>SPs Assigned : </h5>
+            {{ if .PatientsAssigned }}
+            {{ range .PatientsAssigned }}
+                <p>&emsp;{{ .Name.First }} {{ .Name.Last }}</p>
+            {{ end }}
+            {{ else }}
+                <p>&emsp;None</p>
+            {{ end }}
+        </div>
+    </div>
+    <div class="offcanvas offcanvas-end" id="{{ .Information.Title | formatTitle }}edit" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" aria-labelledby="{{ .Information.Title | formatTitle }}edit">
+        <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasScrollingLabel">Edit Information for<br/>{{ .Information.Title }}</h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <form action="/updatesession/" method="post" enctype="application/x-www-form-urlencoded">
+                <input type="hidden" name="title" value="{{ .Information.Title }}">
+                <input type="hidden" name="date" value="{{ .Information.Date }}">
+                <input type="hidden" name="starttime" value="{{ .Information.StartTime }}">
+                <input type="hidden" name="endtime" value="{{ .Information.EndTime }}">
+                <input type="hidden" name="location" value="{{ .Information.Location }}">
+                <input type="hidden" name="description" value="{{ .Information.Description }}">
+
+            <div class="form-floating mb-2">
+                <input type="text" name="newtitle" class="form-control" value="{{ .Information.Title }}">
+                <label for="floatingInput">Title</label>
+            </div>
+            <div class="form-floating mb-2">
+                <input type="text" name="newdate" class="form-control" value="{{ .Information.Date }}">
+                <label for="floatingInput">Date</label>
+            </div>
+            <div class="form-floating mb-2">
+                <input type="text" name="newstarttime" class="form-control" value="{{ .Information.StartTime }}">
+                <label for="floatingInput">Start Time</label>
+            </div>
+            <div class="form-floating mb-2">
+                <input type="text" name="newendtime" class="form-control" value="{{ .Information.EndTime }}">
+                <label for="floatingInput">End Time</label>
+            </div>
+            <div class="form-floating mb-2">
+                <input type="text" name="newlocation" class="form-control" value="{{ .Information.Location }}">
+                <label for="floatingInput">Location</label>
+            </div>
+            <div class="form-floating mb-2">
+                <input type="text" name="newpatientsneeded" class="form-control" value="{{ .PatientsNeeded }}">
+                <label for="floatingInput">SPs Needed : {{ .PatientsNeeded }}</label>
+            </div>
+            <div class="form-floating mb-2">
+                <textarea name="newdescription" style="height: 12rem;" class="form-control">{{ .Information.Description }}</textarea>
+                <label for="floatingInput">Description</label>
+            </div>
+            <button type="submit" class="btn btn-outline-success" data-bs-dismiss="modal">Update</button>
+            
+        </div>
+    </div>
+    <!-- <div class="modal" id="{{ .Information.Title | formatTitle }}edit">
         <div class="modal-dialog me-4 position-absolute top-50 end-0 translate-middle-y">
             <div class="modal-content">
       
-            <!-- Modal Header -->
                 <div class="modal-header">
                     <h4 class="modal-title">Edit Session Information</h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
       
-            <!-- Modal body -->
                 <div class="modal-body">
-                    <form action="/updatesession" method="post" enctype="application/x-www-form-urlencoded">
+                    <form action="/updatesession/" method="post" enctype="application/x-www-form-urlencoded">
                         <input type="hidden" name="title" value="{{ .Information.Title }}">
                         <input type="hidden" name="date" value="{{ .Information.Date }}">
                         <input type="hidden" name="starttime" value="{{ .Information.StartTime }}">
@@ -137,74 +221,20 @@
                 </div>
             </div>
         </div>
-    </div>
-    <div class="modal" id="{{ .Information.Title | formatTitle }}info">
-        <div class="modal-dialog me-4 position-absolute top-50 end-0 translate-middle-y">
-            <div class="modal-content">
-        
-              <!-- Modal Header -->
-                <div class="modal-header">
-                    <h4 class="modal-title">{{ .Information.Title }}</h4>
-                    <h4 class="modal-subtitle">Session Information</h4>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-        
-              <!-- Modal body -->
-                <div class="modal-body">
-                    <h5>Date : {{ .Information.Date }}</h5>
-                    <h5>Title : {{ .Information.Title }}</h5>
-                    <h5>Start Time : {{ .Information.StartTime }}</h5>
-                    <h5>End Time : {{ .Information.EndTime }}</h5>
-                    <h5>Location : {{ .Information.Location }}</h5>
-                    <h5>Description : </h5>
-                    <p>&emsp;{{ .Information.Description }}</p>
-                    <h5>SPs Needed : {{ .PatientsNeeded }}</h5>
-                    <h5>SPs Available : </h5>
-                    {{ if .PatientsAvailable }}
-                    {{ range .PatientsAvailable }}
-                        <p>&emsp;{{ .Name.First }} {{ .Name.Last }}</p>
-                    {{ end }}
-                    {{ else }}
-                        <p>&emsp;None</p>
-                    {{ end }}
-                    <h5>SPs Selected : </h5>
-                    {{ if .PatientsSelected }}
-                    {{ range .PatientsSelected }}
-                        <p>&emsp;{{ .Name.First }} {{ .Name.Last }}</p>
-                    {{ end }}
-                    {{ else }}
-                        <p>&emsp;None</p>
-                    {{ end }}
-                    <h5>SPs Assigned : </h5>
-                    {{ if .PatientsAssigned }}
-                    {{ range .PatientsAssigned }}
-                        <p>&emsp;{{ .Name.First }} {{ .Name.Last }}</p>
-                    {{ end }}
-                    {{ else }}
-                        <p>&emsp;None</p>
-                    {{ end }}
-                    
-                </div>
-  
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    </div> -->
     <div class="modal" id="{{ .Information.Title | formatTitle }}delete">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
         
               <!-- Modal Header -->
                 <div class="modal-header">
-                    <h4 class="modal-title">Confirm Deletion of Session</h4>
+                    <h4 class="modal-title">Confirm Deletion of Session<br/>{{ .Information.Title }}</h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
         
               <!-- Modal body -->
                 <div class="modal-body">
-                    <form action="/deletesession" method="post" enctype="application/x-www-form-urlencoded">
+                    <form action="/deletesession/" method="post" enctype="application/x-www-form-urlencoded">
                         <input type="hidden" name="title" value="{{ .Information.Title }}">
                         <input type="hidden" name="date" value="{{ .Information.Date }}">
                         <input type="hidden" name="starttime" value="{{ .Information.StartTime }}">
@@ -219,85 +249,74 @@
             </div>
         </div>
     </div>
-    <div class="modal" id="{{ .Information.Title | formatTitle }}assignsp">
-        <div class="modal-dialog me-4 position-absolute top-50 end-0 translate-middle-y">
-            <div class="modal-content">
-        
-              <!-- Modal Header -->
-                <div class="modal-header">
-                    <h4 class="modal-title">Assign SPs to {{ .Information.Title }}</h4>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-        
-              <!-- Modal body -->
-                <div class="modal-body">
-                    <form action="/assignsp" method="post" enctype="application/x-www-form-urlencoded">
-                        <input type="hidden" name="title" value="{{ .Information.Title }}">
-                        <input type="hidden" name="date" value="{{ .Information.Date }}">
-                        <input type="hidden" name="starttime" value="{{ .Information.StartTime }}">
-                        <input type="hidden" name="endtime" value="{{ .Information.EndTime }}">
-                        <input type="hidden" name="location" value="{{ .Information.Location }}">
-                        <input type="hidden" name="description" value="{{ .Information.Description }}">
-                        <h6>Available SPs:</h6>
-                        {{ if .PatientsAvailable }}
-                        <span class="badge bg-primary" style="font-size: 0.7rem">add to selected</span>
-                        {{ range .PatientsAvailable }}
-                        <div class="form-check">
-                            <label class="mt-1">
-                                <input type="checkbox" name="{{ .Username }}" value="savedselected" class="form-check-input mt-1" autocomplete="off">
-                                {{ .Name.First }} {{ .Name.Last }}
-                            </label>
-                        </div> 
-                        {{ end }}
-                        {{ else }}
-                            <h6>None</h6>
-                        {{ end }}
-                        <br>
-                        <h6>Selected SPs:</h6>
-                        {{ if .PatientsSelected }}
-                        <span class="badge bg-success" style="font-size: 0.7rem">add to assigned</span>
-                        {{ range .PatientsSelected }}
-                        <div class="form-check">
-                            <label>
-                                <input type="checkbox" name="{{ .Username }}" value="savedassigned" class="form-check-input" autocomplete="off">
-                                {{ .Name.First }} {{ .Name.Last }}
-                            </label>
-                        </div> 
-                        {{ end }}
-                        <span class="badge bg-danger" style="font-size: 0.7rem">remove to available</span>
-                        {{ range .PatientsSelected }}
-                        <div class="form-check">
-                            <label>
-                                <input type="checkbox" name="{{ .Username }}" value="removeselected" class="form-check-input" autocomplete="off">
-                                {{ .Name.First }} {{ .Name.Last }}
-                            </label>
-                        </div> 
-                        {{ end }}
-                        {{ else }}
-                            <h6>None</h6>
-                        {{ end }}
-                        <br>
-                        <h6>Assigned SPs:</h6>
-                        {{ if .PatientsAssigned }}
-                        <span class="badge bg-danger" style="font-size: 0.7rem">remove to available</span>
-                        {{ range .PatientsAssigned }}
-                        <div class="form-check">
-                            <label>
-                                <input type="checkbox" name="{{ .Username }}" value="removeassigned" class="form-check-input" autocomplete="off">
-                                {{ .Name.First }} {{ .Name.Last }}
-                            </label>
-                        </div> 
-                        {{ end }}
-                        {{ else }}
-                            <h6>None</h6>
-                        {{ end }}
-                        <div class="modal-footer">
-                            <button type="submit" formaction="/assignsp" class="btn btn-outline-success" data-bs-dismiss="modal">Submit</button>
-                        </div>
-                    </form>
-                </div>
-              
-            </div>
+    <div class="offcanvas offcanvas-end" id="{{ .Information.Title | formatTitle }}assignsp" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" aria-labelledby="{{ .Information.Title | formatTitle }}assignsp">
+        <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasScrollingLabel">Assign SPs to <br>{{ .Information.Title }}</h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <form action="/assignsp/" method="post" enctype="application/x-www-form-urlencoded">
+                <input type="hidden" name="title" value="{{ .Information.Title }}">
+                <input type="hidden" name="date" value="{{ .Information.Date }}">
+                <input type="hidden" name="starttime" value="{{ .Information.StartTime }}">
+                <input type="hidden" name="endtime" value="{{ .Information.EndTime }}">
+                <input type="hidden" name="location" value="{{ .Information.Location }}">
+                <input type="hidden" name="description" value="{{ .Information.Description }}">
+                <h6>Available SPs:</h6>
+                {{ if .PatientsAvailable }}
+                <span class="badge bg-primary" style="font-size: 0.7rem">add to selected</span>
+                {{ range .PatientsAvailable }}
+                <div class="form-check">
+                    <label class="mt-1">
+                        <input type="checkbox" name="{{ .Username }}" value="savedselected" class="form-check-input mt-1" autocomplete="off">
+                        {{ .Name.First }} {{ .Name.Last }}
+                    </label>
+                </div> 
+                {{ end }}
+                {{ else }}
+                    <h6>None</h6>
+                {{ end }}
+                <br>
+                <h6>Selected SPs:</h6>
+                {{ if .PatientsSelected }}
+                <span class="badge bg-success" style="font-size: 0.7rem">add to assigned</span>
+                {{ range .PatientsSelected }}
+                <div class="form-check">
+                    <label>
+                        <input type="checkbox" name="{{ .Username }}" value="savedassigned" class="form-check-input" autocomplete="off">
+                        {{ .Name.First }} {{ .Name.Last }}
+                    </label>
+                </div> 
+                {{ end }}
+                <span class="badge bg-danger" style="font-size: 0.7rem">remove to available</span>
+                {{ range .PatientsSelected }}
+                <div class="form-check">
+                    <label>
+                        <input type="checkbox" name="{{ .Username }}" value="removeselected" class="form-check-input" autocomplete="off">
+                        {{ .Name.First }} {{ .Name.Last }}
+                    </label>
+                </div> 
+                {{ end }}
+                {{ else }}
+                    <h6>None</h6>
+                {{ end }}
+                <br>
+                <h6>Assigned SPs:</h6>
+                {{ if .PatientsAssigned }}
+                <span class="badge bg-danger" style="font-size: 0.7rem">remove to available</span>
+                {{ range .PatientsAssigned }}
+                <div class="form-check">
+                    <label>
+                        <input type="checkbox" name="{{ .Username }}" value="removeassigned" class="form-check-input" autocomplete="off">
+                        {{ .Name.First }} {{ .Name.Last }}
+                    </label>
+                </div> 
+                {{ end }}
+                {{ else }}
+                    <h6>None</h6>
+                {{ end }}
+                <button type="submit" formaction="/assignsp" class="btn btn-outline-success" data-bs-dismiss="modal">Submit</button>
+            </form>
         </div>
     </div>
 {{ end }}
@@ -347,7 +366,7 @@
     
           <!-- Modal body -->
             <div class="modal-body">
-                <form action="/changepassword" method="post" enctype="application/x-www-form-urlencoded">
+                <form action="/changepassword/" method="post" enctype="application/x-www-form-urlencoded">
                     <div class="form-floating mb-2">
                         <input type="password" name="newpassword" class="form-control" value="">
                         <label for="floatingInput">New Password</label>
@@ -382,7 +401,7 @@
           <!-- Modal body -->
             <div class="modal-body">
                 <h6>Current Email Address:&emsp;{{ .User.Email }}</h6>
-                <form action="/changeemail" method="post" enctype="application/x-www-form-urlencoded">
+                <form action="/changeemail/" method="post" enctype="application/x-www-form-urlencoded">
                 <div class="form-floating mb-2">
                     <input type="text" name="newpassword" class="form-control" value="">
                     <label for="floatingInput">New Email</label>
@@ -416,7 +435,7 @@
   
         <!-- Modal body -->
         <div class="modal-body">
-            <form action="/createsession" method="post" enctype="application/x-www-form-urlencoded">
+            <form action="/createsession/" method="post" enctype="application/x-www-form-urlencoded">
                 <div class="form-floating mb-2">
                     <input type="text" name="title" class="form-control" value="Nurse Practice Session">
                     <label for="floatingInput">Title</label>
@@ -501,7 +520,7 @@
     
           <!-- Modal body -->
             <div class="modal-body">
-                <form action="/createSPRecord" method="post" enctype="application/x-www-form-urlencoded">
+                <form action="/createSPRecord/" method="post" enctype="application/x-www-form-urlencoded">
                     <div class="form-floating mb-2">
                         <input type="text" name="name" class="form-control" value="Lizzy Thompson">
                         <label for="floatingInput">Name</label>
@@ -657,7 +676,7 @@
     
           <!-- Modal body -->
             <div class="modal-body">
-                <form action="/deleteSPRecord" method="post" enctype="application/x-www-form-urlencoded">
+                <form action="/deleteSPRecord/" method="post" enctype="application/x-www-form-urlencoded">
                     <input type="hidden" name="username" value="{{ .Username }}">
                     <button type="submit" class="btn btn-outline-danger" data-bs-dismiss="modal">Yes</button>
                     <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">No</button>

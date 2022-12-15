@@ -1,10 +1,10 @@
 {{ define "session-content" }}
 {{ if .SessionsUnmanaged }}
 {{ range .SessionsUnmanaged }}
-    <div class="card" style="width: 40rem; background-color: #f7f8f7;">
+    <div id="{{ .Information.Title | formatTitle }}" class="card" style="width: 40rem; background-color: #f7f8f7;">
         <div class="card-body">
             <div class="vstack me-2 gap-1 d-flex align-items-center position-absolute top-50 end-0 translate-middle-y">
-                <button type="button" class="btn btn-outline-primary position: relative" data-bs-toggle="modal" data-bs-target="#{{ .Information.Title | formatTitle }}info">
+                <button type="button" class="btn btn-outline-primary position: relative" data-bs-toggle="offcanvas" data-bs-target="#{{ .Information.Title | formatTitle }}info" aria-controls="{{ .Information.Title | formatTitle }}info">
                     Additional Information
                 </button>
                 {{ if .Information.ShowSession }}
@@ -12,11 +12,13 @@
                     Edit Info
                 </button>
                 {{ else }}
-                <button type="button" class="btn btn-outline-primary position: relative" data-bs-toggle="modal" data-bs-target="#{{ .Information.Title | formatTitle }}edit">
+                <button type="button" class="btn btn-outline-primary position: relative" data-bs-toggle="offcanvas" data-bs-target="#{{ .Information.Title | formatTitle }}edit" aria-controls="{{ .Information.Title | formatTitle }}edit">
                     Edit Info
                 </button>
                 {{ end }}
-                <button type="button" class="btn btn-outline-primary position: relative" data-bs-toggle="modal" data-bs-target="#{{ .Information.Title | formatTitle}}assignsp">Assign SPs</button>
+                <button type="button" class="btn btn-outline-primary position: relative" data-bs-toggle="offcanvas" data-bs-target="#{{ .Information.Title | formatTitle}}assignsp" aria-controls="{{ .Information.Title | formatTitle }}assignsp">
+                    Assign SPs
+                </button>
                 <button type="button" class="btn btn-outline-danger position: relative" data-bs-toggle="modal" data-bs-target="#{{ .Information.Title | formatTitle }}delete">
                     Delete
                     <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
