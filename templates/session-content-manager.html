@@ -65,10 +65,10 @@
             <h5 class="card-text">Start Time: {{ .Information.StartTime }}</h5>
             <h5 class="card-text">End Time: {{ .Information.EndTime }}</h5>
             <h5 class="card-text">Location: {{ .Information.Location }}</h5>
-            <h5 class="card-text">SPs Available: {{ .PatientsAvailable | len }}</h5>
-            <h5 class="card-text">SPs Selected: {{ .PatientsSelected | len }}</h5>
-            <h5 class="card-text">SPs Assigned: {{ .PatientsAssigned | len }}</h5>
-            <h5 class="card-text">SPs Needed: {{ .PatientsNeeded }}</h5>
+            <h5 class="card-text">SPs Available: <span class="badge bg-primary">{{ .PatientsAvailable | len }}</span></h5>
+            <h5 class="card-text">SPs Selected: <span class="badge bg-warning">{{ .PatientsSelected | len }}</span></h5>
+            <h5 class="card-text">SPs Assigned: <span class="badge bg-success">{{ .PatientsAssigned | len }}</span></h5>
+            <h5 class="card-text">SPs Needed: <span class="badge bg-danger">{{ .PatientsNeeded }}</span></h5>
         </div>
     </div>
     

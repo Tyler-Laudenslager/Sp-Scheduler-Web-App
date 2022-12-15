@@ -138,13 +138,14 @@
             </div>
         </div>
     </div>
-    <div class="modal modal-lg" id="{{ .Information.Title | formatTitle }}info">
+    <div class="modal" id="{{ .Information.Title | formatTitle }}info">
         <div class="modal-dialog me-4 position-absolute top-50 end-0 translate-middle-y">
             <div class="modal-content">
         
               <!-- Modal Header -->
                 <div class="modal-header">
-                    <h4 class="modal-title">Session Information</h4>
+                    <h4 class="modal-title">{{ .Information.Title }}</h4>
+                    <h4 class="modal-subtitle">Session Information</h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
         
