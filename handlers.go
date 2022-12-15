@@ -978,7 +978,6 @@ func createSPRecord(w http.ResponseWriter, r *http.Request) {
 	}
 	duplicate := false
 	for _, su := range spRecords {
-		fmt.Println(su.Username, username)
 		if su.Username == username {
 			duplicate = true
 		}

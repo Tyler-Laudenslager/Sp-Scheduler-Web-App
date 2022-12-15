@@ -15,7 +15,6 @@ var (
 
 func init() {
 	hashedPassword, err := HashPassword("letmein")
-	fmt.Println("hashed password :", hashedPassword)
 	if err != nil {
 		fmt.Println("Error Hashing Password")
 		return
