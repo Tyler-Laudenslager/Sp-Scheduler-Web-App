@@ -95,8 +95,7 @@
             <h5>Location : {{ .Information.Location }}</h5>
             <h5>Description : </h5>
             <p>&emsp;{{ .Information.Description }}</p>
-            <h5>SPs Needed : {{ .PatientsNeeded }}</h5>
-            <h5>SPs Available : </h5>
+            <h5>SPs Available | <span class="badge bg-primary">{{ .PatientsAvailable | len }}</span></h5>
             {{ if .PatientsAvailable }}
             {{ range .PatientsAvailable }}
                 <p>&emsp;{{ .Name.First }} {{ .Name.Last }}</p>
@@ -104,7 +103,7 @@
             {{ else }}
                 <p>&emsp;None</p>
             {{ end }}
-            <h5>SPs Selected : </h5>
+            <h5>SPs Selected | <span class="badge bg-warning">{{ .PatientsSelected | len }}</span></h5>
             {{ if .PatientsSelected }}
             {{ range .PatientsSelected }}
                 <p>&emsp;{{ .Name.First }} {{ .Name.Last }}</p>
@@ -112,7 +111,7 @@
             {{ else }}
                 <p>&emsp;None</p>
             {{ end }}
-            <h5>SPs Assigned : </h5>
+            <h5>SPs Assigned | <span class="badge bg-success">{{ .PatientsAssigned | len }}</span></h5>
             {{ if .PatientsAssigned }}
             {{ range .PatientsAssigned }}
                 <p>&emsp;{{ .Name.First }} {{ .Name.Last }}</p>
@@ -120,6 +119,7 @@
             {{ else }}
                 <p>&emsp;None</p>
             {{ end }}
+            <h5>SPs Needed | <span class="badge bg-danger">{{ .PatientsNeeded }}</span></h5>
         </div>
     </div>
     <div class="offcanvas offcanvas-end" id="{{ .Information.Title | formatTitle }}edit" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" aria-labelledby="{{ .Information.Title | formatTitle }}edit">
@@ -208,7 +208,7 @@
                 <input type="hidden" name="endtime" value="{{ .Information.EndTime }}">
                 <input type="hidden" name="location" value="{{ .Information.Location }}">
                 <input type="hidden" name="description" value="{{ .Information.Description }}">
-                <h6>Available SPs:</h6>
+                <h6>Available SPs | <span class="badge bg-primary">{{ .PatientsAvailable | len }}</span></h5></h6>
                 {{ if .PatientsAvailable }}
                 <span class="badge bg-primary" style="font-size: 0.7rem">add to selected</span>
                 {{ range .PatientsAvailable }}
@@ -223,7 +223,7 @@
                     <h6>None</h6>
                 {{ end }}
                 <br>
-                <h6>Selected SPs:</h6>
+                <h6>Selected SPs | <span class="badge bg-warning">{{ .PatientsSelected | len }}</span></h5></h6>
                 {{ if .PatientsSelected }}
                 <span class="badge bg-success" style="font-size: 0.7rem">add to assigned</span>
                 {{ range .PatientsSelected }}
@@ -247,7 +247,7 @@
                     <h6>None</h6>
                 {{ end }}
                 <br>
-                <h6>Assigned SPs:</h6>
+                <h6>Assigned SPs | <span class="badge bg-success">{{ .PatientsAssigned | len }}</span></h5></h6>
                 {{ if .PatientsAssigned }}
                 <span class="badge bg-danger" style="font-size: 0.7rem">remove to available</span>
                 {{ range .PatientsAssigned }}
@@ -261,7 +261,9 @@
                 {{ else }}
                     <h6>None</h6>
                 {{ end }}
+                <div class="container mt-4">
                 <button type="submit" formaction="/assignsp" class="btn btn-outline-success" data-bs-dismiss="modal">Submit</button>
+                </div>
             </form>
         </div>
     </div>
