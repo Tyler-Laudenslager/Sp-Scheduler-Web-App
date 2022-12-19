@@ -45,12 +45,15 @@
             <div class="modal-body">
                 <form action="/changepassword" method="post" enctype="application/x-www-form-urlencoded">
                     <div class="form-floating mb-2">
-                        <input type="password" name="newpassword" class="form-control" value="">
+                        <input type="password" class="form-control" name="newpassword" id="password2" placeholder="New Password">
                         <label for="floatingInput">New Password</label>
                     </div>
                     <div class="form-floating mb-2">
-                        <input type="password" name="newpasswordconfirmed" class="form-control" value="">
-                        <label for="floatingInput">Confirm New Password</label>
+                        <input type="password" class="form-control" name="newpasswordconfirmed" id="password3" placeholder="Confirm New Password">
+                        <label for="floatingInput">Enter New Password Again</label>
+                        <button class="btn input-group-text" type="button" id="show-password-btn-3">
+                          <i class="fa fa-eye"></i>
+                        </button>
                     </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-outline-success" data-bs-dismiss="modal">
@@ -98,4 +101,22 @@
         </div>
     </div>
 </div>
+
+<script>
+    var passwordInput2 = document.getElementById('password2');
+    var passwordInput3 = document.getElementById('password3');
+    var showPasswordBtn = document.getElementById('show-password-btn-3');
+    
+    showPasswordBtn.addEventListener('click', function() {
+      if (passwordInput2.type === 'password') {
+        passwordInput2.type = 'text';
+        passwordInput3.type = 'text';
+        showPasswordBtn.innerHTML = '<i class="fa fa-eye-slash"></i>';
+      } else {
+        passwordInput2.type = 'password';
+        passwordInput3.type = 'password';
+        showPasswordBtn.innerHTML = '<i class="fa fa-eye"></i>';
+      }
+    });
+</script>
 {{ end }}
