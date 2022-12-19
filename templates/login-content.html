@@ -15,10 +15,13 @@
               <input type="text" name="userid" class="form-control" placeholder="UserID">
               <label for="floatingInput">UserID</label>
             </div>
-            
+
             <div class="form-floating mb-4">
-              <input id="password" type="password" name="password" class="form-control" placeholder="Password">
-              <label for="floatingPassword">Password</label>
+              <input type="password" class="form-control" name="password" id="password" placeholder="Password">
+              <label for="floatingInput">Password</label>
+              <button class="btn input-group-text" type="button" id="show-password-btn">
+                <i class="fa fa-eye"></i>
+              </button>
             </div>
 
             <button class="btn btn-primary btn-md btn-block" type="submit">Login</button>
@@ -30,4 +33,18 @@
     </div>
   </div>
 </section>
+<script>
+  var passwordInput = document.getElementById('password');
+var showPasswordBtn = document.getElementById('show-password-btn');
+
+showPasswordBtn.addEventListener('click', function() {
+  if (passwordInput.type === 'password') {
+    passwordInput.type = 'text';
+    showPasswordBtn.innerHTML = '<i class="fa fa-eye-slash"></i>';
+  } else {
+    passwordInput.type = 'password';
+    showPasswordBtn.innerHTML = '<i class="fa fa-eye"></i>';
+  }
+});
+</script>
 {{ end }}
