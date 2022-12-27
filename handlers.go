@@ -21,8 +21,16 @@ func formatTitle(title string) string {
 
 func formatDate(date string) string {
 	timeT, _ := time.Parse("01/02/2006", date)
-	return string(timeT.Format("Monday, January 02, 2006"))
+	return timeT.Format("Monday, January 02, 2006")
 
+}
+
+func CheckExpirationDate(expireddate string) bool {
+	if expireddate != "" {
+		expiredDateParsed, _ := time.Parse("01/02/2006", expireddate)
+		return expiredDateParsed.After(time.Now())
+	}
+	return false
 }
 
 func pastSession(date string) bool {
@@ -263,7 +271,19 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 			dashboard_content.Role = "Standardized Patient"
 			dashboard_content.User = spuser
 		}
-		funcMap := template.FuncMap{"formatTitle": formatTitle, "formatDate": formatDate, "sortSessionInfoByDate": sortSessionInfoByDate, "sortSessionByDate": sortSessionByDate, "StatusAssigned": StatusAssigned, "StatusNoResponse": StatusNoResponse, "StatusAvailable": StatusAvailable, "StatusUnavailable": StatusUnavailable, "pastSession": pastSession, "notPastSession": notPastSession}
+		funcMap := template.FuncMap{
+			"formatTitle":           formatTitle,
+			"formatDate":            formatDate,
+			"CheckExpirationDate":   CheckExpirationDate,
+			"sortSessionInfoByDate": sortSessionInfoByDate,
+			"sortSessionByDate":     sortSessionByDate,
+			"StatusAssigned":        StatusAssigned,
+			"StatusNoResponse":      StatusNoResponse,
+			"StatusAvailable":       StatusAvailable,
+			"StatusUnavailable":     StatusUnavailable,
+			"pastSession":           pastSession,
+			"notPastSession":        notPastSession,
+		}
 		t = template.New("templates/html-boilerplate.html").Funcs(funcMap)
 		if !isSpManager {
 			t, _ = t.ParseFiles("templates/html-boilerplate.html", "templates/dashboard-content.html", "templates/session-content-available.html", "templates/user-settings.html")
@@ -286,6 +306,9 @@ func createsession(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Error converting patients needed to integer")
 	}
 	newSession := Session{}.Create(title, date, starttime, endtime, location, description)
+	timenow := time.Now()
+	newSession.Information.CreatedDate = timenow.Format("01/02/2006")
+	newSession.Information.ExpiredDate = timenow.AddDate(0, 0, 7).Format("01/02/2006")
 	newSession.Information.ShowSession = false
 	newSession.PatientsNeeded = patientsneeded
 	err = newSession.MakeRecord(db)
@@ -855,6 +878,9 @@ func toggleshowsession(w http.ResponseWriter, r *http.Request) {
 	} else {
 		availableSessionRecord.Information.ShowSession = true
 	}
+	timenow := time.Now()
+	availableSessionRecord.Information.CreatedDate = timenow.Format("01/02/2006")
+	availableSessionRecord.Information.ExpiredDate = timenow.AddDate(0, 0, 7).Format("01/02/2006")
 	allSpUsers, err := GetAllSpUserRecords(db)
 	if err != nil {
 		fmt.Println("Error Getting all SP User records: ", err)

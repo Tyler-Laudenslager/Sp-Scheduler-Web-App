@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/sessions"
 )
@@ -30,6 +31,8 @@ func init() {
 		return
 	}
 	session := Session{}.Create("Sacred Heart Check-UP", "01/25/2023", "11:00AM", "12:00PM", "Sacred Heart", "Check-Up")
+	session.Information.CreatedDate = time.Now().Format("01/02/2006")
+	session.Information.ExpiredDate = time.Now().AddDate(0, 0, 7).Format("01/02/2006")
 	session.PatientsNeeded = 6
 	session.Instructors = append(session.Instructors, Instructor{}.Create("Joe Thompson", "Director"))
 	err = session.MakeRecord(db)
@@ -38,6 +41,8 @@ func init() {
 	}
 	fmt.Println("Created Session -> ", session.Information)
 	session2 := Session{}.Create("Anderson Follow UP", "02/25/2023", "12:00PM", "2:00PM", "Warren", "Follow-Up")
+	session2.Information.CreatedDate = time.Now().Format("01/02/2006")
+	session2.Information.ExpiredDate = time.Now().AddDate(0, 0, 7).Format("01/02/2006")
 	session2.PatientsNeeded = 4
 	err = session2.MakeRecord(db)
 	if err != nil {
@@ -45,6 +50,8 @@ func init() {
 	}
 	fmt.Println("Created Session -> ", session2.Information)
 	session3 := Session{}.Create("Allentown Skills Workshop", "03/25/2023", "1:00PM", "4:00PM", "Allentown", "Skills Workshop")
+	session3.Information.CreatedDate = time.Now().Format("01/02/2006")
+	session3.Information.ExpiredDate = time.Now().AddDate(0, 0, 7).Format("01/02/2006")
 	session3.PatientsNeeded = 2
 	err = session3.MakeRecord(db)
 	if err != nil {
@@ -52,6 +59,8 @@ func init() {
 	}
 	fmt.Println("Created Session -> ", session3.Information)
 	session4 := Session{}.Create("Anderson ED Skills", "04/25/2023", "2:00PM", "6:00PM", "Anderson", "ED Skills Assessment")
+	session4.Information.CreatedDate = time.Now().Format("01/02/2006")
+	session4.Information.ExpiredDate = time.Now().AddDate(0, 0, 7).Format("01/02/2006")
 	session4.PatientsNeeded = 3
 	err = session4.MakeRecord(db)
 	if err != nil {

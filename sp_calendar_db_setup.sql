@@ -40,12 +40,14 @@ CREATE TABLE Sessions (
 	location varchar(50) NOT NULL,
 	description varchar(300),
 	status varchar(40),
+	createddate varchar(20),
+	expireddate varchar(20),
+	ShowSession BOOL NOT NULL,
 	Instructors JSONB,
 	PatientsNeeded int4 NOT NULL,
 	PatientsAvailable JSONB,
 	PatientsAssigned JSONB,
 	PatientsSelected JSONB,
 	PatientsUnavailable JSONB,
-	PatientsNoResponse JSONB,
-	ShowSession BOOL NOT NULL
+	PatientsNoResponse JSONB
 );

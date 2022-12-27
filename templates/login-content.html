@@ -20,7 +20,7 @@
               <input type="password" class="form-control" name="password" id="password" placeholder="Password">
               <label for="floatingInput">Password</label>
               <button class="btn input-group-text" type="button" id="show-password-btn">
-                <i class="fa fa-eye"></i>
+                <i class="fa fa-eye-slash"></i>
               </button>
             </div>
 
@@ -38,11 +38,11 @@ var passwordInput = document.getElementById('password');
 var showPasswordBtn = document.getElementById('show-password-btn');
 
 showPasswordBtn.addEventListener('click', function() {
-  if (passwordInput.type === 'password') {
-    passwordInput.type = 'text';
+  if (passwordInput.type === 'text') {
+    passwordInput.type = 'password';
     showPasswordBtn.innerHTML = '<i class="fa fa-eye-slash"></i>';
   } else {
-    passwordInput.type = 'password';
+    passwordInput.type = 'text';
     showPasswordBtn.innerHTML = '<i class="fa fa-eye"></i>';
   }
 });

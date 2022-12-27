@@ -201,6 +201,8 @@ func (s Session) Create(title string, date string, starttime string, endtime str
 			Location:    location,
 			Description: description,
 			Status:      "noresponse",
+			CreatedDate: "",
+			ExpiredDate: "",
 			ShowSession: true},
 		Instructors:         []*Instructor{},
 		PatientsNeeded:      0,
@@ -220,6 +222,8 @@ type SessionInfo struct {
 	Location    string `json:"Location"`
 	Description string `json:"Description"`
 	Status      string `json:"Status"`
+	CreatedDate string `json:"CreatedDate"`
+	ExpiredDate string `json:"ExpiredDate"`
 	ShowSession bool   `json:"ShowSession"`
 }
 type SessionInfoContainer []*SessionInfo

@@ -20,11 +20,13 @@
             <h5 class="card-text">End Time: {{ .EndTime }}</h5>
             <h5 class="card-text">Location: {{ .Location }}</h5>
             <h5 class="card-text">Description: {{ .Description }}</h5>
+            
         </div>
     </div>
     {{ end }}
     {{ end }}
     {{ if .Status | StatusNoResponse }}
+    {{ if .ExpiredDate | CheckExpirationDate }}
     {{ if .ShowSession }}
     <div id="{{ .Title | formatTitle }}" class="card" style="width: 40rem; background-color: #f7f8f7;">
         <div class="card-body">
@@ -64,8 +66,10 @@
             <h5 class="card-text">End Time: {{ .EndTime }}</h5>
             <h5 class="card-text">Location: {{ .Location }}</h5>
             <h5 class="card-text">Description: {{ .Description }}</h5>
+            <h5 class="card-text">Expiration Date: {{ .ExpiredDate }}</h5>
         </div>
     </div>
+    {{ end }}
     {{ end }}
     {{ end }}
     {{ if .Status | StatusAvailable }}
@@ -108,6 +112,8 @@
             <h5 class="card-text">End Time: {{ .EndTime }}</h5>
             <h5 class="card-text">Location: {{ .Location }}</h5>
             <h5 class="card-text">Description: {{ .Description }}</h5>
+            <h5 class="card-text">Expiration Date: {{ .ExpiredDate }}</h5>
+
         </div>
     </div>
     {{ end }}
@@ -152,6 +158,7 @@
             <h5 class="card-text">End Time: {{ .EndTime }}</h5>
             <h5 class="card-text">Location: {{ .Location }}</h5>
             <h5 class="card-text">Description: {{ .Description }}</h5>
+            <h5 class="card-text">Expiration Date: {{ .ExpiredDate }}</h5>
         </div>
     </div>
     {{ end }}
