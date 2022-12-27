@@ -12,6 +12,10 @@
                 <button type="button" class="btn btn-outline-primary position: relative" data-bs-toggle="modal" data-bs-target="#{{ .Information.Title | formatTitle }}edit" disabled>
                     Edit Info
                 </button>
+                {{ else if .Information.Date | pastSession }}
+                <button type="button" class="btn btn-outline-primary position: relative" data-bs-toggle="modal" data-bs-target="#{{ .Information.Title | formatTitle }}edit" disabled>
+                    Edit Info
+                </button>
                 {{ else }}
                 <button type="button" class="btn btn-outline-primary position: relative" data-bs-toggle="offcanvas" data-bs-target="#{{ .Information.Title | formatTitle }}edit" aria-controls="{{ .Information.Title | formatTitle }}edit">
                     Edit Info

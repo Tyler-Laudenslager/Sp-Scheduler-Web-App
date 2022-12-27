@@ -323,7 +323,7 @@
                         <input type="password" class="form-control" name="newpasswordconfirmed" id="password3" placeholder="Password">
                         <label for="floatingInput">Password</label>
                         <button class="btn input-group-text" type="button" id="show-password-btn-3">
-                          <i class="fa fa-eye"></i>
+                          <i class="fa fa-eye-slash"></i>
                         </button>
                     </div>
                     <script>
@@ -335,11 +335,11 @@
                           if (passwordInput2.type === 'password') {
                             passwordInput2.type = 'text';
                             passwordInput3.type = 'text';
-                            showPasswordBtn.innerHTML = '<i class="fa fa-eye-slash"></i>';
+                            showPasswordBtn.innerHTML = '<i class="fa fa-eye"></i>';
                           } else {
                             passwordInput2.type = 'password';
                             passwordInput3.type = 'password';
-                            showPasswordBtn.innerHTML = '<i class="fa fa-eye"></i>';
+                            showPasswordBtn.innerHTML = '<i class="fa fa-eye-slash"></i>';
                           }
                         });
                     </script>
