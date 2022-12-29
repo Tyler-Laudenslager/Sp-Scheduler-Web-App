@@ -819,15 +819,27 @@ func changeemail(w http.ResponseWriter, r *http.Request) {
 	}
 	spuser, err := GetSpUserRecord(session.Values["username"].(string), db)
 	if err != nil {
-		fmt.Println("Error: GetSpUserRecord in signupavailable", err)
+		spmanager, err := GetSpManagerRecord(session.Values["username"].(string), db)
+		if err != nil {
+			fmt.Println("Error get spmanager record in changeemail: ", err)
+			return
+		}
+		newemail := r.PostFormValue("newemail")
+		spmanager.Email = newemail
+		err = spmanager.UpdateRecord(db)
+		if err != nil {
+			fmt.Println("Error updating user record in change email handler : ", err)
+		}
+		http.Redirect(w, r, "/dashboard", httpRedirectResponse)
+	} else {
+		newemail := r.PostFormValue("newemail")
+		spuser.Email = newemail
+		err = spuser.UpdateRecord(db)
+		if err != nil {
+			fmt.Println("Error updating user record in change email handler : ", err)
+		}
+		http.Redirect(w, r, "/dashboard", httpRedirectResponse)
 	}
-	newemail := r.PostFormValue("newemail")
-	spuser.Email = newemail
-	err = spuser.UpdateRecord(db)
-	if err != nil {
-		fmt.Println("Error updating user record in change email handler : ", err)
-	}
-	http.Redirect(w, r, "/dashboard", httpRedirectResponse)
 }
 
 func changepassword(w http.ResponseWriter, r *http.Request) {
@@ -838,24 +850,42 @@ func changepassword(w http.ResponseWriter, r *http.Request) {
 	}
 	spuser, err := GetSpUserRecord(session.Values["username"].(string), db)
 	if err != nil {
-		fmt.Println("Error: GetSpUserRecord in signupavailable", err)
-	}
-	newPassword := r.PostFormValue("newpassword")
-	newPasswordConfirmed := r.PostFormValue("newpasswordconfirmed")
-	if newPassword == newPasswordConfirmed {
-		hashedPassword, err := HashPassword(newPassword)
+		spmanager, err := GetSpManagerRecord(session.Values["username"].(string), db)
 		if err != nil {
-			fmt.Println("Error Hashing Password")
-			http.Redirect(w, r, "/dashboard", httpRedirectResponse)
+			fmt.Println("Error getting spmanager record: ", err)
 		}
-		spuser.Password = hashedPassword
+		newPassword := r.PostFormValue("newpassword")
+		newPasswordConfirmed := r.PostFormValue("newpasswordconfirmed")
+		if newPassword == newPasswordConfirmed {
+			hashedPassword, err := HashPassword(newPassword)
+			if err != nil {
+				fmt.Println("Error Hashing Password")
+				http.Redirect(w, r, "/dashboard", httpRedirectResponse)
+			}
+			spmanager.Password = hashedPassword
+		}
+		err = spmanager.UpdateRecord(db)
+		if err != nil {
+			fmt.Println("error updating user record in change password", err)
+		}
+		http.Redirect(w, r, "/dashboard", httpRedirectResponse)
+	} else {
+		newPassword := r.PostFormValue("newpassword")
+		newPasswordConfirmed := r.PostFormValue("newpasswordconfirmed")
+		if newPassword == newPasswordConfirmed {
+			hashedPassword, err := HashPassword(newPassword)
+			if err != nil {
+				fmt.Println("Error Hashing Password")
+				http.Redirect(w, r, "/dashboard", httpRedirectResponse)
+			}
+			spuser.Password = hashedPassword
+		}
+		err = spuser.UpdateRecord(db)
+		if err != nil {
+			fmt.Println("error updating user record in change password", err)
+		}
+		http.Redirect(w, r, "/dashboard", httpRedirectResponse)
 	}
-	err = spuser.UpdateRecord(db)
-	if err != nil {
-		fmt.Println("error updating user record in change password", err)
-	}
-	fmt.Println("New Password is :", newPassword)
-	http.Redirect(w, r, "/dashboard", httpRedirectResponse)
 
 }
 

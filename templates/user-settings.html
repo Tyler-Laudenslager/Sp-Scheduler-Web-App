@@ -46,13 +46,13 @@
                 <form action="/changepassword" method="post" enctype="application/x-www-form-urlencoded">
                     <div class="form-floating mb-2">
                         <input type="password" class="form-control" name="newpassword" id="password2" placeholder="New Password">
-                        <label for="floatingInput">New Password</label>
+                        <label for="floatingInput">Enter New Password</label>
                     </div>
                     <div class="form-floating mb-2">
                         <input type="password" class="form-control" name="newpasswordconfirmed" id="password3" placeholder="Confirm New Password">
                         <label for="floatingInput">Enter New Password Again</label>
                         <button class="btn input-group-text" type="button" id="show-password-btn-3">
-                          <i class="fa fa-eye"></i>
+                          <i class="fa fa-eye-slash"></i>
                         </button>
                     </div>
                     <div class="modal-footer">
@@ -83,8 +83,8 @@
                 <h6>Current Email Address:&emsp;{{ .User.Email }}</h6>
                 <form action="/changeemail" method="post" enctype="application/x-www-form-urlencoded">
                 <div class="form-floating mb-2">
-                    <input type="text" name="newpassword" class="form-control" value="">
-                    <label for="floatingInput">New Email</label>
+                    <input type="text" class="form-control" name="newemail">
+                    <label for="floatingInput">Enter New Email</label>
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-outline-success" data-bs-dismiss="modal">
@@ -111,11 +111,11 @@
       if (passwordInput2.type === 'password') {
         passwordInput2.type = 'text';
         passwordInput3.type = 'text';
-        showPasswordBtn.innerHTML = '<i class="fa fa-eye-slash"></i>';
+        showPasswordBtn.innerHTML = '<i class="fa fa-eye"></i>';
       } else {
         passwordInput2.type = 'password';
         passwordInput3.type = 'password';
-        showPasswordBtn.innerHTML = '<i class="fa fa-eye"></i>';
+        showPasswordBtn.innerHTML = '<i class="fa fa-eye-slash"></i>';
       }
     });
 </script>

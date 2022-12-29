@@ -10,7 +10,7 @@ import (
 
 var (
 	// key must be 16, 24 or 32 bytes long (AES-128, AES-192 or AES-256)
-	key   = []byte("super-secret-key")
+	key   = []byte("dinosaursarecool")
 	store = sessions.NewCookieStore(key)
 )
 
@@ -20,12 +20,17 @@ func init() {
 		fmt.Println("Error Hashing Password")
 		return
 	}
-	hashedPassword2, err := HashPassword("rxpt221!@#")
+	hashedPassword2, err := HashPassword("letmeinman")
 	if err != nil {
 		fmt.Println("Error Hashing Password")
 		return
 	}
 	hashedPassword3, err := HashPassword("letmein2")
+	if err != nil {
+		fmt.Println("Error Hashing Password")
+		return
+	}
+	hashedPassword5, err := HashPassword("letmeinman2")
 	if err != nil {
 		fmt.Println("Error Hashing Password")
 		return
@@ -91,6 +96,14 @@ func init() {
 		Email:    "egarey@duck.com",
 	}
 
+	spmanager2 := SpManager{
+		Name:     *Name{}.Create("Megan Augustine"),
+		Username: "maugustine",
+		Role:     Manager,
+		Password: hashedPassword5,
+		Email:    "maugustine@duck.com",
+	}
+
 	err = spuser.MakeRecord(db)
 	if err != nil {
 		fmt.Println("Error Making Record -> ", err)
@@ -109,19 +122,30 @@ func init() {
 	if err != nil {
 		fmt.Println("Error in Init Get All Sp User Records: ", err)
 	}
-	fmt.Println("Assigned Patients")
-	for _, su := range spmanager.AssignedPatients {
-		fmt.Println(su.Name)
-	}
 	err = spmanager.MakeRecord(db)
 	if err != nil {
 		fmt.Println("Error Making Record -> ", err)
 		return
 	}
 	fmt.Println("Created Record in Database -> ", spmanager.Name)
+
+	spmanager2.AssignedPatients, err = GetAllSpUserRecords(db)
+	if err != nil {
+		fmt.Println("Error in Init Get All Sp User Records: ", err)
+	}
+	err = spmanager2.MakeRecord(db)
+	if err != nil {
+		fmt.Println("Error Making Record -> ", err)
+		return
+	}
+	fmt.Println("Created Record in Database -> ", spmanager2.Name)
 }
 
 func main() {
+	//TLS Server
+	// server := http.Server {
+	//	Addr: ":443",
+	//}
 	server := http.Server{
 		Addr: "127.0.0.1:6600",
 	}

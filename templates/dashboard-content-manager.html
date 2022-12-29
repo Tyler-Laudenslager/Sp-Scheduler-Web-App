@@ -317,11 +317,11 @@
                 <form action="/changepassword" method="post" enctype="application/x-www-form-urlencoded">
                     <div class="form-floating mb-2">
                         <input type="password" class="form-control" name="newpassword" id="password2" placeholder="Password">
-                        <label for="floatingInput">Password</label>
+                        <label for="floatingInput">Enter New Password</label>
                     </div>
                     <div class="form-floating mb-2">
                         <input type="password" class="form-control" name="newpasswordconfirmed" id="password3" placeholder="Password">
-                        <label for="floatingInput">Password</label>
+                        <label for="floatingInput">Enter New Password Again</label>
                         <button class="btn input-group-text" type="button" id="show-password-btn-3">
                           <i class="fa fa-eye-slash"></i>
                         </button>
@@ -372,8 +372,8 @@
                 <h6>Current Email Address:&emsp;{{ .User.Email }}</h6>
                 <form action="/changeemail" method="post" enctype="application/x-www-form-urlencoded">
                 <div class="form-floating mb-2">
-                    <input type="text" name="newpassword" class="form-control" value="">
-                    <label for="floatingInput">New Email</label>
+                    <input type="text" class="form-control" name="newemail">
+                    <label for="floatingInput">Enter New Email</label>
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-outline-success" data-bs-dismiss="modal">
