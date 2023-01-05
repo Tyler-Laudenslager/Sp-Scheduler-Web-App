@@ -15,4 +15,5 @@ type DashboardContent struct {
 	Role       string
 	ByDate     bool
 	ByLocation bool
+	Archives   []string
 }

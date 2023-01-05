@@ -24,6 +24,12 @@
                 </button>
                 </div>
                 <div class="col">
+                    <button type="button" class="btn btn-info position: relative" data-bs-toggle="offcanvas" data-bs-target="#SessionArchives" 
+                     aria-controls="#SessionArchives" style="background-color: white; color: #4581ef;">
+                    Session Archives
+                    </button>
+                </div>
+                <div class="col">
                 <button type="button" class="btn btn-info position: relative logout-btn"
                         style="background-color:white; color:#4581ef;">
                     <a href="/json" target="_blank" style="text-decoration: none;">View All Data</a>
@@ -80,6 +86,7 @@
         </div>
     </div>
 </div>
+
 {{ if .User.SessionsUnmanaged }}
 {{ range .User.SessionsUnmanaged }}
     <div class="offcanvas offcanvas-end" id="{{ .Information.Title | formatTitle }}info" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" aria-labelledby="{{ .Information.Title | formatTitle }}info">
@@ -540,6 +547,25 @@
             <div class="modal-footer">
                 <button class="btn btn-primary" data-bs-target="#ManageSPs" data-bs-toggle="modal" data-bs-dismiss="modal">Back</button>
             </div>
+        </div>
+    </div>
+</div>
+
+<div class="offcanvas offcanvas-start" id="SessionArchives" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" aria-labelledby="SessionArchives">
+    <div class="offcanvas-header">
+    <h5 class="offcanvas-title" id="offcanvasScrollingLabel">Session Archives</h5>
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <div class="vstack gap-2">
+        {{ range .Archives }}
+            <form action="/dashboard" class="mt-2 position relative" method="post" enctype="application/x-www-form-urlencoded">
+                <input type="hidden" name="date" value="{{ . }}">
+                <button type="submit" class="btn btn-primary" data-bs-dismiss="offcanvas">
+                    <h5>{{ . }}</h5>
+                </button>
+            </form>
+        {{ end }}
         </div>
     </div>
 </div>

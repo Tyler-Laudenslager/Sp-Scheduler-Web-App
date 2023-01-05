@@ -25,6 +25,30 @@ func formatDate(date string) string {
 
 }
 
+func removeDuplicate[T string | int](sliceList []T) []T {
+	allKeys := make(map[T]bool)
+	list := []T{}
+	for _, item := range sliceList {
+		if _, value := allKeys[item]; !value {
+			allKeys[item] = true
+			list = append(list, item)
+		}
+	}
+	return list
+}
+
+func GetSessionArchiveDates(sessions []*Session) []string {
+	dates := []string{}
+	for _, session := range sessions {
+		time, _ := time.Parse("01/02/2006", session.Information.Date)
+		date := time.Format("January, 2006")
+		// if date in dates continue else add it
+		dates = append(dates, date)
+		dates = removeDuplicate(dates)
+	}
+	return dates
+}
+
 func CheckExpirationDate(expireddate string) bool {
 	if expireddate != "" {
 		expiredDateParsed, _ := time.Parse("01/02/2006", expireddate)
@@ -172,13 +196,28 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 				dashboard_content.ByLocation = false
 				dashboard_content.ByDate = true
 			}
+			dateFilter := r.PostFormValue("date")
+			if dateFilter != "" {
+				session_records_manager_new := make([]*Session, 0)
+				fmt.Println("Date Filter: ", dateFilter)
+				for _, s := range session_records_manager {
+					time, _ := time.Parse("01/02/2006", s.Information.Date)
+					date := time.Format("January, 2006")
+					if dateFilter == date {
+						session_records_manager_new = append(session_records_manager_new, s)
+					}
+				}
+				session_records_manager = session_records_manager_new
+			}
 			session.Save(r, w)
 			spmanager.SessionsUnmanaged = session_records_manager
+			session_records, _ := GetAllSessionRecords(db)
 			spuser_records, err := GetAllSpUserRecords(db)
 			spmanager.AssignedPatients = spuser_records
 			if err != nil {
 				fmt.Println("Error Get All User records in dashboard: ", err)
 			}
+			dashboard_content.Archives = GetSessionArchiveDates(session_records)
 			dashboard_content.Role = "Manager"
 			dashboard_content.User = spmanager
 			isSpManager = true
