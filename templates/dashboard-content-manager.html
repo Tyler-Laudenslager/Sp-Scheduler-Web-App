@@ -558,6 +558,12 @@
     </div>
     <div class="offcanvas-body">
         <div class="vstack gap-2">
+        <form action="/dashboard" class="mt-2 position relative" method="post" enctype="application/x-www-form-urlencoded">
+            <input type="hidden" name="date" value="allsessions">
+            <button type="submit" class="btn btn-primary" data-bs-dismiss="offcanvas">
+                <h5>Show All Sessions</h5>
+            </button>
+        </form>
         {{ range .Archives }}
             <form action="/dashboard" class="mt-2 position relative" method="post" enctype="application/x-www-form-urlencoded">
                 <input type="hidden" name="date" value="{{ . }}">
