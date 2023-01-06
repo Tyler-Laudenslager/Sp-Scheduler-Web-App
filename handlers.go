@@ -169,7 +169,7 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 						}
 					}
 					session_records_manager = session_records_manager_new
-				} else if session.Values["dateFilter"] != nil {
+				} else if session.Values["dateFilter"] != nil && session.Values["dateFilter"] != "allsessions" {
 					dashboard_content.SelectedDate = session.Values["dateFilter"].(string)
 					session_records_manager_new := make([]*Session, 0)
 					for _, s := range session_records_manager {
@@ -180,9 +180,12 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 						}
 					}
 					session_records_manager = session_records_manager_new
+				} else {
+					dashboard_content.SelectedDate = "All Sessions"
 				}
 			} else if r.PostFormValue("date") == "allsessions" {
 				dashboard_content.SelectedDate = "All Sessions"
+				session.Values["dateFilter"] = "allsessions"
 			}
 
 			if r.PostFormValue("orderBy") != "" {
