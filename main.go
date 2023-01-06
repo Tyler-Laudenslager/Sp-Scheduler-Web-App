@@ -44,7 +44,6 @@ func init() {
 	if err != nil {
 		fmt.Println("Error Making Session Record 1: ", err)
 	}
-	fmt.Println("Created Session -> ", session.Information)
 	session2 := Session{}.Create("Anderson Follow UP", "02/25/2023", "12:00PM", "2:00PM", "Warren", "Follow-Up")
 	session2.Information.CreatedDate = time.Now().Format("01/02/2006")
 	session2.Information.ExpiredDate = time.Now().AddDate(0, 0, 7).Format("01/02/2006")
@@ -53,7 +52,6 @@ func init() {
 	if err != nil {
 		fmt.Println("Error Making Session Record 2: ", err)
 	}
-	fmt.Println("Created Session -> ", session2.Information)
 	session3 := Session{}.Create("Allentown Skills Workshop", "03/25/2023", "1:00PM", "4:00PM", "Allentown", "Skills Workshop")
 	session3.Information.CreatedDate = time.Now().Format("01/02/2006")
 	session3.Information.ExpiredDate = time.Now().AddDate(0, 0, 7).Format("01/02/2006")
@@ -62,7 +60,6 @@ func init() {
 	if err != nil {
 		fmt.Println("Error Making Session Record 3: ", err)
 	}
-	fmt.Println("Created Session -> ", session3.Information)
 	session4 := Session{}.Create("Anderson ED Skills", "04/25/2023", "2:00PM", "6:00PM", "Anderson", "ED Skills Assessment")
 	session4.Information.CreatedDate = time.Now().Format("01/02/2006")
 	session4.Information.ExpiredDate = time.Now().AddDate(0, 0, 7).Format("01/02/2006")
@@ -71,7 +68,6 @@ func init() {
 	if err != nil {
 		fmt.Println("Error Making Session Record 4: ", err)
 	}
-	fmt.Println("Created Session -> ", session4.Information)
 	spuser := SpUser{
 		Name:     *Name{}.Create("Robert Pike"),
 		Username: "rpike",
@@ -109,14 +105,12 @@ func init() {
 		fmt.Println("Error Making Record -> ", err)
 		return
 	}
-	fmt.Println("Created Record in Database -> ", spuser.Name)
 
 	err = spuser2.MakeRecord(db)
 	if err != nil {
 		fmt.Println("Error Making Record -> ", err)
 		return
 	}
-	fmt.Println("Created Record in Database -> ", spuser2.Name)
 
 	spmanager.AssignedPatients, err = GetAllSpUserRecords(db)
 	if err != nil {
@@ -127,7 +121,6 @@ func init() {
 		fmt.Println("Error Making Record -> ", err)
 		return
 	}
-	fmt.Println("Created Record in Database -> ", spmanager.Name)
 
 	spmanager2.AssignedPatients, err = GetAllSpUserRecords(db)
 	if err != nil {
@@ -138,7 +131,6 @@ func init() {
 		fmt.Println("Error Making Record -> ", err)
 		return
 	}
-	fmt.Println("Created Record in Database -> ", spmanager2.Name)
 }
 
 func main() {

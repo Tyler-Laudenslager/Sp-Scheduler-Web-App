@@ -372,7 +372,6 @@ func createsession(w http.ResponseWriter, r *http.Request) {
 	timenow := time.Now()
 	datetime, _ := time.Parse("01/02/2006", date)
 	dateFilter := datetime.Format("January, 2006")
-	fmt.Println("Create Session Date Filter:", dateFilter)
 	session.Values["dateFilter"] = dateFilter
 	session.Save(r, w)
 	newSession.Information.CreatedDate = timenow.Format("01/02/2006")
