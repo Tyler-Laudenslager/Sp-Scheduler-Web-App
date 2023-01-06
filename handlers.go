@@ -364,11 +364,17 @@ func createsession(w http.ResponseWriter, r *http.Request) {
 	location := r.PostFormValue("location")
 	description := r.PostFormValue("description")
 	patientsneeded, err := strconv.Atoi(r.PostFormValue("patientsneeded"))
+	session, _ := store.Get(r, "sessionAuthSPCalendar")
 	if err != nil {
 		fmt.Println("Error converting patients needed to integer")
 	}
 	newSession := Session{}.Create(title, date, starttime, endtime, location, description)
 	timenow := time.Now()
+	datetime, _ := time.Parse("01/02/2006", date)
+	dateFilter := datetime.Format("January, 2006")
+	fmt.Println("Create Session Date Filter:", dateFilter)
+	session.Values["dateFilter"] = dateFilter
+	session.Save(r, w)
 	newSession.Information.CreatedDate = timenow.Format("01/02/2006")
 	newSession.Information.ExpiredDate = timenow.AddDate(0, 0, 7).Format("01/02/2006")
 	newSession.Information.ShowSession = false
