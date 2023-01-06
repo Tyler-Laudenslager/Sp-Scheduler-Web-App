@@ -51,6 +51,18 @@
             </div>
             <div class="row row-cols-auto">
                 <div class="col">
+                    <button type="button" class="mt-2 btn btn-info position relative" style="background-color: white; color: #4581ef;">
+                        Sessions Selected: {{ .SelectedDate }}
+                    </button>
+                </div>
+                <div class="col">
+                    <button type="button" class="mt-2 btn btn-info position relative" style="background-color: white; color: #4581ef;">
+                        Total Sessions: {{ .User.SessionsUnmanaged | len }}
+                    </button>
+                </div>
+            </div>
+            <div class="row row-cols-auto">
+                <div class="col">
                     <button type="button" class="mt-2 btn btn-info position relative" data-bs-toggle="modal" data-bs-target="#createSessionModal">
                         Create Session
                     </button>
