@@ -90,7 +90,7 @@ func init() {
 
 	spmanager := SpManager{
 		Name:     *Name{}.Create("Emily Garey"),
-		Username: "egarey",
+		Username: "gareye",
 		Role:     Manager,
 		Password: hashedPassword2,
 		Email:    "egarey@duck.com",
@@ -98,7 +98,7 @@ func init() {
 
 	spmanager2 := SpManager{
 		Name:     *Name{}.Create("Megan Augustine"),
-		Username: "maugustine",
+		Username: "augustm",
 		Role:     Manager,
 		Password: hashedPassword5,
 		Email:    "maugustine@duck.com",
