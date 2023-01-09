@@ -244,6 +244,15 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 				fmt.Println("Error Get All User records in dashboard: ", err)
 			}
 			dashboard_content.Archives = GetSessionArchiveDates(session_records)
+			sort.Slice(dashboard_content.Archives, func(i int, j int) bool {
+				iDate := dashboard_content.Archives[i]
+				jDate := dashboard_content.Archives[j]
+
+				iParsed, _ := time.Parse("January, 2006", iDate)
+				jParsed, _ := time.Parse("January, 2006", jDate)
+
+				return iParsed.Before(jParsed)
+			})
 			dashboard_content.Role = "Manager"
 			dashboard_content.User = spmanager
 			isSpManager = true
