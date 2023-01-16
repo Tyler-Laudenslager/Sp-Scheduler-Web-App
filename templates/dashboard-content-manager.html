@@ -101,7 +101,7 @@
 
 {{ if .User.SessionsUnmanaged }}
 {{ range .User.SessionsUnmanaged }}
-    <div class="offcanvas offcanvas-end" id="{{ .Information.Title | formatTitle }}info" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" aria-labelledby="{{ .Information.Title | formatTitle }}info">
+    <div class="offcanvas offcanvas-end" id="{{ .Information.Title | formatTitle }}{{ .Information.Date | formatTitle }}{{ .Information.StartTime | formatTitle }}{{ .Information.EndTime | formatTitle }}{{ .Information.Location | formatTitle }}info" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" aria-labelledby="{{ .Information.Title | formatTitle }}{{ .Information.Date | formatTitle }}{{ .Information.StartTime | formatTitle }}{{ .Information.EndTime | formatTitle }}{{ .Information.Location | formatTitle }}info">
         <div class="offcanvas-header">
         <h5 class="offcanvas-title" id="offcanvasScrollingLabel">Session Information</h5>
         <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
@@ -141,7 +141,7 @@
             <h5>SPs Needed | <span class="badge bg-danger">{{ .PatientsNeeded }}</span></h5>
         </div>
     </div>
-    <div class="offcanvas offcanvas-end" id="{{ .Information.Title | formatTitle }}edit" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" aria-labelledby="{{ .Information.Title | formatTitle }}edit">
+    <div class="offcanvas offcanvas-end" id="{{ .Information.Title | formatTitle }}{{ .Information.Date | formatTitle }}{{ .Information.StartTime | formatTitle }}{{ .Information.EndTime | formatTitle }}{{ .Information.Location | formatTitle }}edit" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" aria-labelledby="{{ .Information.Title | formatTitle }}{{ .Information.Date | formatTitle }}{{ .Information.StartTime | formatTitle }}{{ .Information.EndTime | formatTitle }}{{ .Information.Location | formatTitle }}edit">
         <div class="offcanvas-header">
         <h5 class="offcanvas-title" id="offcanvasScrollingLabel">Edit Information for<br/>{{ .Information.Title }}</h5>
         <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
@@ -187,7 +187,7 @@
             </form>
         </div>
     </div>
-    <div class="modal" id="{{ .Information.Title | formatTitle }}delete">
+    <div class="modal" id="{{ .Information.Title | formatTitle }}{{ .Information.Date | formatTitle }}{{ .Information.StartTime | formatTitle }}{{ .Information.EndTime | formatTitle }}{{ .Information.Location | formatTitle }}delete">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
         
@@ -214,9 +214,9 @@
             </div>
         </div>
     </div>
-    <div class="offcanvas offcanvas-end" id="{{ .Information.Title | formatTitle }}assignsp" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" aria-labelledby="{{ .Information.Title | formatTitle }}assignsp">
+    <div class="offcanvas offcanvas-end" id="{{ .Information.Title | formatTitle }}{{ .Information.Date | formatTitle }}{{ .Information.StartTime | formatTitle }}{{ .Information.EndTime | formatTitle }}{{ .Information.Location | formatTitle }}assignsp" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" aria-labelledby="{{ .Information.Title | formatTitle }}{{ .Information.Date | formatTitle }}{{ .Information.StartTime | formatTitle }}{{ .Information.EndTime | formatTitle }}{{ .Information.Location | formatTitle }}assignsp">
         <div class="offcanvas-header">
-        <h5 class="offcanvas-title" id="offcanvasScrollingLabel">Assign SPs to <br>{{ .Information.Title }}</h5>
+        <h5 class="offcanvas-title" id="offcanvasScrollingLabel">Assign SPs to <br>{{ .Information.Title }}<br>{{ .Information.Date }}<br>{{ .Information.StartTime }} - {{ .Information.EndTime }}</h5>
         <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">

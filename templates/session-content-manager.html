@@ -2,29 +2,29 @@
 {{ if .SessionsUnmanaged }}
 {{ range .SessionsUnmanaged }}
     <div class="list-group-item mb-2">
-    <div id="{{ .Information.Title | formatTitle }}" class="card" style="width: 40rem; background-color: #f7f8f7;">
+    <div id="{{ .Information.Title | formatTitle }}{{ .Information.Date | formatTitle }}{{ .Information.StartTime | formatTitle }}{{ .Information.EndTime | formatTitle }}{{ .Information.Location | formatTitle }}" class="card" style="width: 40rem; background-color: #f7f8f7;">
         <div class="card-body">
             <div class="vstack me-2 gap-1 d-flex align-items-center position-absolute top-50 end-0 translate-middle-y">
-                <button type="button" class="btn btn-outline-primary position: relative" data-bs-toggle="offcanvas" data-bs-target="#{{ .Information.Title | formatTitle }}info" aria-controls="{{ .Information.Title | formatTitle }}info">
+                <button type="button" class="btn btn-outline-primary position: relative" data-bs-toggle="offcanvas" data-bs-target="#{{ .Information.Title | formatTitle }}{{ .Information.Date | formatTitle }}{{ .Information.StartTime | formatTitle }}{{ .Information.EndTime | formatTitle }}{{ .Information.Location | formatTitle }}info" aria-controls="{{ .Information.Title | formatTitle }}{{ .Information.Date | formatTitle }}{{ .Information.StartTime | formatTitle }}{{ .Information.EndTime | formatTitle }}{{ .Information.Location | formatTitle }}info">
                     Additional Information
                 </button>
                 {{ if .Information.ShowSession }}
-                <button type="button" class="btn btn-outline-primary position: relative" data-bs-toggle="modal" data-bs-target="#{{ .Information.Title | formatTitle }}edit" disabled>
+                <button type="button" class="btn btn-outline-primary position: relative" data-bs-toggle="modal" data-bs-target="#{{ .Information.Title | formatTitle }}{{ .Information.Date | formatTitle }}{{ .Information.StartTime | formatTitle }}{{ .Information.EndTime | formatTitle }}{{ .Information.Location | formatTitle }}edit" disabled>
                     Edit Info
                 </button>
                 {{ else if .Information.Date | pastSession }}
-                <button type="button" class="btn btn-outline-primary position: relative" data-bs-toggle="modal" data-bs-target="#{{ .Information.Title | formatTitle }}edit" disabled>
+                <button type="button" class="btn btn-outline-primary position: relative" data-bs-toggle="modal" data-bs-target="#{{ .Information.Title | formatTitle }}{{ .Information.Date | formatTitle }}{{ .Information.StartTime | formatTitle }}{{ .Information.EndTime | formatTitle }}{{ .Information.Location | formatTitle }}edit" disabled>
                     Edit Info
                 </button>
                 {{ else }}
-                <button type="button" class="btn btn-outline-primary position: relative" data-bs-toggle="offcanvas" data-bs-target="#{{ .Information.Title | formatTitle }}edit" aria-controls="{{ .Information.Title | formatTitle }}edit">
+                <button type="button" class="btn btn-outline-primary position: relative" data-bs-toggle="offcanvas" data-bs-target="#{{ .Information.Title | formatTitle }}{{ .Information.Date | formatTitle }}{{ .Information.StartTime | formatTitle }}{{ .Information.EndTime | formatTitle }}{{ .Information.Location | formatTitle }}edit" aria-controls="{{ .Information.Title | formatTitle }}{{ .Information.Date | formatTitle }}{{ .Information.StartTime | formatTitle }}{{ .Information.EndTime | formatTitle }}{{ .Information.Location | formatTitle }}edit">
                     Edit Info
                 </button>
                 {{ end }}
-                <button type="button" class="btn btn-outline-primary position: relative" data-bs-toggle="offcanvas" data-bs-target="#{{ .Information.Title | formatTitle}}assignsp" aria-controls="{{ .Information.Title | formatTitle }}assignsp">
+                <button type="button" class="btn btn-outline-primary position: relative" data-bs-toggle="offcanvas" data-bs-target="#{{ .Information.Title | formatTitle}}{{ .Information.Date | formatTitle }}{{ .Information.StartTime | formatTitle }}{{ .Information.EndTime | formatTitle }}{{ .Information.Location | formatTitle }}assignsp" aria-controls="{{ .Information.Title | formatTitle }}{{ .Information.Date | formatTitle }}{{ .Information.StartTime | formatTitle }}{{ .Information.EndTime | formatTitle }}{{ .Information.Location | formatTitle }}assignsp">
                     Assign SPs
                 </button>
-                <button type="button" class="btn btn-outline-danger position: relative" data-bs-toggle="modal" data-bs-target="#{{ .Information.Title | formatTitle }}delete">
+                <button type="button" class="btn btn-outline-danger position: relative" data-bs-toggle="modal" data-bs-target="#{{ .Information.Title | formatTitle }}{{ .Information.Date | formatTitle }}{{ .Information.StartTime | formatTitle }}{{ .Information.EndTime | formatTitle }}{{ .Information.Location | formatTitle }}delete">
                     Delete
                     <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
                         <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"></path>
