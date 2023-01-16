@@ -16,6 +16,7 @@ const (
 )
 
 func formatTitle(title string) string {
+	title = strings.ReplaceAll(title, ",", "")
 	title = strings.ReplaceAll(title, ":", "")
 	title = strings.ReplaceAll(title, "/", "")
 	return strings.Join(strings.Fields(strings.TrimSpace(title)), "")
