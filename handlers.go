@@ -1112,14 +1112,7 @@ func createSPRecord(w http.ResponseWriter, r *http.Request) {
 	name := r.PostFormValue("name")
 	email := r.PostFormValue("email")
 	password := r.PostFormValue("password")
-
-	split_name := strings.Split(strings.ToLower(name), " ")
-	first_initial := string(split_name[0][0])
-	last_name := string(split_name[1])
-	if len(last_name) >= 6 {
-		last_name = last_name[:6]
-	}
-	username := last_name + first_initial
+	username := email
 	spRecords, err := GetAllSpUserRecords(db)
 	if err != nil {
 		fmt.Println("Get all sp user records in createSPRecord: ", err)

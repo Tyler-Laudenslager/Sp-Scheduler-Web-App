@@ -35,7 +35,11 @@ func init() {
 		fmt.Println("Error Hashing Password")
 		return
 	}
-	session := Session{}.Create("Sacred Heart Check-UP", "01/25/2023", "11:00AM", "12:00PM", "Sacred Heart", "Check-Up")
+	hashedPassword6, err := HashPassword("Heydontscarethetiger75")
+	if err != nil {
+		fmt.Println("Error Hashing Password")
+	}
+	session := Session{}.Create("Sacred Heart Check-UP", "01/25/2025", "11:00AM", "12:00PM", "Sacred Heart", "Check-Up")
 	session.Information.CreatedDate = time.Now().Format("01/02/2006")
 	session.Information.ExpiredDate = time.Now().AddDate(0, 0, 7).Format("01/02/2006")
 	session.PatientsNeeded = 6
@@ -44,7 +48,7 @@ func init() {
 	if err != nil {
 		fmt.Println("Error Making Session Record 1: ", err)
 	}
-	session2 := Session{}.Create("Anderson Follow UP", "02/25/2023", "12:00PM", "2:00PM", "Warren", "Follow-Up")
+	session2 := Session{}.Create("Anderson Follow UP", "02/25/2025", "12:00PM", "2:00PM", "Warren", "Follow-Up")
 	session2.Information.CreatedDate = time.Now().Format("01/02/2006")
 	session2.Information.ExpiredDate = time.Now().AddDate(0, 0, 7).Format("01/02/2006")
 	session2.PatientsNeeded = 4
@@ -52,7 +56,7 @@ func init() {
 	if err != nil {
 		fmt.Println("Error Making Session Record 2: ", err)
 	}
-	session3 := Session{}.Create("Allentown Skills Workshop", "03/25/2023", "1:00PM", "4:00PM", "Allentown", "Skills Workshop")
+	session3 := Session{}.Create("Allentown Skills Workshop", "03/25/2025", "1:00PM", "4:00PM", "Allentown", "Skills Workshop")
 	session3.Information.CreatedDate = time.Now().Format("01/02/2006")
 	session3.Information.ExpiredDate = time.Now().AddDate(0, 0, 7).Format("01/02/2006")
 	session3.PatientsNeeded = 2
@@ -60,7 +64,7 @@ func init() {
 	if err != nil {
 		fmt.Println("Error Making Session Record 3: ", err)
 	}
-	session4 := Session{}.Create("Anderson ED Skills", "04/25/2023", "2:00PM", "6:00PM", "Anderson", "ED Skills Assessment")
+	session4 := Session{}.Create("Anderson ED Skills", "04/25/2025", "2:00PM", "6:00PM", "Anderson", "ED Skills Assessment")
 	session4.Information.CreatedDate = time.Now().Format("01/02/2006")
 	session4.Information.ExpiredDate = time.Now().AddDate(0, 0, 7).Format("01/02/2006")
 	session4.PatientsNeeded = 3
@@ -86,18 +90,35 @@ func init() {
 
 	spmanager := SpManager{
 		Name:     *Name{}.Create("Emily Garey"),
-		Username: "gareye",
+		Username: "emily.garey@sluhn.org",
 		Role:     Manager,
 		Password: hashedPassword2,
-		Email:    "egarey@duck.com",
+		Email:    "emily.garey@sluhn.org",
 	}
 
 	spmanager2 := SpManager{
 		Name:     *Name{}.Create("Megan Augustine"),
-		Username: "augustm",
+		Username: "megan.augustine@sluhn.org",
 		Role:     Manager,
 		Password: hashedPassword5,
-		Email:    "maugustine@duck.com",
+		Email:    "megan.augustine@sluhn.org",
+	}
+
+	spmanager3 := SpManager{
+		Name:     *Name{}.Create("Tyler Laudenslager"),
+		Username: "tlauden",
+		Role:     Manager,
+		Password: hashedPassword6,
+	}
+
+	spmanager3.AssignedPatients, err = GetAllSpUserRecords(db)
+	if err != nil {
+		fmt.Println("Error in Init Get All Sp User Records: ", err)
+	}
+	err = spmanager3.MakeRecord(db)
+	if err != nil {
+		fmt.Println("Error Making Record -> ", err)
+		return
 	}
 
 	err = spuser.MakeRecord(db)
