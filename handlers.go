@@ -17,8 +17,10 @@ const (
 
 func formatTitle(title string) string {
 	title = strings.ReplaceAll(title, ",", "")
+	title = strings.ReplaceAll(title, ".", "")
 	title = strings.ReplaceAll(title, ":", "")
 	title = strings.ReplaceAll(title, "/", "")
+	title = strings.ReplaceAll(title, "@", "")
 	return strings.Join(strings.Fields(strings.TrimSpace(title)), "")
 }
 
@@ -55,18 +57,17 @@ func GetSessionArchiveDates(sessions []*Session) []string {
 func CheckExpirationDate(expireddate string) bool {
 	if expireddate != "" {
 		expiredDateParsed, _ := time.Parse("01/02/2006", expireddate)
-		return expiredDateParsed.After(time.Now())
+		return expiredDateParsed.After(time.Now().AddDate(0, 0, 1))
 	}
 	return false
 }
 
 func pastSession(date string) bool {
 	sessionDate := date
-	currentDate := time.Now()
+	currentDate := time.Now().AddDate(0, 0, -1)
 
 	sessionDateParsed, _ := time.Parse("01/02/2006", sessionDate)
-
-	return sessionDateParsed.Before(currentDate)
+	return currentDate.After(sessionDateParsed)
 }
 
 func notPastSession(date string) bool {
@@ -74,8 +75,8 @@ func notPastSession(date string) bool {
 	currentDate := time.Now()
 
 	sessionDateParsed, _ := time.Parse("01/02/2006", sessionDate)
-
-	return sessionDateParsed.After(currentDate)
+	sessionDateParsed = sessionDateParsed.AddDate(0, 0, 1)
+	return currentDate.Before(sessionDateParsed)
 }
 
 func StatusAssigned(status string) bool {
@@ -1112,7 +1113,7 @@ func createSPRecord(w http.ResponseWriter, r *http.Request) {
 	name := r.PostFormValue("name")
 	email := r.PostFormValue("email")
 	password := r.PostFormValue("password")
-	username := email
+	username := r.PostFormValue("email")
 	spRecords, err := GetAllSpUserRecords(db)
 	if err != nil {
 		fmt.Println("Get all sp user records in createSPRecord: ", err)

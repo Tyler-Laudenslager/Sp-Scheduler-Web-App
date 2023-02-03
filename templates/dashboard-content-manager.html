@@ -549,7 +549,7 @@
                     {{ if .User.AssignedPatients }}
                     <div class="vstack gap-2 d-flex align-items-left position: relative;">
                         {{ range .User.AssignedPatients }}
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#{{ .Username }}Info">
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#{{ .Username | formatTitle }}Info">
                                 {{ .Name.First }} {{ .Name.Last }}
                             </button>
                         {{ end }}
@@ -590,7 +590,7 @@
 
 {{ if .User.AssignedPatients }}
     {{ range .User.AssignedPatients }}
-        <div class="modal fade" id="{{ .Username }}Info">
+        <div class="modal fade" id="{{ .Username | formatTitle }}Info">
             <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
                 <div class="modal-content">
     

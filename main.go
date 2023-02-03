@@ -64,7 +64,8 @@ func init() {
 	if err != nil {
 		fmt.Println("Error Making Session Record 3: ", err)
 	}
-	session4 := Session{}.Create("Anderson ED Skills", "04/25/2025", "2:00PM", "6:00PM", "Anderson", "ED Skills Assessment")
+	session4 := Session{}.Create("Anderson ED Skills", "04/25/2025", "2:00PM", "6:00PM", "Anderson",
+		"ED Skills Assessment Aggresive Patients No Respone Biggles With the Cat")
 	session4.Information.CreatedDate = time.Now().Format("01/02/2006")
 	session4.Information.ExpiredDate = time.Now().AddDate(0, 0, 7).Format("01/02/2006")
 	session4.PatientsNeeded = 3
