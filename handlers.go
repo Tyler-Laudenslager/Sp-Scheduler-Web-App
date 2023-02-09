@@ -55,27 +55,38 @@ func GetSessionArchiveDates(sessions []*Session) []string {
 }
 
 func CheckExpirationDate(expireddate string) bool {
+	loc, err := time.LoadLocation("EST")
+	if err != nil {
+		fmt.Println("Error in LoadLocation CheckExpirationDate :", err)
+	}
 	if expireddate != "" {
 		expiredDateParsed, _ := time.Parse("01/02/2006", expireddate)
-		return expiredDateParsed.After(time.Now().AddDate(0, 0, 1))
+		return expiredDateParsed.After(time.Now().In(loc))
 	}
 	return false
 }
 
 func pastSession(date string) bool {
+	loc, err := time.LoadLocation("EST")
+	if err != nil {
+		fmt.Println("Error in LoadLocation CheckExpirationDate :", err)
+	}
 	sessionDate := date
-	currentDate := time.Now().AddDate(0, 0, -1)
+	currentDate := time.Now().In(loc)
 
 	sessionDateParsed, _ := time.Parse("01/02/2006", sessionDate)
 	return currentDate.After(sessionDateParsed)
 }
 
 func notPastSession(date string) bool {
+	loc, err := time.LoadLocation("EST")
+	if err != nil {
+		fmt.Println("Error in LoadLocation CheckExpirationDate :", err)
+	}
 	sessionDate := date
-	currentDate := time.Now()
+	currentDate := time.Now().In(loc)
 
 	sessionDateParsed, _ := time.Parse("01/02/2006", sessionDate)
-	sessionDateParsed = sessionDateParsed.AddDate(0, 0, 1)
 	return currentDate.Before(sessionDateParsed)
 }
 
@@ -133,8 +144,12 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 		var t *template.Template
 		var spmanager SpManager
 		isSpManager := false
+		loc, err := time.LoadLocation("EST")
+		if err != nil {
+			fmt.Println("Error in LoadLocation CheckExpirationDate :", err)
+		}
 		dashboard_content := DashboardContent{
-			Date: time.Now().Format("Monday, January 02, 2006"),
+			Date: time.Now().In(loc).Format("Monday, January 02, 2006"),
 		}
 		session_records, err := GetAllSessionInfoRecords(db)
 		if err != nil {
