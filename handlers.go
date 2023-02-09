@@ -61,7 +61,9 @@ func CheckExpirationDate(expireddate string) bool {
 	}
 	if expireddate != "" {
 		expiredDateParsed, _ := time.Parse("01/02/2006", expireddate)
-		return expiredDateParsed.After(time.Now().In(loc))
+		currentDate := time.Now().In(loc).AddDate(0, 0, -1)
+		fmt.Println("Expired Date: ", expiredDateParsed, "After ", currentDate)
+		return expiredDateParsed.After(currentDate)
 	}
 	return false
 }
@@ -72,9 +74,10 @@ func pastSession(date string) bool {
 		fmt.Println("Error in LoadLocation CheckExpirationDate :", err)
 	}
 	sessionDate := date
-	currentDate := time.Now().In(loc)
+	currentDate := time.Now().In(loc).AddDate(0, 0, -1)
 
 	sessionDateParsed, _ := time.Parse("01/02/2006", sessionDate)
+	fmt.Println("Current Date: ", currentDate, "After ", sessionDateParsed)
 	return currentDate.After(sessionDateParsed)
 }
 
@@ -84,9 +87,10 @@ func notPastSession(date string) bool {
 		fmt.Println("Error in LoadLocation CheckExpirationDate :", err)
 	}
 	sessionDate := date
-	currentDate := time.Now().In(loc)
+	currentDate := time.Now().In(loc).AddDate(0, 0, -1)
 
 	sessionDateParsed, _ := time.Parse("01/02/2006", sessionDate)
+	fmt.Println("Current Date: ", currentDate, "Before ", sessionDateParsed)
 	return currentDate.Before(sessionDateParsed)
 }
 
