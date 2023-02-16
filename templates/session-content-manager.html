@@ -8,19 +8,9 @@
                 <button type="button" class="btn btn-outline-primary position: relative" data-bs-toggle="offcanvas" data-bs-target="#{{ .Information.Title | formatTitle }}{{ .Information.Date | formatTitle }}{{ .Information.StartTime | formatTitle }}{{ .Information.EndTime | formatTitle }}{{ .Information.Location | formatTitle }}info" aria-controls="{{ .Information.Title | formatTitle }}{{ .Information.Date | formatTitle }}{{ .Information.StartTime | formatTitle }}{{ .Information.EndTime | formatTitle }}{{ .Information.Location | formatTitle }}info">
                     Additional Information
                 </button>
-                {{ if .Information.ShowSession }}
-                <button type="button" class="btn btn-outline-primary position: relative" data-bs-toggle="modal" data-bs-target="#{{ .Information.Title | formatTitle }}{{ .Information.Date | formatTitle }}{{ .Information.StartTime | formatTitle }}{{ .Information.EndTime | formatTitle }}{{ .Information.Location | formatTitle }}edit" disabled>
-                    Edit Info
-                </button>
-                {{ else if .Information.Date | pastSession }}
-                <button type="button" class="btn btn-outline-primary position: relative" data-bs-toggle="modal" data-bs-target="#{{ .Information.Title | formatTitle }}{{ .Information.Date | formatTitle }}{{ .Information.StartTime | formatTitle }}{{ .Information.EndTime | formatTitle }}{{ .Information.Location | formatTitle }}edit" disabled>
-                    Edit Info
-                </button>
-                {{ else }}
                 <button type="button" class="btn btn-outline-primary position: relative" data-bs-toggle="offcanvas" data-bs-target="#{{ .Information.Title | formatTitle }}{{ .Information.Date | formatTitle }}{{ .Information.StartTime | formatTitle }}{{ .Information.EndTime | formatTitle }}{{ .Information.Location | formatTitle }}edit" aria-controls="{{ .Information.Title | formatTitle }}{{ .Information.Date | formatTitle }}{{ .Information.StartTime | formatTitle }}{{ .Information.EndTime | formatTitle }}{{ .Information.Location | formatTitle }}edit">
                     Edit Info
                 </button>
-                {{ end }}
                 <button type="button" class="btn btn-outline-primary position: relative" data-bs-toggle="offcanvas" data-bs-target="#{{ .Information.Title | formatTitle}}{{ .Information.Date | formatTitle }}{{ .Information.StartTime | formatTitle }}{{ .Information.EndTime | formatTitle }}{{ .Information.Location | formatTitle }}assignsp" aria-controls="{{ .Information.Title | formatTitle }}{{ .Information.Date | formatTitle }}{{ .Information.StartTime | formatTitle }}{{ .Information.EndTime | formatTitle }}{{ .Information.Location | formatTitle }}assignsp">
                     Assign SPs
                 </button>

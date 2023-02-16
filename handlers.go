@@ -501,6 +501,36 @@ func updatesession(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println("Error in Get Session Record in Update Session : ", err)
 	}
+
+	fmt.Println("Original Session Start Time: ", foundSession.Information.StartTime)
+
+	allSpUsers, err := GetAllSpUserRecords(db)
+	if err != nil {
+		fmt.Println("Error Getting all SP User records: ", err)
+	}
+	// For Every SP record in the database
+	for _, su := range allSpUsers {
+		// collect all sessions except for assigned ones
+		allSessions := append(su.SessionsAssigned, su.SessionsAvailable...)
+		allSessions = append(allSessions, su.SessionsUnavailable...)
+		allSessions = append(allSessions, su.SessionsPool...)
+		allSessions = append(allSessions, su.SessionsAssigned...)
+		// find the session needed to be updated
+		for _, si := range allSessions {
+
+			if sessionEqual(foundSession.Information, si) {
+				si.Title = newtitle
+				si.Date = newdate
+				si.StartTime = newstarttime
+				si.EndTime = newendtime
+				si.Location = newlocation
+				si.Description = newdescription
+			}
+		}
+		// update the found session record
+		su.UpdateRecord(db)
+	}
+
 	foundSession.Information.Title = newtitle
 	foundSession.Information.Date = newdate
 	foundSession.Information.StartTime = newstarttime
@@ -508,6 +538,8 @@ func updatesession(w http.ResponseWriter, r *http.Request) {
 	foundSession.Information.Location = newlocation
 	foundSession.Information.Description = newdescription
 	foundSession.PatientsNeeded = newpatientsneeded
+
+	fmt.Println("New Session Start Time: ", foundSession.Information.StartTime)
 
 	err = foundSession.UpdateRecord(db)
 	if err != nil {
@@ -1099,7 +1131,7 @@ func togglehourglass(w http.ResponseWriter, r *http.Request) {
 			// find the session needed to be updated
 			for _, si := range allSessions {
 
-				if availableSessionRecord.Information == si {
+				if sessionEqual(availableSessionRecord.Information, si) {
 					si.ExpiredDate = availableSessionRecord.Information.ExpiredDate
 				}
 			}
