@@ -114,6 +114,11 @@
             <h5>Location : {{ .Information.Location }}</h5>
             <h5>Description : </h5>
             <p>&emsp;{{ .Information.Description }}</p>
+            {{ if .Information.ExpiredDate }}
+            <h5>Sign Up Expires : {{ .Information.ExpiredDate }}</h5>
+            {{ else }}
+            <h5>Sign Up Expires : None</h5>
+            {{ end }}
             <h5>SPs Available | <span class="badge bg-primary">{{ .PatientsAvailable | len }}</span></h5>
             {{ if .PatientsAvailable }}
             {{ range .PatientsAvailable }}

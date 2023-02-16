@@ -194,16 +194,17 @@ func (s *Session) Scan(value interface{}) error {
 func (s Session) Create(title string, date string, starttime string, endtime string, location string, description string) *Session {
 	return &Session{
 		Information: &SessionInfo{
-			Title:       title,
-			Date:        date,
-			StartTime:   starttime,
-			EndTime:     endtime,
-			Location:    location,
-			Description: description,
-			Status:      "noresponse",
-			CreatedDate: "",
-			ExpiredDate: "",
-			ShowSession: true},
+			Title:             title,
+			Date:              date,
+			StartTime:         starttime,
+			EndTime:           endtime,
+			Location:          location,
+			Description:       description,
+			Status:            "noresponse",
+			CreatedDate:       "",
+			ExpiredDate:       "",
+			CheckMarkAssigned: false,
+			ShowSession:       true},
 		Instructors:         []*Instructor{},
 		PatientsNeeded:      0,
 		PatientsAssigned:    []*SpUser{},
@@ -215,16 +216,17 @@ func (s Session) Create(title string, date string, starttime string, endtime str
 }
 
 type SessionInfo struct {
-	Title       string `json:"Title"`
-	Date        string `json:"Date"`
-	StartTime   string `json:"StartTime"`
-	EndTime     string `json:"EndTime"`
-	Location    string `json:"Location"`
-	Description string `json:"Description"`
-	Status      string `json:"Status"`
-	CreatedDate string `json:"CreatedDate"`
-	ExpiredDate string `json:"ExpiredDate"`
-	ShowSession bool   `json:"ShowSession"`
+	Title             string `json:"Title"`
+	Date              string `json:"Date"`
+	StartTime         string `json:"StartTime"`
+	EndTime           string `json:"EndTime"`
+	Location          string `json:"Location"`
+	Description       string `json:"Description"`
+	Status            string `json:"Status"`
+	CreatedDate       string `json:"CreatedDate"`
+	ExpiredDate       string `json:"ExpiredDate"`
+	ShowSession       bool   `json:"ShowSession"`
+	CheckMarkAssigned bool   `json:"CheckMarkAssigned"`
 }
 type SessionInfoContainer []*SessionInfo
 

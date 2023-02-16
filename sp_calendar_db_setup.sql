@@ -42,6 +42,7 @@ CREATE TABLE Sessions (
 	status varchar(40),
 	createddate varchar(20),
 	expireddate varchar(20),
+	CheckMarkAssigned BOOL NOT NULL,
 	ShowSession BOOL NOT NULL,
 	Instructors JSONB,
 	PatientsNeeded int4 NOT NULL,

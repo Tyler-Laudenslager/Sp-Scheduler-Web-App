@@ -15,6 +15,27 @@ const (
 	httpRedirectResponse = http.StatusFound
 )
 
+func sessionEqual(session1, session2 *SessionInfo) bool {
+	if session1.Title != session2.Title {
+		return false
+	}
+	if session1.Date != session2.Date {
+		return false
+	}
+	if session1.StartTime != session2.StartTime {
+		return false
+	}
+	if session1.EndTime != session2.EndTime {
+		return false
+	}
+	if session1.Location != session2.Location {
+		return false
+	}
+	if session1.Description != session2.Description {
+		return false
+	}
+	return true
+}
 func formatTitle(title string) string {
 	title = strings.ReplaceAll(title, ",", "")
 	title = strings.ReplaceAll(title, ".", "")
@@ -54,7 +75,7 @@ func GetSessionArchiveDates(sessions []*Session) []string {
 	return dates
 }
 
-func CheckExpirationDate(expireddate string) bool {
+func CheckExpired(expireddate string) bool {
 	loc, err := time.LoadLocation("EST")
 	if err != nil {
 		fmt.Println("Error in LoadLocation CheckExpirationDate :", err)
@@ -62,9 +83,32 @@ func CheckExpirationDate(expireddate string) bool {
 	if expireddate != "" {
 		expiredDateParsed, _ := time.Parse("01/02/2006", expireddate)
 		currentDate := time.Now().In(loc).AddDate(0, 0, -1)
-		return expiredDateParsed.After(currentDate)
+		return currentDate.After(expiredDateParsed)
+	} else {
+		return false
 	}
-	return false
+}
+
+func CheckNotExpired(expireddate string) bool {
+	loc, err := time.LoadLocation("EST")
+	if err != nil {
+		fmt.Println("Error in LoadLocation CheckExpirationDate :", err)
+	}
+	if expireddate != "" {
+		expiredDateParsed, _ := time.Parse("01/02/2006", expireddate)
+		currentDate := time.Now().In(loc).AddDate(0, 0, -1)
+		return currentDate.Before(expiredDateParsed)
+	} else {
+		return false
+	}
+}
+
+func ExpirationDateSet(expireddate string) bool {
+	if expireddate != "" {
+		return true
+	} else {
+		return false
+	}
 }
 
 func pastSession(date string) bool {
@@ -132,12 +176,17 @@ func logout(w http.ResponseWriter, r *http.Request) {
 
 	// Revoke users authentication
 	session.Values["authenticated"] = false
+	session.Options.MaxAge = -1
 	session.Save(r, w)
 	http.Redirect(w, r, "/login", httpRedirectResponse)
 }
 
 func dashboard(w http.ResponseWriter, r *http.Request) {
 	session, _ := store.Get(r, "sessionAuthSPCalendar")
+	if session.Options.MaxAge != 3600 {
+		session.Options.MaxAge = 60 * 60
+		session.Options.Secure = true
+	}
 	if auth, ok := session.Values["authenticated"].(bool); !ok || !auth {
 		http.Redirect(w, r, "/login", httpRedirectResponse)
 		return
@@ -368,7 +417,9 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 		funcMap := template.FuncMap{
 			"formatTitle":           formatTitle,
 			"formatDate":            formatDate,
-			"CheckExpirationDate":   CheckExpirationDate,
+			"ExpirationDateSet":     ExpirationDateSet,
+			"CheckExpired":          CheckExpired,
+			"CheckNotExpired":       CheckNotExpired,
 			"sortSessionInfoByDate": sortSessionInfoByDate,
 			"sortSessionByDate":     sortSessionByDate,
 			"StatusAssigned":        StatusAssigned,
@@ -401,13 +452,17 @@ func createsession(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Error converting patients needed to integer")
 	}
 	newSession := Session{}.Create(title, date, starttime, endtime, location, description)
-	timenow := time.Now()
+	loc, err := time.LoadLocation("EST")
+	if err != nil {
+		fmt.Println("Error in LoadLocation CheckExpirationDate :", err)
+	}
+	timenow := time.Now().In(loc)
 	datetime, _ := time.Parse("01/02/2006", date)
 	dateFilter := datetime.Format("January, 2006")
 	session.Values["dateFilter"] = dateFilter
 	session.Save(r, w)
 	newSession.Information.CreatedDate = timenow.Format("01/02/2006")
-	newSession.Information.ExpiredDate = timenow.AddDate(0, 0, 7).Format("01/02/2006")
+	newSession.Information.ExpiredDate = ""
 	newSession.Information.ShowSession = false
 	newSession.PatientsNeeded = patientsneeded
 	err = newSession.MakeRecord(db)
@@ -541,59 +596,6 @@ func assignsp(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
-	if len(foundSession.PatientsAssigned) > 0 {
-		for _, spuser := range foundSession.PatientsAssigned {
-			username := spuser.Username
-			spuserRecord, err := GetSpUserRecord(username, db)
-			if err != nil {
-				fmt.Println("Error Getting Record: ", err)
-				return
-			}
-			duplicate := false
-			for _, si := range spuserRecord.SessionsAssigned {
-				if si.Title == foundSession.Information.Title {
-					duplicate = true
-				}
-			}
-			if !duplicate {
-				spuserRecord.SessionsAssigned = append(spuserRecord.SessionsAssigned, foundSession.Information)
-			}
-			if len(spuserRecord.SessionsAvailable) > 0 {
-				for i := 0; i < len(spuserRecord.SessionsAvailable); i++ {
-					if spuserRecord.SessionsAvailable[i].Title == foundSession.Information.Title {
-						spuserRecord.SessionsAvailable = append(spuserRecord.SessionsAvailable[:i], spuserRecord.SessionsAvailable[i+1:]...)
-					}
-				}
-			}
-			if len(spuserRecord.SessionsSelected) > 0 {
-				for i := 0; i < len(spuserRecord.SessionsSelected); i++ {
-					if spuserRecord.SessionsSelected[i].Title == foundSession.Information.Title {
-						spuserRecord.SessionsSelected = append(spuserRecord.SessionsSelected[:i], spuserRecord.SessionsSelected[i+1:]...)
-					}
-				}
-			}
-			if len(spuserRecord.SessionsPool) > 0 {
-				for i := 0; i < len(spuserRecord.SessionsPool); i++ {
-					if spuserRecord.SessionsPool[i].Title == foundSession.Information.Title {
-						spuserRecord.SessionsPool = append(spuserRecord.SessionsPool[:i], spuserRecord.SessionsPool[i+1:]...)
-					}
-				}
-			}
-			if len(spuserRecord.SessionsUnavailable) > 0 {
-				for i := 0; i < len(spuserRecord.SessionsUnavailable); i++ {
-					if spuserRecord.SessionsUnavailable[i].Title == foundSession.Information.Title {
-						spuserRecord.SessionsUnavailable = append(spuserRecord.SessionsUnavailable[:i], spuserRecord.SessionsUnavailable[i+1:]...)
-					}
-				}
-			}
-			spuserRecord.TotalSessionsAssigned = spuserRecord.TotalSessionsAssigned + 1
-			err = spuserRecord.UpdateRecord(db)
-			if err != nil {
-				fmt.Println("Error Updating Record: ", err)
-				return
-			}
-		}
-	}
 
 	if len(foundSession.PatientsAvailable) > 0 {
 		for _, spuser := range foundSession.PatientsAvailable {
@@ -605,7 +607,7 @@ func assignsp(w http.ResponseWriter, r *http.Request) {
 			}
 			duplicate := false
 			for _, si := range spuserRecord.SessionsAvailable {
-				if si.Title == foundSession.Information.Title {
+				if sessionEqual(si, foundSession.Information) {
 					duplicate = true
 				}
 			}
@@ -614,28 +616,28 @@ func assignsp(w http.ResponseWriter, r *http.Request) {
 			}
 			if len(spuserRecord.SessionsAssigned) > 0 {
 				for i := 0; i < len(spuserRecord.SessionsAssigned); i++ {
-					if spuserRecord.SessionsAssigned[i].Title == foundSession.Information.Title {
+					if sessionEqual(spuserRecord.SessionsAssigned[i], foundSession.Information) {
 						spuserRecord.SessionsAssigned = append(spuserRecord.SessionsAssigned[:i], spuserRecord.SessionsAssigned[i+1:]...)
 					}
 				}
 			}
 			if len(spuserRecord.SessionsPool) > 0 {
 				for i := 0; i < len(spuserRecord.SessionsPool); i++ {
-					if spuserRecord.SessionsPool[i].Title == foundSession.Information.Title {
+					if sessionEqual(spuserRecord.SessionsPool[i], foundSession.Information) {
 						spuserRecord.SessionsPool = append(spuserRecord.SessionsPool[:i], spuserRecord.SessionsPool[i+1:]...)
 					}
 				}
 			}
 			if len(spuserRecord.SessionsUnavailable) > 0 {
 				for i := 0; i < len(spuserRecord.SessionsUnavailable); i++ {
-					if spuserRecord.SessionsUnavailable[i].Title == foundSession.Information.Title {
+					if sessionEqual(spuserRecord.SessionsUnavailable[i], foundSession.Information) {
 						spuserRecord.SessionsUnavailable = append(spuserRecord.SessionsUnavailable[:i], spuserRecord.SessionsUnavailable[i+1:]...)
 					}
 				}
 			}
 			if len(spuserRecord.SessionsSelected) > 0 {
 				for i := 0; i < len(spuserRecord.SessionsSelected); i++ {
-					if spuserRecord.SessionsSelected[i].Title == foundSession.Information.Title {
+					if sessionEqual(spuserRecord.SessionsSelected[i], foundSession.Information) {
 						spuserRecord.SessionsSelected = append(spuserRecord.SessionsSelected[:i], spuserRecord.SessionsSelected[i+1:]...)
 					}
 				}
@@ -664,28 +666,28 @@ func assignsp(w http.ResponseWriter, r *http.Request) {
 			//delete any occurances of session from other session boxes
 			if len(spuserRecord.SessionsAvailable) > 0 {
 				for i := 0; i < len(spuserRecord.SessionsAvailable); i++ {
-					if spuserRecord.SessionsAvailable[i].Title == foundSession.Information.Title {
+					if sessionEqual(spuserRecord.SessionsAvailable[i], foundSession.Information) {
 						spuserRecord.SessionsAvailable = append(spuserRecord.SessionsAvailable[:i], spuserRecord.SessionsAvailable[i+1:]...)
 					}
 				}
 			}
 			if len(spuserRecord.SessionsAssigned) > 0 {
 				for i := 0; i < len(spuserRecord.SessionsAssigned); i++ {
-					if spuserRecord.SessionsAssigned[i].Title == foundSession.Information.Title {
+					if sessionEqual(spuserRecord.SessionsAssigned[i], foundSession.Information) {
 						spuserRecord.SessionsAssigned = append(spuserRecord.SessionsAssigned[:i], spuserRecord.SessionsAssigned[i+1:]...)
 					}
 				}
 			}
 			if len(spuserRecord.SessionsPool) > 0 {
 				for i := 0; i < len(spuserRecord.SessionsPool); i++ {
-					if spuserRecord.SessionsPool[i].Title == foundSession.Information.Title {
+					if sessionEqual(spuserRecord.SessionsPool[i], foundSession.Information) {
 						spuserRecord.SessionsPool = append(spuserRecord.SessionsPool[:i], spuserRecord.SessionsPool[i+1:]...)
 					}
 				}
 			}
 			if len(spuserRecord.SessionsUnavailable) > 0 {
 				for i := 0; i < len(spuserRecord.SessionsUnavailable); i++ {
-					if spuserRecord.SessionsUnavailable[i].Title == foundSession.Information.Title {
+					if sessionEqual(spuserRecord.SessionsUnavailable[i], foundSession.Information) {
 						spuserRecord.SessionsUnavailable = append(spuserRecord.SessionsUnavailable[:i], spuserRecord.SessionsUnavailable[i+1:]...)
 					}
 				}
@@ -989,6 +991,60 @@ func changepassword(w http.ResponseWriter, r *http.Request) {
 }
 
 func toggleshowsession(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Show Session Toggled")
+	sessionInfo := SessionInfo{
+		Title:       r.PostFormValue("title"),
+		Date:        r.PostFormValue("date"),
+		StartTime:   r.PostFormValue("starttime"),
+		EndTime:     r.PostFormValue("endtime"),
+		Location:    r.PostFormValue("location"),
+		Description: r.PostFormValue("description"),
+	}
+	// Get the Session
+	availableSessionRecord, err := GetSessionRecord(&sessionInfo, db)
+	if err != nil {
+		fmt.Println("Error GetSessionRecord in signupavailable", err)
+	}
+	// Update Session Details
+	if availableSessionRecord.Information.ShowSession {
+		availableSessionRecord.Information.ShowSession = false
+	} else {
+		availableSessionRecord.Information.ShowSession = true
+	}
+	// Update SP users with those session details
+	allSpUsers, err := GetAllSpUserRecords(db)
+	if err != nil {
+		fmt.Println("Error Getting all SP User records: ", err)
+	}
+	for _, su := range allSpUsers {
+		allSessions := append(su.SessionsAssigned, su.SessionsAvailable...)
+		allSessions = append(allSessions, su.SessionsUnavailable...)
+		allSessions = append(allSessions, su.SessionsPool...)
+		// Find the session in the SP records to update
+		for _, si := range allSessions {
+			if availableSessionRecord.Information.Title == si.Title {
+				si.ShowSession = availableSessionRecord.Information.ShowSession
+			}
+		}
+		// update each SP User
+		su.UpdateRecord(db)
+	}
+	// Update Original Session Record
+	err = availableSessionRecord.UpdateRecord(db)
+	if err != nil {
+		fmt.Println("Error Updating Session Record in Toggle Show Session : ", err)
+	}
+	uniqueID := formatTitle(availableSessionRecord.Information.Title)
+	uniqueID = formatTitle(uniqueID + availableSessionRecord.Information.Date)
+	uniqueID = formatTitle(uniqueID + availableSessionRecord.Information.StartTime)
+	uniqueID = formatTitle(uniqueID + availableSessionRecord.Information.EndTime)
+	uniqueID = formatTitle(uniqueID + availableSessionRecord.Information.Location)
+	// send user back to the correct position on the page
+	http.Redirect(w, r, "/dashboard#"+uniqueID, httpRedirectResponse)
+}
+
+func togglehourglass(w http.ResponseWriter, r *http.Request) {
+	//Obtain Session from Session Information
 	sessionInfo := SessionInfo{
 		Title:       r.PostFormValue("title"),
 		Date:        r.PostFormValue("date"),
@@ -1002,41 +1058,151 @@ func toggleshowsession(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println("Error GetSessionRecord in signupavailable", err)
 	}
-	if availableSessionRecord.Information.ShowSession {
-		availableSessionRecord.Information.ShowSession = false
+	uniqueID := formatTitle(availableSessionRecord.Information.Title)
+	uniqueID = formatTitle(uniqueID + availableSessionRecord.Information.Date)
+	uniqueID = formatTitle(uniqueID + availableSessionRecord.Information.StartTime)
+	uniqueID = formatTitle(uniqueID + availableSessionRecord.Information.EndTime)
+	uniqueID = formatTitle(uniqueID + availableSessionRecord.Information.Location)
+	if availableSessionRecord.Information.ExpiredDate != "" {
+		fmt.Println("Expired Date Reached Reset")
+		if CheckExpired(availableSessionRecord.Information.ExpiredDate) {
+			availableSessionRecord.Information.ExpiredDate = ""
+			err = availableSessionRecord.UpdateRecord(db)
+			if err != nil {
+				fmt.Println("Error updating expired record in toggle hour glass", err)
+			}
+			http.Redirect(w, r, "/dashboard#"+uniqueID, httpRedirectResponse)
+		}
 	} else {
-		availableSessionRecord.Information.ShowSession = true
+		//fmt.Println("Session Expires: ", availableSessionRecord.Information.ExpiredDate)
+		// end Session Information block
+		// Load Eastern Standard Time
+		loc, err := time.LoadLocation("EST")
+		if err != nil {
+			fmt.Println("Error loading location time in toggleHourGlass")
+		}
+		timenow := time.Now().In(loc)
+		// end Load of Eastern Standard Time
+		// change expiration date of session
+		availableSessionRecord.Information.ExpiredDate = timenow.AddDate(0, 0, 5).Format("01/02/2006")
+		// get All SP Records from Database
+		allSpUsers, err := GetAllSpUserRecords(db)
+		if err != nil {
+			fmt.Println("Error Getting all SP User records: ", err)
+		}
+		// For Every SP record in the database
+		for _, su := range allSpUsers {
+			// collect all sessions except for assigned ones
+			allSessions := append(su.SessionsAssigned, su.SessionsAvailable...)
+			allSessions = append(allSessions, su.SessionsUnavailable...)
+			allSessions = append(allSessions, su.SessionsPool...)
+			// find the session needed to be updated
+			for _, si := range allSessions {
+
+				if availableSessionRecord.Information == si {
+					si.ExpiredDate = availableSessionRecord.Information.ExpiredDate
+				}
+			}
+			// update the found session record
+			su.UpdateRecord(db)
+		}
+		//fmt.Println("New Session Expiration: ", availableSessionRecord.Information.ExpiredDate)
+		err = availableSessionRecord.UpdateRecord(db)
+		if err != nil {
+			fmt.Println("Error Updating Session Record in Toggle Show Session : ", err)
+		}
+		http.Redirect(w, r, "/dashboard#"+uniqueID, httpRedirectResponse)
 	}
-	timenow := time.Now()
-	availableSessionRecord.Information.CreatedDate = timenow.Format("01/02/2006")
-	availableSessionRecord.Information.ExpiredDate = timenow.AddDate(0, 0, 7).Format("01/02/2006")
-	allSpUsers, err := GetAllSpUserRecords(db)
+}
+
+func togglechecksquare(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Check Square Toggled")
+	sessionInfo := SessionInfo{
+		Title:       r.PostFormValue("title"),
+		Date:        r.PostFormValue("date"),
+		StartTime:   r.PostFormValue("starttime"),
+		EndTime:     r.PostFormValue("endtime"),
+		Location:    r.PostFormValue("location"),
+		Description: r.PostFormValue("description"),
+	}
+	//Put this session into all the SPs assigned sessionsAssignedBox
+	foundSession, err := GetSessionRecord(&sessionInfo, db)
 	if err != nil {
-		fmt.Println("Error Getting all SP User records: ", err)
+		fmt.Println("Error GetSessionRecord in signupavailable", err)
 	}
-	for _, su := range allSpUsers {
-		allSessions := append(su.SessionsAssigned, su.SessionsAvailable...)
-		allSessions = append(allSessions, su.SessionsUnavailable...)
-		allSessions = append(allSessions, su.SessionsPool...)
-		for _, si := range allSessions {
-			if availableSessionRecord.Information.Title == si.Title {
-				si.ShowSession = availableSessionRecord.Information.ShowSession
+	if !foundSession.Information.CheckMarkAssigned {
+		foundSession.Information.CheckMarkAssigned = true
+		err = foundSession.UpdateRecord(db)
+		if err != nil {
+			fmt.Println("Error updating record in togglecheckassign ", err)
+		}
+	}
+	if len(foundSession.PatientsAssigned) > 0 {
+		for _, spuser := range foundSession.PatientsAssigned {
+			username := spuser.Username
+			spuserRecord, err := GetSpUserRecord(username, db)
+			if err != nil {
+				fmt.Println("Error Getting Record: ", err)
+				return
+			}
+			duplicate := false
+			for _, si := range spuserRecord.SessionsAssigned {
+				if si == foundSession.Information {
+					duplicate = true
+				}
+			}
+			if !duplicate {
+				spuserRecord.SessionsAssigned = append(spuserRecord.SessionsAssigned, foundSession.Information)
+			}
+			if len(spuserRecord.SessionsAvailable) > 0 {
+				for i := 0; i < len(spuserRecord.SessionsAvailable); i++ {
+					if sessionEqual(spuserRecord.SessionsAvailable[i], foundSession.Information) {
+						spuserRecord.SessionsAvailable = append(spuserRecord.SessionsAvailable[:i], spuserRecord.SessionsAvailable[i+1:]...)
+					}
+				}
+			}
+			if len(spuserRecord.SessionsSelected) > 0 {
+				fmt.Println("Made it to remove from selected sp user")
+				for i := 0; i < len(spuserRecord.SessionsSelected); i++ {
+					if sessionEqual(spuserRecord.SessionsSelected[i], foundSession.Information) {
+						fmt.Println("Made it to the removal part")
+						spuserRecord.SessionsSelected = append(spuserRecord.SessionsSelected[:i], spuserRecord.SessionsSelected[i+1:]...)
+					}
+				}
+			}
+			if len(spuserRecord.SessionsPool) > 0 {
+				for i := 0; i < len(spuserRecord.SessionsPool); i++ {
+					if sessionEqual(spuserRecord.SessionsPool[i], foundSession.Information) {
+						spuserRecord.SessionsPool = append(spuserRecord.SessionsPool[:i], spuserRecord.SessionsPool[i+1:]...)
+					}
+				}
+			}
+			if len(spuserRecord.SessionsUnavailable) > 0 {
+				for i := 0; i < len(spuserRecord.SessionsUnavailable); i++ {
+					if sessionEqual(spuserRecord.SessionsUnavailable[i], foundSession.Information) {
+						spuserRecord.SessionsUnavailable = append(spuserRecord.SessionsUnavailable[:i], spuserRecord.SessionsUnavailable[i+1:]...)
+					}
+				}
+			}
+			spuserRecord.TotalSessionsAssigned = spuserRecord.TotalSessionsAssigned + 1
+			err = spuserRecord.UpdateRecord(db)
+			if err != nil {
+				fmt.Println("Error Updating Record: ", err)
+				return
 			}
 		}
-		su.UpdateRecord(db)
 	}
-	err = availableSessionRecord.UpdateRecord(db)
-	if err != nil {
-		fmt.Println("Error Updating Session Record in Toggle Show Session : ", err)
-	}
-	http.Redirect(w, r, "/dashboard", httpRedirectResponse)
+	uniqueID := formatTitle(foundSession.Information.Title)
+	uniqueID = formatTitle(uniqueID + foundSession.Information.Date)
+	uniqueID = formatTitle(uniqueID + foundSession.Information.StartTime)
+	uniqueID = formatTitle(uniqueID + foundSession.Information.EndTime)
+	uniqueID = formatTitle(uniqueID + foundSession.Information.Location)
+
+	http.Redirect(w, r, "/dashboard#"+uniqueID, httpRedirectResponse)
 }
 
 func authenticate(w http.ResponseWriter, r *http.Request) {
 	session, _ := store.Get(r, "sessionAuthSPCalendar")
-	// 60 seconds * 60 minutes = 1 hour max age
-	session.Options.MaxAge = 60 * 60 // in seconds
-	session.Options.Secure = true
 
 	username := r.PostFormValue("userid")
 	username = strings.ToLower(username)
