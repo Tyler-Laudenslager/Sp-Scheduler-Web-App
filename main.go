@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/gorilla/sessions"
 )
@@ -15,10 +14,11 @@ var (
 )
 
 func init() {
-	loc, err := time.LoadLocation("EST")
+
+	/* // loc, err := time.LoadLocation("EST")
 	if err != nil {
 		fmt.Println("Error in LoadLocation CheckExpirationDate :", err)
-	}
+	} */
 	hashedPassword, err := HashPassword("letmein")
 	if err != nil {
 		fmt.Println("Error Hashing Password")
@@ -43,9 +43,9 @@ func init() {
 	if err != nil {
 		fmt.Println("Error Hashing Password")
 	}
-	session := Session{}.Create("Sacred Heart Check-UP", "01/25/2025", "11:00AM", "12:00PM", "Sacred Heart", "Check-Up")
+	/* session := Session{}.Create("Sacred Heart Check-UP", "01/25/2025", "11:00AM", "12:00PM", "Sacred Heart", "Check-Up")
 	session.Information.CreatedDate = time.Now().In(loc).Format("01/02/2006")
-	session.Information.ExpiredDate = time.Now().In(loc).AddDate(0, 0, -1).Format("01/02/2006")
+	session.Information.ExpiredDate = time.Now().In(loc).Format("01/02/2006")
 	session.PatientsNeeded = 6
 	session.Instructors = append(session.Instructors, Instructor{}.Create("Joe Thompson", "Director"))
 	err = session.MakeRecord(db)
@@ -76,7 +76,7 @@ func init() {
 	err = session4.MakeRecord(db)
 	if err != nil {
 		fmt.Println("Error Making Session Record 4: ", err)
-	}
+	} */
 	spuser := SpUser{
 		Name:     *Name{}.Create("Robert Pike"),
 		Username: "rpike",
@@ -157,6 +157,7 @@ func init() {
 		fmt.Println("Error Making Record -> ", err)
 		return
 	}
+
 }
 
 func main() {
@@ -177,6 +178,7 @@ func main() {
 	http.HandleFunc("/assignsp", assignsp)
 	http.HandleFunc("/signupavailable", signupavailable)
 	http.HandleFunc("/signupnotavailable", signupnotavailable)
+	http.HandleFunc("/sessionbackup", sessionbackup)
 	http.HandleFunc("/changeemail", changeemail)
 	http.HandleFunc("/changepassword", changepassword)
 	http.HandleFunc("/createSPRecord", createSPRecord)

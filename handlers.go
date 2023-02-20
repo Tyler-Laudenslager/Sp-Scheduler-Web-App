@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"sort"
 	"strconv"
@@ -82,7 +83,7 @@ func CheckExpired(expireddate string) bool {
 	}
 	if expireddate != "" {
 		expiredDateParsed, _ := time.Parse("01/02/2006", expireddate)
-		currentDate := time.Now().In(loc).AddDate(0, 0, -1)
+		currentDate := time.Now().In(loc)
 		return currentDate.After(expiredDateParsed)
 	} else {
 		return false
@@ -96,7 +97,7 @@ func CheckNotExpired(expireddate string) bool {
 	}
 	if expireddate != "" {
 		expiredDateParsed, _ := time.Parse("01/02/2006", expireddate)
-		currentDate := time.Now().In(loc).AddDate(0, 0, -1)
+		currentDate := time.Now().In(loc)
 		return currentDate.Before(expiredDateParsed)
 	} else {
 		return false
@@ -569,6 +570,7 @@ func assignsp(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Error getting record in database", err)
 		return
 	}
+	foundSession.Information.CheckMarkAssigned = false
 	usersToRemoveAvailable := make([]string, 0)
 	usersToRemoveAssigned := make([]string, 0)
 	usersToRemoveSelected := make([]string, 0)
@@ -1096,9 +1098,9 @@ func togglehourglass(w http.ResponseWriter, r *http.Request) {
 	uniqueID = formatTitle(uniqueID + availableSessionRecord.Information.EndTime)
 	uniqueID = formatTitle(uniqueID + availableSessionRecord.Information.Location)
 	if availableSessionRecord.Information.ExpiredDate != "" {
-		fmt.Println("Expired Date Reached Reset")
 		if CheckExpired(availableSessionRecord.Information.ExpiredDate) {
 			availableSessionRecord.Information.ExpiredDate = ""
+			availableSessionRecord.Information.ShowSession = false
 			err = availableSessionRecord.UpdateRecord(db)
 			if err != nil {
 				fmt.Println("Error updating expired record in toggle hour glass", err)
@@ -1117,6 +1119,7 @@ func togglehourglass(w http.ResponseWriter, r *http.Request) {
 		// end Load of Eastern Standard Time
 		// change expiration date of session
 		availableSessionRecord.Information.ExpiredDate = timenow.AddDate(0, 0, 5).Format("01/02/2006")
+		availableSessionRecord.Information.ShowSession = true
 		// get All SP Records from Database
 		allSpUsers, err := GetAllSpUserRecords(db)
 		if err != nil {
@@ -1148,7 +1151,6 @@ func togglehourglass(w http.ResponseWriter, r *http.Request) {
 }
 
 func togglechecksquare(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Check Square Toggled")
 	sessionInfo := SessionInfo{
 		Title:       r.PostFormValue("title"),
 		Date:        r.PostFormValue("date"),
@@ -1164,6 +1166,7 @@ func togglechecksquare(w http.ResponseWriter, r *http.Request) {
 	}
 	if !foundSession.Information.CheckMarkAssigned {
 		foundSession.Information.CheckMarkAssigned = true
+		foundSession.Information.ShowSession = true
 		err = foundSession.UpdateRecord(db)
 		if err != nil {
 			fmt.Println("Error updating record in togglecheckassign ", err)
@@ -1321,6 +1324,36 @@ func sendjson(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(output)
+}
+
+func sessionbackup(w http.ResponseWriter, r *http.Request) {
+	file, _, err := r.FormFile("BackUpSessions")
+	if err == nil {
+		data, err := io.ReadAll(file)
+		if err == nil {
+			SpUsersBox := make(SpUsersBox, 0)
+			SpManagersBox := make(SpManagersBox, 0)
+			SessionsBox := make(SpSessionsBox, 0)
+			HospitalCalendar := HospitalCalendar{
+				Users:    SpUsersBox,
+				Managers: SpManagersBox,
+				Sessions: SessionsBox,
+			}
+			err = json.Unmarshal(data, &HospitalCalendar)
+			if err != nil {
+				fmt.Fprintln(w, "Error Uploading File!!")
+			}
+			for _, session := range HospitalCalendar.Sessions {
+				_ = session.DeleteRecord(db)
+				err = session.MakeRecord(db)
+				if err != nil {
+					fmt.Println(w, "Error Creating Session Record")
+				}
+			}
+			http.Redirect(w, r, "/dashboard", httpRedirectResponse)
+
+		}
+	}
 }
 
 func createSPRecord(w http.ResponseWriter, r *http.Request) {

@@ -204,7 +204,7 @@ func (s Session) Create(title string, date string, starttime string, endtime str
 			CreatedDate:       "",
 			ExpiredDate:       "",
 			CheckMarkAssigned: false,
-			ShowSession:       true},
+			ShowSession:       false},
 		Instructors:         []*Instructor{},
 		PatientsNeeded:      0,
 		PatientsAssigned:    []*SpUser{},

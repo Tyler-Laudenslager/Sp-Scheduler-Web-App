@@ -92,9 +92,20 @@
                     </form>
                 </div>
             </div>
-            <ul class="listgroup mb-4 mt-2">
+            <ul class="listgroup mb-2 mt-2">
             {{ template "session-content" .User }}
             </ul>
+            {{ if .User.SessionsUnmanaged }}
+            <button type="button" class="btn btn-primary mb-4 mt-2 position: relative"
+            style="background-color:white; color:#4581ef;">
+                <a href="/dashboard" style="text-decoration: none;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-90deg-up" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M4.854 1.146a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L4 2.707V12.5A2.5 2.5 0 0 0 6.5 15h8a.5.5 0 0 0 0-1h-8A1.5 1.5 0 0 1 5 12.5V2.707l3.146 3.147a.5.5 0 1 0 .708-.708l-4-4z"/>
+                    </svg>
+                    Return to Top
+                </a>
+            </button>
+            {{ end }}
         </div>
     </div>
 </div>
@@ -569,26 +580,60 @@
 </div>
 
 <div class="offcanvas offcanvas-start" id="SessionArchives" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" aria-labelledby="SessionArchives">
-    <div class="offcanvas-header">
+    <div class="offcanvas-header" style="background-color: #cef3f3;">
     <h5 class="offcanvas-title" id="offcanvasScrollingLabel">Session Archives</h5>
     <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
-    <div class="offcanvas-body">
+    <div class="offcanvas-body" style="background-color: #f8f9f9;">
         <div class="vstack gap-2">
         <form action="/dashboard" class="mt-2 position relative" method="post" enctype="application/x-www-form-urlencoded">
             <input type="hidden" name="date" value="allsessions">
-            <button type="submit" class="btn btn-primary" data-bs-dismiss="offcanvas">
-                <h5>Show All Sessions</h5>
+            <button type="submit" class="btn btn-outline-primary" data-bs-dismiss="offcanvas">
+                <h5>All Sessions</h5>
             </button>
         </form>
         {{ range .Archives }}
             <form action="/dashboard" class="mt-2 position relative" method="post" enctype="application/x-www-form-urlencoded">
                 <input type="hidden" name="date" value="{{ . }}">
-                <button type="submit" class="btn btn-primary" data-bs-dismiss="offcanvas">
+                <button type="submit" class="btn btn-outline-primary" data-bs-dismiss="offcanvas">
                     <h5>{{ . }}</h5>
                 </button>
             </form>
         {{ end }}
+
+        <button type="button" class="btn btn-outline-danger position-absolute me-4 bottom-0 end-0 translate-middle-y" data-bs-toggle="modal" data-bs-target="#RestoreBackUp">
+                    Restore Sessions From Backup File
+        </button>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="RestoreBackUp">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+    
+          <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Restore Sessions from Backup File</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+    
+          <!-- Modal body -->
+            <div class="modal-body">
+                <form action="/sessionbackup" method="post" enctype="multipart/form-data">
+                <label class="form-label" for="backupsession">Choose Back Up Session JSON File</label>
+                <input type="file" class="form-control" id="backupsession" name="BackUpSessions"/>
+                <button type="submit" class="btn btn-outline-success mt-4" data-bs-dismiss="offcanvas">
+                    Upload
+                </button> 
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Close
+                </button>
+            </div>
         </div>
     </div>
 </div>
