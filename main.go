@@ -19,21 +19,21 @@ func init() {
 	if err != nil {
 		fmt.Println("Error in LoadLocation CheckExpirationDate :", err)
 	} */
-	hashedPassword, err := HashPassword("letmein")
+	/* hashedPassword, err := HashPassword("letmein")
 	if err != nil {
 		fmt.Println("Error Hashing Password")
 		return
-	}
+	} */
 	hashedPassword2, err := HashPassword("letmeinman")
 	if err != nil {
 		fmt.Println("Error Hashing Password")
 		return
 	}
-	hashedPassword3, err := HashPassword("letmein2")
+	/* hashedPassword3, err := HashPassword("letmein2")
 	if err != nil {
 		fmt.Println("Error Hashing Password")
 		return
-	}
+	} */
 	hashedPassword5, err := HashPassword("letmeinman2")
 	if err != nil {
 		fmt.Println("Error Hashing Password")
@@ -77,7 +77,7 @@ func init() {
 	if err != nil {
 		fmt.Println("Error Making Session Record 4: ", err)
 	} */
-	spuser := SpUser{
+	/* spuser := SpUser{
 		Name:     *Name{}.Create("Robert Pike"),
 		Username: "rpike",
 		Role:     SP,
@@ -91,7 +91,7 @@ func init() {
 		Role:     SP,
 		Password: hashedPassword3,
 		Email:    "cdarwin@duck.com",
-	}
+	} */
 
 	spmanager := SpManager{
 		Name:     *Name{}.Create("Emily Garey"),
@@ -126,7 +126,7 @@ func init() {
 		return
 	}
 
-	err = spuser.MakeRecord(db)
+	/* err = spuser.MakeRecord(db)
 	if err != nil {
 		fmt.Println("Error Making Record -> ", err)
 		return
@@ -136,7 +136,7 @@ func init() {
 	if err != nil {
 		fmt.Println("Error Making Record -> ", err)
 		return
-	}
+	} */
 
 	spmanager.AssignedPatients, err = GetAllSpUserRecords(db)
 	if err != nil {
