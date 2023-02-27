@@ -1357,6 +1357,12 @@ func sessionbackup(w http.ResponseWriter, r *http.Request) {
 					fmt.Fprintln(w, "Error Creating User Record")
 				}
 			}
+			for _, manager := range HospitalCalendar.Managers {
+				err = manager.UpdateRecord(db)
+				if err != nil {
+					fmt.Fprintln(w, "Error Creating User Record")
+				}
+			}
 			http.Redirect(w, r, "/dashboard", httpRedirectResponse)
 
 		}

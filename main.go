@@ -110,7 +110,7 @@ func init() {
 	}
 
 	spmanager3 := SpManager{
-		Name:     *Name{}.Create("Tyler Laudenslager"),
+		Name:     *Name{}.Create("Sim Wizard"),
 		Username: "tlauden",
 		Role:     Manager,
 		Password: hashedPassword6,
