@@ -1197,10 +1197,8 @@ func togglechecksquare(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 			if len(spuserRecord.SessionsSelected) > 0 {
-				fmt.Println("Made it to remove from selected sp user")
 				for i := 0; i < len(spuserRecord.SessionsSelected); i++ {
 					if sessionEqual(spuserRecord.SessionsSelected[i], foundSession.Information) {
-						fmt.Println("Made it to the removal part")
 						spuserRecord.SessionsSelected = append(spuserRecord.SessionsSelected[:i], spuserRecord.SessionsSelected[i+1:]...)
 					}
 				}

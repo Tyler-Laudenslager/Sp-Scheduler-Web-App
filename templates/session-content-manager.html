@@ -11,15 +11,9 @@
                 <button type="button" class="btn btn-outline-primary position: relative" data-bs-toggle="offcanvas" data-bs-target="#{{ .Information.Title | formatTitle }}{{ .Information.Date | formatTitle }}{{ .Information.StartTime | formatTitle }}{{ .Information.EndTime | formatTitle }}{{ .Information.Location | formatTitle }}edit" aria-controls="{{ .Information.Title | formatTitle }}{{ .Information.Date | formatTitle }}{{ .Information.StartTime | formatTitle }}{{ .Information.EndTime | formatTitle }}{{ .Information.Location | formatTitle }}edit">
                     Edit Info
                 </button>
-                {{ if .Information.ExpiredDate | CheckExpired }}
                 <button type="button" class="btn btn-outline-primary position: relative" data-bs-toggle="offcanvas" data-bs-target="#{{ .Information.Title | formatTitle}}{{ .Information.Date | formatTitle }}{{ .Information.StartTime | formatTitle }}{{ .Information.EndTime | formatTitle }}{{ .Information.Location | formatTitle }}assignsp" aria-controls="{{ .Information.Title | formatTitle }}{{ .Information.Date | formatTitle }}{{ .Information.StartTime | formatTitle }}{{ .Information.EndTime | formatTitle }}{{ .Information.Location | formatTitle }}assignsp">
                     Assign SPs
                 </button>
-                {{ else }}
-                <button type="button" class="btn btn-outline-primary position: relative" data-bs-toggle="offcanvas" data-bs-target="#{{ .Information.Title | formatTitle}}{{ .Information.Date | formatTitle }}{{ .Information.StartTime | formatTitle }}{{ .Information.EndTime | formatTitle }}{{ .Information.Location | formatTitle }}assignsp" aria-controls="{{ .Information.Title | formatTitle }}{{ .Information.Date | formatTitle }}{{ .Information.StartTime | formatTitle }}{{ .Information.EndTime | formatTitle }}{{ .Information.Location | formatTitle }}assignsp" disabled>
-                    Assign SPs
-                </button>
-                {{ end }} 
                 <button type="button" class="btn btn-outline-danger position: relative" data-bs-toggle="modal" data-bs-target="#{{ .Information.Title | formatTitle }}{{ .Information.Date | formatTitle }}{{ .Information.StartTime | formatTitle }}{{ .Information.EndTime | formatTitle }}{{ .Information.Location | formatTitle }}delete">
                     Delete
                     <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
