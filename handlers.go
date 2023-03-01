@@ -382,8 +382,6 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 				session.Values["dateFilter"] = dateFilter
 			}
 			if r.PostFormValue("date") == "" {
-				fmt.Println("Made it Here")
-				fmt.Println("Length of Sessions Sorted : ", len(spuser.SessionsSorted))
 				loc, err := time.LoadLocation("EST")
 				if err != nil {
 					fmt.Println("Error in LoadLocation CheckExpirationDate :", err)
