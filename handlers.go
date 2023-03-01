@@ -76,6 +76,18 @@ func GetSessionArchiveDates(sessions []*Session) []string {
 	return dates
 }
 
+func GetSessionInfoArchiveDates(sessions []*SessionInfo) []string {
+	dates := []string{}
+	for _, session := range sessions {
+		time, _ := time.Parse("01/02/2006", session.Date)
+		date := time.Format("January, 2006")
+		// if date in dates continue else add it
+		dates = append(dates, date)
+		dates = removeDuplicate(dates)
+	}
+	return dates
+}
+
 func CheckExpired(expireddate string) bool {
 	loc, err := time.LoadLocation("EST")
 	if err != nil {
@@ -209,9 +221,10 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 		spuser, err := GetSpUserRecord(session.Values["username"].(string), db)
 
 		if err != nil {
+			// Cannot Find SP User Account Must Be Manager
 			spmanager, err = GetSpManagerRecord(session.Values["username"].(string), db)
 			if err != nil {
-				fmt.Println("Error Get User record in dashboard: ", err)
+				fmt.Println("Error Get Manager record in dashboard: ", err)
 				return
 			}
 			session_records_manager, err := GetAllSessionRecords(db)
@@ -361,6 +374,49 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 				si.Status = "noresponse"
 				spuser.SessionsSorted = append(spuser.SessionsSorted, si)
 			}
+
+			if session.Values["dateFilter"] == nil {
+				timenow := time.Now()
+				dateFilter := timenow.Format("January, 2006")
+				session.Values["dateFilter"] = dateFilter
+			}
+			dashboard_content.SelectedDate = "All Available"
+			if r.PostFormValue("date") == "" {
+				dashboard_content.SelectedDate = "All Available"
+			} else if r.PostFormValue("date") == "allavailable" {
+				dashboard_content.SelectedDate = "All Available"
+			} else if r.PostFormValue("date") != "allsessions" {
+				if r.PostFormValue("date") != "" {
+					session.Values["dateFilter"] = r.PostFormValue("date")
+					dashboard_content.SelectedDate = r.PostFormValue("date")
+					newSessionsAssigned := make([]*SessionInfo, 0)
+					for _, s := range spuser.SessionsAssigned {
+						time, _ := time.Parse("01/02/2006", s.Date)
+						date := time.Format("January, 2006")
+						if r.PostFormValue("date") == date {
+							newSessionsAssigned = append(newSessionsAssigned, s)
+						}
+					}
+					spuser.SessionsSorted = newSessionsAssigned
+				} else if session.Values["dateFilter"] != nil && session.Values["dateFilter"] != "allsessions" {
+					dashboard_content.SelectedDate = session.Values["dateFilter"].(string)
+					newSessionsAssigned := make([]*SessionInfo, 0)
+					for _, s := range spuser.SessionsAssigned {
+						time, _ := time.Parse("01/02/2006", s.Date)
+						date := time.Format("January, 2006")
+						if session.Values["dateFilter"] == date {
+							newSessionsAssigned = append(newSessionsAssigned, s)
+						}
+					}
+					spuser.SessionsSorted = newSessionsAssigned
+				} else {
+					dashboard_content.SelectedDate = "All Assigned"
+				}
+			} else if r.PostFormValue("date") == "allsessions" {
+				dashboard_content.SelectedDate = "All Assigned"
+				spuser.SessionsSorted = spuser.SessionsAssigned
+				session.Values["dateFilter"] = "allsessions"
+			}
 			if r.PostFormValue("orderBy") != "" {
 				session.Values["orderBy"] = r.PostFormValue("orderBy")
 			}
@@ -412,6 +468,16 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				fmt.Println("Error updating record")
 			}
+			dashboard_content.Archives = GetSessionInfoArchiveDates(spuser.SessionsAssigned)
+			sort.Slice(dashboard_content.Archives, func(i int, j int) bool {
+				iDate := dashboard_content.Archives[i]
+				jDate := dashboard_content.Archives[j]
+
+				iParsed, _ := time.Parse("January, 2006", iDate)
+				jParsed, _ := time.Parse("January, 2006", jDate)
+
+				return iParsed.Before(jParsed)
+			})
 			dashboard_content.Role = "Standardized Patient"
 			dashboard_content.User = spuser
 		}
@@ -503,8 +569,6 @@ func updatesession(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Error in Get Session Record in Update Session : ", err)
 	}
 
-	fmt.Println("Original Session Start Time: ", foundSession.Information.StartTime)
-
 	allSpUsers, err := GetAllSpUserRecords(db)
 	if err != nil {
 		fmt.Println("Error Getting all SP User records: ", err)
@@ -539,8 +603,6 @@ func updatesession(w http.ResponseWriter, r *http.Request) {
 	foundSession.Information.Location = newlocation
 	foundSession.Information.Description = newdescription
 	foundSession.PatientsNeeded = newpatientsneeded
-
-	fmt.Println("New Session Start Time: ", foundSession.Information.StartTime)
 
 	err = foundSession.UpdateRecord(db)
 	if err != nil {
@@ -743,7 +805,7 @@ func assignsp(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Error updating record in assign sp", err)
 		return
 	}
-	title = formatTitle(title)
+	title = formatTitle(title + date + starttime + endtime + location)
 	http.Redirect(w, r, "/dashboard#"+title, httpRedirectResponse)
 }
 
@@ -1410,6 +1472,5 @@ func deleteSPRecord(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Error deleting SP user record: ", err)
 		return
 	}
-	fmt.Println("Deleted SP User Record: ", username)
 	http.Redirect(w, r, "/dashboard", httpRedirectResponse)
 }

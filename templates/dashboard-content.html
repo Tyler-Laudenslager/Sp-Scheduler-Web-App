@@ -17,30 +17,41 @@
                 </div>
             </div>
             <div class="row row-cols-auto mt-1 mb-1">
-                <div class="col mb-2">
-                    <form action="/dashboard" class="position relative" method="post" enctype="application/x-www-form-urlencoded">
-                    <input type="hidden" name="username" value="{{ .User.Username }}">
-                    {{ if .ByDate }}
-                    <select name="orderBy" class="form-select" aria-label="Order Sessions" onchange="this.form.submit();" onfocus="this.selectedIndex = -1;">
-                        <option disabled>Order Sessions</option>
-                        <option selected disabled value="byDate">Order By Date</option>
-                        <option value="byLocation">Order By Location</option>
-                    </select>
-                    {{ else if .ByLocation }}
-                    <select name="orderBy" class="form-select" aria-label="Order Sessions" onchange="this.form.submit();" onfocus="this.selectedIndex = -1;">
-                        <option disabled>Order Sessions</option>
-                        <option value="byDate">Order By Date</option>
-                        <option selected disabled value="byLocation">Order By Location</option>
-                    </select>
-                    {{ else }}
-                    <select name="orderBy" class="form-select" aria-label="Order Sessions" onchange="this.form.submit();" onfocus="this.selectedIndex = -1;">
-                        <option selected disabled>Order Sessions</option>
-                        <option value="byDate">Order By Date</option>
-                        <option value="byLocation">Order By Location</option>
-                    </select>
-                    {{ end }}
-                    </form>
+            <div class="col">
+                <button type="button" class="btn btn-info position: relative" data-bs-toggle="offcanvas" data-bs-target="#AssignedSessionRecords" 
+                 aria-controls="#AssignedSessionRecords" style="background-color: white; color: #4581ef;">
+                Assigned Records
+                </button>
             </div>
+            <div class="col">
+                <button type="button" class="btn btn-info position relative" style="background-color: white; color: #4581ef;">
+                    Sessions Selected: {{ .SelectedDate }}
+                </button>
+            </div>
+            <div class="col">
+                <form action="/dashboard" class="position relative" method="post" enctype="application/x-www-form-urlencoded">
+                <input type="hidden" name="username" value="{{ .User.Username }}">
+                {{ if .ByDate }}
+                <select name="orderBy" class="form-select" aria-label="Order Sessions" onchange="this.form.submit();" onfocus="this.selectedIndex = -1;">
+                    <option disabled>Order Sessions</option>
+                    <option selected disabled value="byDate">Order By Date</option>
+                    <option value="byLocation">Order By Location</option>
+                </select>
+                {{ else if .ByLocation }}
+                <select name="orderBy" class="form-select" aria-label="Order Sessions" onchange="this.form.submit();" onfocus="this.selectedIndex = -1;">
+                    <option disabled>Order Sessions</option>
+                    <option value="byDate">Order By Date</option>
+                    <option selected disabled value="byLocation">Order By Location</option>
+                </select>
+                {{ else }}
+                <select name="orderBy" class="form-select" aria-label="Order Sessions" onchange="this.form.submit();" onfocus="this.selectedIndex = -1;">
+                    <option selected disabled>Order Sessions</option>
+                    <option value="byDate">Order By Date</option>
+                    <option value="byLocation">Order By Location</option>
+                </select>
+                {{ end }}
+                </form>
+        </div>
             <div class="col">
                 <button type="button" class="btn btn-info position: relative" data-bs-toggle="modal" data-bs-target="#UserSettings"
                         style="background-color: white; color: #4581ef;">
@@ -55,12 +66,45 @@
                 </button>
             </div>
             </div>
+            
             {{ template "session-content" . }}
         </div>
     </div>
 </div>
 
-
+<div class="offcanvas offcanvas-start" id="AssignedSessionRecords" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" aria-labelledby="AssignedSessionRecords">
+    <div class="offcanvas-header" style="background-color: #cef3f3;">
+    <h5 class="offcanvas-title" id="offcanvasScrollingLabel">Session Records</h5>
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body" style="background-color: #f8f9f9;">
+        <div class="vstack gap-2">
+        <form action="/dashboard" class="mt-2 position relative" method="post" enctype="application/x-www-form-urlencoded">
+                <input type="hidden" name="date" value="allavailable">
+                <button type="submit" class="btn btn-outline-primary" data-bs-dismiss="offcanvas">
+                    <h5>All Available Records</h5>
+                </button>
+        </form>
+        
+        {{ range .Archives }}
+            <form action="/dashboard" class="mt-2 position relative" method="post" enctype="application/x-www-form-urlencoded">
+                <input type="hidden" name="date" value="{{ . }}">
+                <button type="submit" class="btn btn-outline-primary" data-bs-dismiss="offcanvas">
+                    <h5>{{ . }}</h5>
+                </button>
+            </form>
+        {{ end }}
+        {{ if .User.SessionsAssigned }}
+        <form action="/dashboard" class="mt-2 position relative" method="post" enctype="application/x-www-form-urlencoded">
+            <input type="hidden" name="date" value="allsessions">
+            <button type="submit" class="btn btn-outline-primary" data-bs-dismiss="offcanvas">
+                <h5>All Assigned Records</h5>
+            </button>
+        </form>
+        {{ end }}
+        </div>
+    </div>
+</div>
 
 {{ template "user-settings" . }}
 
