@@ -80,9 +80,9 @@
     <div class="offcanvas-body" style="background-color: #f8f9f9;">
         <div class="vstack gap-2">
         <form action="/dashboard" class="mt-2 position relative" method="post" enctype="application/x-www-form-urlencoded">
-                <input type="hidden" name="date" value="allavailable">
+                <input type="hidden" name="date" value="currentMonth">
                 <button type="submit" class="btn btn-outline-primary" data-bs-dismiss="offcanvas">
-                    <h5>All Available Records</h5>
+                    <h5>Current Month : {{ .SelectedDate }}</h5>
                 </button>
         </form>
         

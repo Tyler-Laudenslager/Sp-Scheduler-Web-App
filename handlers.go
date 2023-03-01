@@ -340,6 +340,7 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 			dashboard_content.User = spmanager
 			isSpManager = true
 		} else {
+			// Sp User Section of the Dashboard
 			spuser.SessionsPool = make([]*SessionInfo, 0)
 			sessions_viewed := append(spuser.SessionsAvailable, spuser.SessionsUnavailable...)
 			sessions_viewed = append(sessions_viewed, spuser.SessionsAssigned...)
@@ -380,11 +381,46 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 				dateFilter := timenow.Format("January, 2006")
 				session.Values["dateFilter"] = dateFilter
 			}
-			dashboard_content.SelectedDate = "All Available"
 			if r.PostFormValue("date") == "" {
-				dashboard_content.SelectedDate = "All Available"
-			} else if r.PostFormValue("date") == "allavailable" {
-				dashboard_content.SelectedDate = "All Available"
+				fmt.Println("Made it Here")
+				fmt.Println("Length of Sessions Sorted : ", len(spuser.SessionsSorted))
+				loc, err := time.LoadLocation("EST")
+				if err != nil {
+					fmt.Println("Error in LoadLocation CheckExpirationDate :", err)
+				}
+				timenow := time.Now().In(loc)
+				dateFilter := timenow.Format("January, 2006")
+				session.Values["dateFilter"] = dateFilter
+				dashboard_content.SelectedDate = dateFilter
+				newSessionsSorted := make([]*SessionInfo, 0)
+				for _, s := range spuser.SessionsSorted {
+					time, _ := time.Parse("01/02/2006", s.Date)
+					date := time.Format("January, 2006")
+					if dateFilter == date {
+						newSessionsSorted = append(newSessionsSorted, s)
+					}
+				}
+				spuser.SessionsSorted = newSessionsSorted
+
+			} else if r.PostFormValue("date") == "currentMonth" {
+				fmt.Println("This Printed")
+				loc, err := time.LoadLocation("EST")
+				if err != nil {
+					fmt.Println("Error in LoadLocation CheckExpirationDate :", err)
+				}
+				timenow := time.Now().In(loc)
+				dateFilter := timenow.Format("January, 2006")
+				session.Values["dateFilter"] = dateFilter
+				dashboard_content.SelectedDate = dateFilter
+				newSessionsSorted := make([]*SessionInfo, 0)
+				for _, s := range spuser.SessionsSorted {
+					time, _ := time.Parse("01/02/2006", s.Date)
+					date := time.Format("January, 2006")
+					if dateFilter == date {
+						newSessionsSorted = append(newSessionsSorted, s)
+					}
+				}
+				spuser.SessionsSorted = newSessionsSorted
 			} else if r.PostFormValue("date") != "allsessions" {
 				if r.PostFormValue("date") != "" {
 					session.Values["dateFilter"] = r.PostFormValue("date")
