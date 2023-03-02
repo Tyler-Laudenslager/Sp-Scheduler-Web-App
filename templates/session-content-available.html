@@ -4,7 +4,7 @@
     {{ if .Date | notPastSession }}
     {{ if .Status | StatusAssigned }}
     {{ if .ShowSession }}
-    <div id="{{ .Title | formatTitle }}" class="card border-success" style="width: 40rem; background-color: #f7f8f7;">
+    <div id="{{ .Title | formatTitle }}{{ .Date | formatTitle }}{{ .StartTime | formatTitle }}{{ .EndTime | formatTitle }}{{ .Location | formatTitle }}" class="card border-success" style="width: 40rem; background-color: #f7f8f7;">
         <div class="card-body">
             <div class="vstack me-2 gap-2 d-flex align-items-center position-absolute top-50 end-0 translate-middle-y">
                 <div class="card text-white bg-success" style="width: 16rem;">
@@ -28,7 +28,7 @@
     {{ if .Status | StatusNoResponse }}
     {{ if .ExpiredDate | CheckNotExpired }}
     {{ if .ShowSession }}
-    <div id="{{ .Title | formatTitle }}" class="card" style="width: 40rem; background-color: #f7f8f7;">
+    <div id="{{ .Title | formatTitle }}{{ .Date | formatTitle }}{{ .StartTime | formatTitle }}{{ .EndTime | formatTitle }}{{ .Location | formatTitle }}" class="card" style="width: 40rem; background-color: #f7f8f7;">
         <div class="card-body">
             <div class="vstack me-2 gap-2 d-flex align-items-center position-absolute top-50 end-0 translate-middle-y">
                 <form action="/signupavailable" method="post" enctype="application/x-www-form-urlencoded">
@@ -75,7 +75,7 @@
     {{ if .Status | StatusAvailable }}
     {{ if .ExpiredDate | CheckNotExpired }}
     {{ if .ShowSession }}
-    <div id="{{ .Title | formatTitle }}" class="card" style="width: 40rem; background-color: #f7f8f7;">
+    <div id="{{ .Title | formatTitle }}{{ .Date | formatTitle }}{{ .StartTime | formatTitle }}{{ .EndTime | formatTitle }}{{ .Location | formatTitle }}" class="card" style="width: 40rem; background-color: #f7f8f7;">
         <div class="card-body">
             <div class="vstack me-2 gap-2 d-flex align-items-center position-absolute top-50 end-0 translate-middle-y">
                 <form action="/signupavailable" method="post" enctype="application/x-www-form-urlencoded">
@@ -123,7 +123,7 @@
     {{ if .Status | StatusUnavailable }}
     {{ if .ExpiredDate | CheckNotExpired }}
     {{ if .ShowSession }}
-    <div id="{{ .Title | formatTitle }}" class="card" style="width: 40rem; background-color: #f7f8f7;">
+    <div id="{{ .Title | formatTitle }}{{ .Date | formatTitle }}{{ .StartTime | formatTitle }}{{ .EndTime | formatTitle }}{{ .Location | formatTitle }}" class="card" style="width: 40rem; background-color: #f7f8f7;">
         <div class="card-body">
             <div class="vstack me-2 gap-2 d-flex align-items-center position-absolute top-50 end-0 translate-middle-y">
                 <form action="/signupavailable" method="post" enctype="application/x-www-form-urlencoded">

@@ -347,7 +347,7 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 			for _, session_info := range session_records {
 				viewed_session := false
 				for _, session_viewed_info := range sessions_viewed {
-					if session_info.Title == session_viewed_info.Title {
+					if sessionEqual(session_info, session_viewed_info) {
 						viewed_session = true
 						break
 					}
@@ -386,7 +386,7 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 				if err != nil {
 					fmt.Println("Error in LoadLocation CheckExpirationDate :", err)
 				}
-				timenow := time.Now().In(loc)
+				timenow := time.Now().In(loc).AddDate(0, 1, 0)
 				dateFilter := timenow.Format("January, 2006")
 				session.Values["dateFilter"] = dateFilter
 				dashboard_content.SelectedDate = dateFilter
@@ -401,12 +401,11 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 				spuser.SessionsSorted = newSessionsSorted
 
 			} else if r.PostFormValue("date") == "currentMonth" {
-				fmt.Println("This Printed")
 				loc, err := time.LoadLocation("EST")
 				if err != nil {
 					fmt.Println("Error in LoadLocation CheckExpirationDate :", err)
 				}
-				timenow := time.Now().In(loc)
+				timenow := time.Now().In(loc).AddDate(0, 1, 0)
 				dateFilter := timenow.Format("January, 2006")
 				session.Values["dateFilter"] = dateFilter
 				dashboard_content.SelectedDate = dateFilter
@@ -944,27 +943,25 @@ func signupavailable(w http.ResponseWriter, r *http.Request) {
 	duplicate = false
 	if spuser.SessionsAvailable != nil {
 		for i := 0; i < len(spuser.SessionsAvailable); i++ {
-			if availableSessionRecord.Information.Title == spuser.SessionsAvailable[i].Title &&
-				availableSessionRecord.Information.Date == spuser.SessionsAvailable[i].Date &&
-				availableSessionRecord.Information.Location == spuser.SessionsAvailable[i].Location &&
-				availableSessionRecord.Information.StartTime == spuser.SessionsAvailable[i].StartTime &&
-				availableSessionRecord.Information.EndTime == spuser.SessionsAvailable[i].EndTime &&
-				availableSessionRecord.Information.Description == spuser.SessionsAvailable[i].Description {
+			if sessionEqual(availableSessionRecord.Information, spuser.SessionsAvailable[i]) {
 				duplicate = true
 			}
 		}
 	}
 	if !duplicate {
 		for i := 0; i < len(spuser.SessionsPool); i++ {
-			if spuser.SessionsPool[i].Title == sessionInfo.Title {
+			// Removed Session From Sessions Pool
+			if sessionEqual(spuser.SessionsPool[i], &sessionInfo) {
 				spuser.SessionsPool = append(spuser.SessionsPool[:i], spuser.SessionsPool[i+1:]...)
 			}
 		}
 		for i := 0; i < len(spuser.SessionsUnavailable); i++ {
-			if spuser.SessionsUnavailable[i].Title == sessionInfo.Title {
+			//Removed Session from Sessions Unavailable
+			if sessionEqual(spuser.SessionsUnavailable[i], &sessionInfo) {
 				spuser.SessionsUnavailable = append(spuser.SessionsUnavailable[:i], spuser.SessionsUnavailable[i+1:]...)
 			}
 		}
+		//Add session to SessionsAvailable
 		spuser.SessionsAvailable = append(spuser.SessionsAvailable, availableSessionRecord.Information)
 		spuser.UpdateRecord(db)
 		if err != nil {
@@ -976,7 +973,9 @@ func signupavailable(w http.ResponseWriter, r *http.Request) {
 		}
 
 	}
-	title := formatTitle(availableSessionRecord.Information.Title)
+	title := formatTitle(availableSessionRecord.Information.Title + availableSessionRecord.Information.Date +
+		availableSessionRecord.Information.StartTime + availableSessionRecord.Information.EndTime +
+		availableSessionRecord.Information.Location)
 
 	http.Redirect(w, r, "/dashboard#"+title, httpRedirectResponse)
 }
@@ -1007,24 +1006,19 @@ func signupnotavailable(w http.ResponseWriter, r *http.Request) {
 	}
 	if spuser.SessionsUnavailable != nil {
 		for i := 0; i < len(spuser.SessionsUnavailable); i++ {
-			if notAvailableSessionRecord.Information.Title == spuser.SessionsUnavailable[i].Title &&
-				notAvailableSessionRecord.Information.Date == spuser.SessionsUnavailable[i].Date &&
-				notAvailableSessionRecord.Information.Location == spuser.SessionsUnavailable[i].Location &&
-				notAvailableSessionRecord.Information.StartTime == spuser.SessionsUnavailable[i].StartTime &&
-				notAvailableSessionRecord.Information.EndTime == spuser.SessionsUnavailable[i].EndTime &&
-				notAvailableSessionRecord.Information.Description == spuser.SessionsUnavailable[i].Description {
+			if sessionEqual(notAvailableSessionRecord.Information, spuser.SessionsUnavailable[i]) {
 				duplicate = true
 			}
 		}
 	}
 	if !duplicate {
 		for i := 0; i < len(spuser.SessionsPool); i++ {
-			if spuser.SessionsPool[i].Title == sessionInfo.Title {
+			if sessionEqual(spuser.SessionsPool[i], &sessionInfo) {
 				spuser.SessionsPool = append(spuser.SessionsPool[:i], spuser.SessionsPool[i+1:]...)
 			}
 		}
 		for i := 0; i < len(spuser.SessionsAvailable); i++ {
-			if spuser.SessionsAvailable[i].Title == sessionInfo.Title {
+			if sessionEqual(spuser.SessionsAvailable[i], &sessionInfo) {
 				spuser.SessionsAvailable = append(spuser.SessionsAvailable[:i], spuser.SessionsAvailable[i+1:]...)
 			}
 		}
@@ -1038,7 +1032,9 @@ func signupnotavailable(w http.ResponseWriter, r *http.Request) {
 			fmt.Println("Error: GetSpUserRecord in signupavailable", err)
 		}
 	}
-	title := formatTitle(notAvailableSessionRecord.Information.Title)
+	title := formatTitle(notAvailableSessionRecord.Information.Title + notAvailableSessionRecord.Information.Date +
+		notAvailableSessionRecord.Information.StartTime + notAvailableSessionRecord.Information.EndTime +
+		notAvailableSessionRecord.Information.Location)
 	http.Redirect(w, r, "/dashboard#"+title, httpRedirectResponse)
 }
 
