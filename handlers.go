@@ -641,7 +641,12 @@ func updatesession(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println("Error in Update Session Make Record : ", err)
 	}
-	http.Redirect(w, r, "/dashboard", httpRedirectResponse)
+	uniqueID := formatTitle(foundSession.Information.Title)
+	uniqueID = formatTitle(uniqueID + foundSession.Information.Date)
+	uniqueID = formatTitle(uniqueID + foundSession.Information.StartTime)
+	uniqueID = formatTitle(uniqueID + foundSession.Information.EndTime)
+	uniqueID = formatTitle(uniqueID + foundSession.Information.Location)
+	http.Redirect(w, r, "/dashboard#"+uniqueID, httpRedirectResponse)
 }
 
 func assignsp(w http.ResponseWriter, r *http.Request) {
