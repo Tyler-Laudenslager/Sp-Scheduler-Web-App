@@ -564,10 +564,12 @@
             <div class="modal-body">
                     {{ if .User.AssignedPatients }}
                     <div class="vstack gap-2 d-flex align-items-left position: relative;">
-                        {{ range .User.AssignedPatients }}
+                        {{ with $AssignedPatients := .User.AssignedPatients | sortSpUserByLastName }}
+                        {{ range $AssignedPatients }}
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#{{ .Username | formatTitle }}Info">
                                 {{ .Name.First }} {{ .Name.Last }}
                             </button>
+                        {{ end }}
                         {{ end }}
                     </div>
                     {{ end }}
@@ -652,40 +654,48 @@
                         <h6>Email: {{ .Email }}</h6>
                         <h6>Sessions Available | {{ .SessionsAvailable | len }}:</h6>
                         {{ if .SessionsAvailable }}
-                            {{ range .SessionsAvailable }}
+                            {{ with $SessionsAvailable := .SessionsAvailable | sortSessionInfoByDate }}
+                            {{ range $SessionsAvailable }}
                                 {{ if .Date | notPastSession }}
                                 <p>&emsp; {{ .Title }} {{ .Date }}</p>
                                 {{ end }}
+                            {{ end }}
                             {{ end }}
                         {{ else }}
                         <p>&emsp;None</p>
                         {{ end }}
                         <h6>Sessions Unavailable | {{ .SessionsUnavailable | len }}:</h6>
                         {{ if .SessionsUnavailable }}
-                            {{ range .SessionsUnavailable }}
+                            {{ with $SessionsUnavailable := .SessionsUnavailable | sortSessionInfoByDate }}
+                            {{ range $SessionsUnavailable }}
                                 {{ if .Date | notPastSession }}
                                 <p>&emsp; {{ .Title }} {{ .Date }}</p>
                                 {{ end }}
+                            {{ end }}
                             {{ end }}
                         {{ else }}
                         <p>&emsp;None</p>
                         {{ end }}
                         <h6>Sessions Selected | {{ .SessionsSelected | len }}:</h6>
                         {{ if .SessionsSelected }}
-                            {{ range .SessionsSelected }}
+                            {{ with $SessionsSelected := .SessionsSelected | sortSessionInfoByDate }}
+                            {{ range $SessionsSelected }}
                                 {{ if .Date | notPastSession }}
                                 <p>&emsp; {{ .Title }} {{ .Date }}</p>
                                 {{ end }}
+                            {{ end }}
                             {{ end }}
                         {{ else }}
                         <p>&emsp;None</p>
                         {{ end }} 
                         <h6>Sessions Assigned | {{ .SessionsAssigned | len }}:</h6>
                         {{ if .SessionsAssigned }}
-                            {{ range .SessionsAssigned }}
+                            {{ with $SessionsAssigned := .SessionsAssigned | sortSessionInfoByDate }}
+                            {{ range $SessionsAssigned }}
                                 {{ if .Date | notPastSession }}
                                 <p>&emsp; {{ .Title }} {{ .Date }}</p>
                                 {{ end }}
+                            {{ end }}
                             {{ end }}
                         {{ else }}
                         <p>&emsp;None</p>

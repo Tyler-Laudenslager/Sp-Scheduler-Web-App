@@ -174,6 +174,13 @@ func sortSessionByDate(a []*Session) []*Session {
 	return a
 }
 
+func sortSpUserByLastName(assignedPatients []*SpUser) []*SpUser {
+	sort.Slice(assignedPatients, func(i int, j int) bool {
+		return assignedPatients[i].Name.Last < assignedPatients[j].Name.Last
+	})
+	return assignedPatients
+}
+
 func login(w http.ResponseWriter, r *http.Request) {
 	session, _ := store.Get(r, "sessionAuthSPCalendar")
 	if auth, ok := session.Values["authenticated"].(bool); ok && auth {
@@ -522,6 +529,7 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 			"CheckNotExpired":       CheckNotExpired,
 			"sortSessionInfoByDate": sortSessionInfoByDate,
 			"sortSessionByDate":     sortSessionByDate,
+			"sortSpUserByLastName":  sortSpUserByLastName,
 			"StatusAssigned":        StatusAssigned,
 			"StatusNoResponse":      StatusNoResponse,
 			"StatusAvailable":       StatusAvailable,
