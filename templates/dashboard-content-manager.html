@@ -657,7 +657,7 @@
                             {{ with $SessionsAvailable := .SessionsAvailable | sortSessionInfoByDate }}
                             {{ range $SessionsAvailable }}
                                 {{ if .Date | notPastSession }}
-                                <p>&emsp; {{ .Title }} {{ .Date }}</p>
+                                <p>&emsp; {{ .Title }} {{ .Date }} {{ .StartTime }} {{ .EndTime }}</p>
                                 {{ end }}
                             {{ end }}
                             {{ end }}
@@ -669,7 +669,7 @@
                             {{ with $SessionsUnavailable := .SessionsUnavailable | sortSessionInfoByDate }}
                             {{ range $SessionsUnavailable }}
                                 {{ if .Date | notPastSession }}
-                                <p>&emsp; {{ .Title }} {{ .Date }}</p>
+                                <p>&emsp; {{ .Title }} {{ .Date }} {{ .StartTime }} {{ .EndTime }}</p>
                                 {{ end }}
                             {{ end }}
                             {{ end }}
@@ -681,7 +681,7 @@
                             {{ with $SessionsSelected := .SessionsSelected | sortSessionInfoByDate }}
                             {{ range $SessionsSelected }}
                                 {{ if .Date | notPastSession }}
-                                <p>&emsp; {{ .Title }} {{ .Date }}</p>
+                                <p>&emsp; {{ .Title }} {{ .Date }} {{ .StartTime }} {{ .EndTime }}</p>
                                 {{ end }}
                             {{ end }}
                             {{ end }}
@@ -693,7 +693,7 @@
                             {{ with $SessionsAssigned := .SessionsAssigned | sortSessionInfoByDate }}
                             {{ range $SessionsAssigned }}
                                 {{ if .Date | notPastSession }}
-                                <p>&emsp; {{ .Title }} {{ .Date }}</p>
+                                <p>&emsp; {{ .Title }} {{ .Date }} {{ .StartTime }} {{ .EndTime }}</p>
                                 {{ end }}
                             {{ end }}
                             {{ end }}

@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/sessions"
 )
@@ -14,26 +15,25 @@ var (
 )
 
 func init() {
-
-	/* // loc, err := time.LoadLocation("EST")
+	loc, err := time.LoadLocation("EST")
 	if err != nil {
 		fmt.Println("Error in LoadLocation CheckExpirationDate :", err)
-	} */
-	/* hashedPassword, err := HashPassword("letmein")
+	}
+	hashedPassword, err := HashPassword("letmein")
 	if err != nil {
 		fmt.Println("Error Hashing Password")
 		return
-	} */
+	}
 	hashedPassword2, err := HashPassword("letmeinman")
 	if err != nil {
 		fmt.Println("Error Hashing Password")
 		return
 	}
-	/* hashedPassword3, err := HashPassword("letmein2")
+	hashedPassword3, err := HashPassword("letmein2")
 	if err != nil {
 		fmt.Println("Error Hashing Password")
 		return
-	} */
+	}
 	hashedPassword5, err := HashPassword("letmeinman2")
 	if err != nil {
 		fmt.Println("Error Hashing Password")
@@ -43,7 +43,7 @@ func init() {
 	if err != nil {
 		fmt.Println("Error Hashing Password")
 	}
-	/* session := Session{}.Create("Sacred Heart Check-UP", "01/25/2025", "11:00AM", "12:00PM", "Sacred Heart", "Check-Up")
+	session := Session{}.Create("Sacred Heart Check-UP", "01/25/2025", "11:00AM", "12:00PM", "Sacred Heart", "Check-Up")
 	session.Information.CreatedDate = time.Now().In(loc).Format("01/02/2006")
 	session.Information.ExpiredDate = time.Now().In(loc).Format("01/02/2006")
 	session.PatientsNeeded = 6
@@ -76,22 +76,21 @@ func init() {
 	err = session4.MakeRecord(db)
 	if err != nil {
 		fmt.Println("Error Making Session Record 4: ", err)
-	} */
-	/* spuser := SpUser{
+	}
+	spuser := SpUser{
 		Name:     *Name{}.Create("Robert Pike"),
 		Username: "rpike",
 		Role:     SP,
 		Password: hashedPassword,
 		Email:    "rpike@duck.com",
 	}
-
 	spuser2 := SpUser{
 		Name:     *Name{}.Create("Charles Darwin"),
 		Username: "cdarwin",
 		Role:     SP,
 		Password: hashedPassword3,
 		Email:    "cdarwin@duck.com",
-	} */
+	}
 
 	spmanager := SpManager{
 		Name:     *Name{}.Create("Emily Garey"),
@@ -126,17 +125,16 @@ func init() {
 		return
 	}
 
-	/* err = spuser.MakeRecord(db)
+	err = spuser.MakeRecord(db)
 	if err != nil {
 		fmt.Println("Error Making Record -> ", err)
 		return
 	}
-
 	err = spuser2.MakeRecord(db)
 	if err != nil {
 		fmt.Println("Error Making Record -> ", err)
 		return
-	} */
+	}
 
 	spmanager.AssignedPatients, err = GetAllSpUserRecords(db)
 	if err != nil {
@@ -157,7 +155,6 @@ func init() {
 		fmt.Println("Error Making Record -> ", err)
 		return
 	}
-
 }
 
 func main() {
