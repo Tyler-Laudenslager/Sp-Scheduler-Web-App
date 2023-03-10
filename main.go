@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/gorilla/sessions"
 )
@@ -15,7 +14,7 @@ var (
 )
 
 func init() {
-	loc, err := time.LoadLocation("EST")
+	/* loc, err := time.LoadLocation("EST")
 	if err != nil {
 		fmt.Println("Error in LoadLocation CheckExpirationDate :", err)
 	}
@@ -23,13 +22,13 @@ func init() {
 	if err != nil {
 		fmt.Println("Error Hashing Password")
 		return
-	}
+	} */
 	hashedPassword2, err := HashPassword("letmeinman")
 	if err != nil {
 		fmt.Println("Error Hashing Password")
 		return
 	}
-	hashedPassword3, err := HashPassword("letmein2")
+	/* hashedPassword3, err := HashPassword("letmein2")
 	if err != nil {
 		fmt.Println("Error Hashing Password")
 		return
@@ -91,7 +90,7 @@ func init() {
 		Password: hashedPassword3,
 		Email:    "cdarwin@duck.com",
 	}
-
+	*/
 	spmanager := SpManager{
 		Name:     *Name{}.Create("Emily Garey"),
 		Username: "emily.garey@sluhn.org",
@@ -100,7 +99,7 @@ func init() {
 		Email:    "emily.garey@sluhn.org",
 	}
 
-	spmanager2 := SpManager{
+	/* spmanager2 := SpManager{
 		Name:     *Name{}.Create("Megan Augustine"),
 		Username: "megan.augustine@sluhn.org",
 		Role:     Manager,
@@ -135,7 +134,7 @@ func init() {
 		fmt.Println("Error Making Record -> ", err)
 		return
 	}
-
+	*/
 	spmanager.AssignedPatients, err = GetAllSpUserRecords(db)
 	if err != nil {
 		fmt.Println("Error in Init Get All Sp User Records: ", err)
@@ -146,7 +145,7 @@ func init() {
 		return
 	}
 
-	spmanager2.AssignedPatients, err = GetAllSpUserRecords(db)
+	/* spmanager2.AssignedPatients, err = GetAllSpUserRecords(db)
 	if err != nil {
 		fmt.Println("Error in Init Get All Sp User Records: ", err)
 	}
@@ -154,7 +153,7 @@ func init() {
 	if err != nil {
 		fmt.Println("Error Making Record -> ", err)
 		return
-	}
+	} */
 }
 
 func main() {
