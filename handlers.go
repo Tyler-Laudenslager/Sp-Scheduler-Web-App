@@ -1470,14 +1470,12 @@ func sessionbackup(w http.ResponseWriter, r *http.Request) {
 				fmt.Fprintln(w, "Error Uploading File!!")
 			}
 			for _, session := range HospitalCalendar.Sessions {
-				_ = session.DeleteRecord(db)
 				err = session.MakeRecord(db)
 				if err != nil {
 					fmt.Println(w, "Error Creating Session Record")
 				}
 			}
 			for _, user := range HospitalCalendar.Users {
-				_ = user.DeleteRecord(db)
 				err = user.MakeRecord(db)
 				if err != nil {
 					fmt.Fprintln(w, "Error Creating User Record")
