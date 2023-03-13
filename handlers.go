@@ -1366,7 +1366,12 @@ func authenticate(w http.ResponseWriter, r *http.Request) {
 	session, _ := store.Get(r, "sessionAuthSPCalendar")
 
 	username := r.PostFormValue("userid")
-	username = strings.ToLower(username)
+	dotindex := strings.Index(username, ".")
+	first_name := username[:dotindex]
+	at_symbol := strings.Index(username, "@")
+	last_name := username[dotindex+1 : at_symbol]
+	ending := username[at_symbol:]
+	username = strings.ToLower(first_name) + "." + strings.ToLower(last_name) + strings.ToLower(ending)
 	password := r.PostFormValue("password")
 	spuser, err := GetSpUserRecord(username, db)
 	if err != nil {
