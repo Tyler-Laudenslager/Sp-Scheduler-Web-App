@@ -1367,8 +1367,14 @@ func authenticate(w http.ResponseWriter, r *http.Request) {
 
 	username := r.PostFormValue("userid")
 	dotindex := strings.Index(username, ".")
+	if dotindex == -1 {
+		http.Redirect(w, r, "/login", httpRedirectResponse)
+	}
 	first_name := username[:dotindex]
 	at_symbol := strings.Index(username, "@")
+	if at_symbol == -1 {
+		http.Redirect(w, r, "/login", httpRedirectResponse)
+	}
 	last_name := username[dotindex+1 : at_symbol]
 	ending := username[at_symbol:]
 	username = strings.ToLower(first_name) + "." + strings.ToLower(last_name) + strings.ToLower(ending)
