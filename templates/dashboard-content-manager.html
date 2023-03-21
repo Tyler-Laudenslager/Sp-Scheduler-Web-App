@@ -60,6 +60,12 @@
                         Total Sessions: {{ .User.SessionsUnmanaged | len }}
                     </button>
                 </div>
+                <div class="col">
+                    <button type="button" class="mt-1 btn btn-info position relative" data-bs-toggle="modal" data-bs-target="#ConfirmSPs" 
+                     style="background-color: rgb(78, 241, 38); color: #2e2e32;">
+                        Confirm All SPs
+                    </button>
+                </div>
             </div>
             <div class="row row-cols-auto">
                 <div class="col">
@@ -511,6 +517,41 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="ConfirmSPs">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+    
+          <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Confirm SPs Assignments</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+    
+          <!-- Modal body -->
+            <div class="modal-body">
+                <h5>Confirm All Standardized Patients for</h5>
+                <h5>Month Selected : {{ .SelectedDate }}</h5>
+                <br>
+                <div class="d-flex gap-2 justify-content-center">
+                <button type="button" class="btn btn-success mb-2" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#CreateSPRecord">
+                    Yes Confirm!
+                </button> 
+                <button type="button" class="btn btn-danger mb-2" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#RetrieveSPRecord">
+                    No Do Not!
+                </button>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <div class="modal fade" id="CreateSPRecord">
     <div class="modal-dialog modal-dialog-centered">

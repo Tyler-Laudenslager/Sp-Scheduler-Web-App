@@ -44,7 +44,7 @@ func init() {
 	if err != nil {
 		fmt.Println("Error Hashing Password")
 	}
-	session := Session{}.Create("Sacred Heart Check-UP", "01/25/2025", "11:00AM", "12:00PM", "Sacred Heart", "Check-Up")
+	session := Session{}.Create("Sacred Heart Check-UP", "04/25/2023", "11:00AM", "12:00PM", "Sacred Heart", "Check-Up")
 	session.Information.CreatedDate = time.Now().In(loc).Format("01/02/2006")
 	session.Information.ExpiredDate = time.Now().In(loc).Format("01/02/2006")
 	session.PatientsNeeded = 6
@@ -53,7 +53,7 @@ func init() {
 	if err != nil {
 		fmt.Println("Error Making Session Record 1: ", err)
 	}
-	session2 := Session{}.Create("Anderson Follow UP", "02/25/2025", "12:00PM", "2:00PM", "Warren", "Follow-Up")
+	session2 := Session{}.Create("Anderson Follow UP", "04/22/2023", "12:00PM", "2:00PM", "Warren", "Follow-Up")
 	session2.Information.CreatedDate = time.Now().Format("01/02/2006")
 	session2.Information.ExpiredDate = ""
 	session2.PatientsNeeded = 4
@@ -61,7 +61,7 @@ func init() {
 	if err != nil {
 		fmt.Println("Error Making Session Record 2: ", err)
 	}
-	session3 := Session{}.Create("Allentown Skills Workshop", "03/25/2025", "1:00PM", "4:00PM", "Allentown", "Skills Workshop")
+	session3 := Session{}.Create("Allentown Skills Workshop", "04/16/2023", "1:00PM", "4:00PM", "Allentown", "Skills Workshop")
 	session3.Information.CreatedDate = time.Now().Format("01/02/2006")
 	session3.Information.ExpiredDate = ""
 	session3.PatientsNeeded = 2
@@ -69,7 +69,7 @@ func init() {
 	if err != nil {
 		fmt.Println("Error Making Session Record 3: ", err)
 	}
-	session4 := Session{}.Create("Anderson ED Skills", "04/25/2025", "2:00PM", "6:00PM", "Anderson",
+	session4 := Session{}.Create("Anderson ED Skills", "04/02/2023", "2:00PM", "6:00PM", "Anderson",
 		"ED Skills Assessment Aggresive Patients No Respone Biggles With the Cat")
 	session4.Information.CreatedDate = time.Now().Format("01/02/2006")
 	session4.Information.ExpiredDate = ""
