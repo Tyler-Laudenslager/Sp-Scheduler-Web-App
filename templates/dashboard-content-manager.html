@@ -530,17 +530,30 @@
     
           <!-- Modal body -->
             <div class="modal-body">
+                {{ if .SelectedDate | CheckForAllSessionsInput }}
+                <div class="d-flex gap-2 justify-content-center">
+                <h1><span class="badge bg-danger">Error!</span></h1>
+                </div>
+                <br/>
+                <h5>"All Sessions" option selected!</h5>
+                <br/>
+                <h5>Select a month from the session archives to activate!</h5>
+                {{ else }}
                 <h5>Confirm All Standardized Patients for</h5>
                 <h5>Month Selected : {{ .SelectedDate }}</h5>
                 <br>
                 <div class="d-flex gap-2 justify-content-center">
-                <button type="button" class="btn btn-success mb-2" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#CreateSPRecord">
-                    Yes Confirm!
-                </button> 
-                <button type="button" class="btn btn-danger mb-2" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#RetrieveSPRecord">
-                    No Do Not!
-                </button>
+                    <form action="/confirmAllSPs" method="post" enctype="application/x-www-form-urlencoded">
+                        <input type="hidden" name="selectedmonth" value="{{ .SelectedDate }}">
+                        <button type="submit" class="btn btn-success mb-2" data-bs-dismiss="modal">
+                            Yes Confirm!
+                        </button> 
+                        <button type="button" class="btn btn-danger mb-2" data-bs-dismiss="modal">
+                            No Do Not!
+                        </button>
+                    </form>
                 </div>
+                {{ end }}
             </div>
 
             <div class="modal-footer">

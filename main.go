@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/sessions"
 )
@@ -13,147 +15,146 @@ var (
 )
 
 func init() {
-	/*
-		loc, err := time.LoadLocation("EST")
-		if err != nil {
-			fmt.Println("Error in LoadLocation CheckExpirationDate :", err)
-		}
-		hashedPassword, err := HashPassword("letmein")
-		if err != nil {
-			fmt.Println("Error Hashing Password")
-			return
-		}
-		hashedPassword2, err := HashPassword("letmeinman")
-		if err != nil {
-			fmt.Println("Error Hashing Password")
-			return
-		}
-		hashedPassword3, err := HashPassword("letmein2")
-		if err != nil {
-			fmt.Println("Error Hashing Password")
-			return
-		}
-		hashedPassword5, err := HashPassword("letmeinman2")
-		if err != nil {
-			fmt.Println("Error Hashing Password")
-			return
-		}
-		hashedPassword6, err := HashPassword("Heydontscarethetiger75")
-		if err != nil {
-			fmt.Println("Error Hashing Password")
-		}
-		session := Session{}.Create("Sacred Heart Check-UP", "04/25/2023", "11:00AM", "12:00PM", "Sacred Heart", "Check-Up")
-		session.Information.CreatedDate = time.Now().In(loc).Format("01/02/2006")
-		session.Information.ExpiredDate = time.Now().In(loc).Format("01/02/2006")
-		session.PatientsNeeded = 6
-		session.Instructors = append(session.Instructors, Instructor{}.Create("Joe Thompson", "Director"))
-		err = session.MakeRecord(db)
-		if err != nil {
-			fmt.Println("Error Making Session Record 1: ", err)
-		}
-		session2 := Session{}.Create("Anderson Follow UP", "04/22/2023", "12:00PM", "2:00PM", "Warren", "Follow-Up")
-		session2.Information.CreatedDate = time.Now().Format("01/02/2006")
-		session2.Information.ExpiredDate = ""
-		session2.PatientsNeeded = 4
-		err = session2.MakeRecord(db)
-		if err != nil {
-			fmt.Println("Error Making Session Record 2: ", err)
-		}
-		session3 := Session{}.Create("Allentown Skills Workshop", "04/16/2023", "1:00PM", "4:00PM", "Allentown", "Skills Workshop")
-		session3.Information.CreatedDate = time.Now().Format("01/02/2006")
-		session3.Information.ExpiredDate = ""
-		session3.PatientsNeeded = 2
-		err = session3.MakeRecord(db)
-		if err != nil {
-			fmt.Println("Error Making Session Record 3: ", err)
-		}
-		session4 := Session{}.Create("Anderson ED Skills", "04/02/2023", "2:00PM", "6:00PM", "Anderson",
-			"ED Skills Assessment Aggresive Patients No Respone Biggles With the Cat")
-		session4.Information.CreatedDate = time.Now().Format("01/02/2006")
-		session4.Information.ExpiredDate = ""
-		session4.PatientsNeeded = 3
-		err = session4.MakeRecord(db)
-		if err != nil {
-			fmt.Println("Error Making Session Record 4: ", err)
-		}
-		spuser := SpUser{
-			Name:     *Name{}.Create("Robert Pike"),
-			Username: "rpike",
-			Role:     SP,
-			Password: hashedPassword,
-			Email:    "rpike@duck.com",
-		}
-		spuser2 := SpUser{
-			Name:     *Name{}.Create("Charles Darwin"),
-			Username: "cdarwin",
-			Role:     SP,
-			Password: hashedPassword3,
-			Email:    "cdarwin@duck.com",
-		}
+	loc, err := time.LoadLocation("EST")
+	if err != nil {
+		fmt.Println("Error in LoadLocation CheckExpirationDate :", err)
+	}
+	hashedPassword, err := HashPassword("letmein")
+	if err != nil {
+		fmt.Println("Error Hashing Password")
+		return
+	}
+	hashedPassword2, err := HashPassword("letmeinman")
+	if err != nil {
+		fmt.Println("Error Hashing Password")
+		return
+	}
+	hashedPassword3, err := HashPassword("letmein2")
+	if err != nil {
+		fmt.Println("Error Hashing Password")
+		return
+	}
+	hashedPassword5, err := HashPassword("letmeinman2")
+	if err != nil {
+		fmt.Println("Error Hashing Password")
+		return
+	}
+	hashedPassword6, err := HashPassword("Heydontscarethetiger75")
+	if err != nil {
+		fmt.Println("Error Hashing Password")
+	}
+	session := Session{}.Create("Sacred Heart Check-UP", "04/25/2023", "11:00AM", "12:00PM", "Sacred Heart", "Check-Up")
+	session.Information.CreatedDate = time.Now().In(loc).Format("01/02/2006")
+	session.Information.ExpiredDate = time.Now().In(loc).Format("01/02/2006")
+	session.PatientsNeeded = 6
+	session.Instructors = append(session.Instructors, Instructor{}.Create("Joe Thompson", "Director"))
+	err = session.MakeRecord(db)
+	if err != nil {
+		fmt.Println("Error Making Session Record 1: ", err)
+	}
+	session2 := Session{}.Create("Anderson Follow UP", "04/22/2023", "12:00PM", "2:00PM", "Warren", "Follow-Up")
+	session2.Information.CreatedDate = time.Now().Format("01/02/2006")
+	session2.Information.ExpiredDate = ""
+	session2.PatientsNeeded = 4
+	err = session2.MakeRecord(db)
+	if err != nil {
+		fmt.Println("Error Making Session Record 2: ", err)
+	}
+	session3 := Session{}.Create("Allentown Skills Workshop", "04/16/2023", "1:00PM", "4:00PM", "Allentown", "Skills Workshop")
+	session3.Information.CreatedDate = time.Now().Format("01/02/2006")
+	session3.Information.ExpiredDate = ""
+	session3.PatientsNeeded = 2
+	err = session3.MakeRecord(db)
+	if err != nil {
+		fmt.Println("Error Making Session Record 3: ", err)
+	}
+	session4 := Session{}.Create("Anderson ED Skills", "04/02/2023", "2:00PM", "6:00PM", "Anderson",
+		"ED Skills Assessment Aggresive Patients No Respone Biggles With the Cat")
+	session4.Information.CreatedDate = time.Now().Format("01/02/2006")
+	session4.Information.ExpiredDate = ""
+	session4.PatientsNeeded = 3
+	err = session4.MakeRecord(db)
+	if err != nil {
+		fmt.Println("Error Making Session Record 4: ", err)
+	}
+	spuser := SpUser{
+		Name:     *Name{}.Create("Robert Pike"),
+		Username: "rpike",
+		Role:     SP,
+		Password: hashedPassword,
+		Email:    "rpike@duck.com",
+	}
+	spuser2 := SpUser{
+		Name:     *Name{}.Create("Charles Darwin"),
+		Username: "cdarwin",
+		Role:     SP,
+		Password: hashedPassword3,
+		Email:    "cdarwin@duck.com",
+	}
 
-		spmanager := SpManager{
-			Name:     *Name{}.Create("Emily Garey"),
-			Username: "emily.garey@sluhn.org",
-			Role:     Manager,
-			Password: hashedPassword2,
-			Email:    "emily.garey@sluhn.org",
-		}
+	spmanager := SpManager{
+		Name:     *Name{}.Create("Emily Garey"),
+		Username: "emily.garey@sluhn.org",
+		Role:     Manager,
+		Password: hashedPassword2,
+		Email:    "emily.garey@sluhn.org",
+	}
 
-		spmanager2 := SpManager{
-			Name:     *Name{}.Create("Megan Augustine"),
-			Username: "megan.augustine@sluhn.org",
-			Role:     Manager,
-			Password: hashedPassword5,
-			Email:    "megan.augustine@sluhn.org",
-		}
+	spmanager2 := SpManager{
+		Name:     *Name{}.Create("Megan Augustine"),
+		Username: "megan.augustine@sluhn.org",
+		Role:     Manager,
+		Password: hashedPassword5,
+		Email:    "megan.augustine@sluhn.org",
+	}
 
-		spmanager3 := SpManager{
-			Name:     *Name{}.Create("Sim Wizard"),
-			Username: "tlauden",
-			Role:     Manager,
-			Password: hashedPassword6,
-		}
+	spmanager3 := SpManager{
+		Name:     *Name{}.Create("Sim Wizard"),
+		Username: "tlauden",
+		Role:     Manager,
+		Password: hashedPassword6,
+	}
 
-		spmanager3.AssignedPatients, err = GetAllSpUserRecords(db)
-		if err != nil {
-			fmt.Println("Error in Init Get All Sp User Records: ", err)
-		}
-		err = spmanager3.MakeRecord(db)
-		if err != nil {
-			fmt.Println("Error Making Record -> ", err)
-			return
-		}
+	spmanager3.AssignedPatients, err = GetAllSpUserRecords(db)
+	if err != nil {
+		fmt.Println("Error in Init Get All Sp User Records: ", err)
+	}
+	err = spmanager3.MakeRecord(db)
+	if err != nil {
+		fmt.Println("Error Making Record -> ", err)
+		return
+	}
 
-		err = spuser.MakeRecord(db)
-		if err != nil {
-			fmt.Println("Error Making Record -> ", err)
-			return
-		}
-		err = spuser2.MakeRecord(db)
-		if err != nil {
-			fmt.Println("Error Making Record -> ", err)
-			return
-		}
+	err = spuser.MakeRecord(db)
+	if err != nil {
+		fmt.Println("Error Making Record -> ", err)
+		return
+	}
+	err = spuser2.MakeRecord(db)
+	if err != nil {
+		fmt.Println("Error Making Record -> ", err)
+		return
+	}
 
-		spmanager.AssignedPatients, err = GetAllSpUserRecords(db)
-		if err != nil {
-			fmt.Println("Error in Init Get All Sp User Records: ", err)
-		}
-		err = spmanager.MakeRecord(db)
-		if err != nil {
-			fmt.Println("Error Making Record -> ", err)
-			return
-		}
+	spmanager.AssignedPatients, err = GetAllSpUserRecords(db)
+	if err != nil {
+		fmt.Println("Error in Init Get All Sp User Records: ", err)
+	}
+	err = spmanager.MakeRecord(db)
+	if err != nil {
+		fmt.Println("Error Making Record -> ", err)
+		return
+	}
 
-		spmanager2.AssignedPatients, err = GetAllSpUserRecords(db)
-		if err != nil {
-			fmt.Println("Error in Init Get All Sp User Records: ", err)
-		}
-		err = spmanager2.MakeRecord(db)
-		if err != nil {
-			fmt.Println("Error Making Record -> ", err)
-			return
-		} */
+	spmanager2.AssignedPatients, err = GetAllSpUserRecords(db)
+	if err != nil {
+		fmt.Println("Error in Init Get All Sp User Records: ", err)
+	}
+	err = spmanager2.MakeRecord(db)
+	if err != nil {
+		fmt.Println("Error Making Record -> ", err)
+		return
+	}
 
 }
 
@@ -172,6 +173,7 @@ func main() {
 	http.HandleFunc("/createsession", createsession)
 	http.HandleFunc("/updatesession", updatesession)
 	http.HandleFunc("/deletesession", deletesession)
+	http.HandleFunc("/confirmAllSPs", confirmAllSPs)
 	http.HandleFunc("/assignsp", assignsp)
 	http.HandleFunc("/signupavailable", signupavailable)
 	http.HandleFunc("/signupnotavailable", signupnotavailable)

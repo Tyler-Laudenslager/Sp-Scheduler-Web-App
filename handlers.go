@@ -573,20 +573,21 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 			dashboard_content.User = spuser
 		}
 		funcMap := template.FuncMap{
-			"formatTitle":           formatTitle,
-			"formatDate":            formatDate,
-			"ExpirationDateSet":     ExpirationDateSet,
-			"CheckExpired":          CheckExpired,
-			"CheckNotExpired":       CheckNotExpired,
-			"sortSessionInfoByDate": sortSessionInfoByDate,
-			"sortSessionByDate":     sortSessionByDate,
-			"sortSpUserByLastName":  sortSpUserByLastName,
-			"StatusAssigned":        StatusAssigned,
-			"StatusNoResponse":      StatusNoResponse,
-			"StatusAvailable":       StatusAvailable,
-			"StatusUnavailable":     StatusUnavailable,
-			"pastSession":           pastSession,
-			"notPastSession":        notPastSession,
+			"formatTitle":              formatTitle,
+			"formatDate":               formatDate,
+			"ExpirationDateSet":        ExpirationDateSet,
+			"CheckExpired":             CheckExpired,
+			"CheckNotExpired":          CheckNotExpired,
+			"CheckForAllSessionsInput": CheckForAllSessionsInput,
+			"sortSessionInfoByDate":    sortSessionInfoByDate,
+			"sortSessionByDate":        sortSessionByDate,
+			"sortSpUserByLastName":     sortSpUserByLastName,
+			"StatusAssigned":           StatusAssigned,
+			"StatusNoResponse":         StatusNoResponse,
+			"StatusAvailable":          StatusAvailable,
+			"StatusUnavailable":        StatusUnavailable,
+			"pastSession":              pastSession,
+			"notPastSession":           notPastSession,
 		}
 		t = template.New("templates/html-boilerplate.html").Funcs(funcMap)
 		if !isSpManager {
@@ -706,6 +707,93 @@ func updatesession(w http.ResponseWriter, r *http.Request) {
 	uniqueID = formatTitle(uniqueID + foundSession.Information.EndTime)
 	uniqueID = formatTitle(uniqueID + foundSession.Information.Location)
 	http.Redirect(w, r, "/dashboard#"+uniqueID, httpRedirectResponse)
+}
+
+func CheckForAllSessionsInput(inputText string) bool {
+	return inputText == "All Sessions"
+}
+
+func confirmAllSPs(w http.ResponseWriter, r *http.Request) {
+	selectedmonth := r.PostFormValue("selectedmonth")
+	fmt.Println("Month Selected :", selectedmonth)
+	// Get all session records from database
+	session_records, err := GetAllSessionRecords(db)
+	if err != nil {
+		fmt.Println("Error getting records in confirmAllSPS", err)
+	}
+
+	// Filter the session records by date
+	session_records_new := make([]*Session, 0)
+	for _, s := range session_records {
+		time, _ := time.Parse("01/02/2006", s.Information.Date)
+		date := time.Format("January, 2006")
+		fmt.Println(date)
+		if date == selectedmonth {
+			session_records_new = append(session_records_new, s)
+		}
+	}
+
+	// Add the session record information to each assigned sp account
+	for _, foundSession := range session_records_new {
+		fmt.Println(foundSession.Information.Title)
+		for _, spuser := range foundSession.PatientsAssigned {
+			username := spuser.Username
+			spuserRecord, err := GetSpUserRecord(username, db)
+			if err != nil {
+				fmt.Println("Error Getting Record: ", err)
+				return
+			}
+			duplicate := false
+			for _, si := range spuserRecord.SessionsAssigned {
+				if sessionEqual(si, foundSession.Information) {
+					duplicate = true
+				}
+			}
+			if !duplicate {
+				spuserRecord.SessionsAssigned = append(spuserRecord.SessionsAssigned, foundSession.Information)
+
+				if len(spuserRecord.SessionsAvailable) > 0 {
+					for i := 0; i < len(spuserRecord.SessionsAvailable); i++ {
+						if sessionEqual(spuserRecord.SessionsAvailable[i], foundSession.Information) {
+							spuserRecord.SessionsAvailable = append(spuserRecord.SessionsAvailable[:i], spuserRecord.SessionsAvailable[i+1:]...)
+						}
+					}
+				}
+				if len(spuserRecord.SessionsSelected) > 0 {
+					for i := 0; i < len(spuserRecord.SessionsSelected); i++ {
+						if sessionEqual(spuserRecord.SessionsSelected[i], foundSession.Information) {
+							spuserRecord.SessionsSelected = append(spuserRecord.SessionsSelected[:i], spuserRecord.SessionsSelected[i+1:]...)
+						}
+					}
+				}
+				if len(spuserRecord.SessionsPool) > 0 {
+					for i := 0; i < len(spuserRecord.SessionsPool); i++ {
+						if sessionEqual(spuserRecord.SessionsPool[i], foundSession.Information) {
+							spuserRecord.SessionsPool = append(spuserRecord.SessionsPool[:i], spuserRecord.SessionsPool[i+1:]...)
+						}
+					}
+				}
+				if len(spuserRecord.SessionsUnavailable) > 0 {
+					for i := 0; i < len(spuserRecord.SessionsUnavailable); i++ {
+						if sessionEqual(spuserRecord.SessionsUnavailable[i], foundSession.Information) {
+							spuserRecord.SessionsUnavailable = append(spuserRecord.SessionsUnavailable[:i], spuserRecord.SessionsUnavailable[i+1:]...)
+						}
+					}
+				}
+				spuserRecord.TotalSessionsAssigned = spuserRecord.TotalSessionsAssigned + 1
+			}
+			err = spuserRecord.UpdateRecord(db)
+			if err != nil {
+				fmt.Println("Error Updating Record: ", err)
+				return
+			}
+
+			foundSession.Information.CheckMarkAssigned = true
+			foundSession.Information.ShowSession = true
+			foundSession.UpdateRecord(db)
+		}
+	}
+	http.Redirect(w, r, "/dashboard", httpRedirectResponse)
 }
 
 func assignsp(w http.ResponseWriter, r *http.Request) {
