@@ -87,6 +87,34 @@ func removeDuplicate[T string | int](sliceList []T) []T {
 	return list
 }
 
+func removeSessionInfoDuplicates(sessionInfoBox []*SessionInfo) []*SessionInfo {
+
+	type miniSessionInfo struct {
+		title     string
+		date      string
+		starttime string
+		endtime   string
+	}
+
+	keys := make(map[miniSessionInfo]bool)
+	list := make([]*SessionInfo, 0)
+
+	for _, entry := range sessionInfoBox {
+
+		sessionInfo := miniSessionInfo{
+			title:     entry.Title,
+			date:      entry.Date,
+			starttime: entry.StartTime,
+			endtime:   entry.EndTime,
+		}
+		if _, value := keys[sessionInfo]; !value {
+			keys[sessionInfo] = true
+			list = append(list, entry)
+		}
+	}
+	return list
+}
+
 func GetSessionArchiveDates(sessions []*Session) []string {
 	dates := []string{}
 	for _, session := range sessions {
