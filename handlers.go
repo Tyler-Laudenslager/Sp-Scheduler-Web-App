@@ -353,9 +353,45 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 					iDate := session_records_manager[i].Information.Date
 					jDate := session_records_manager[j].Information.Date
 
+					iStartTime := strings.ReplaceAll(session_records_manager[i].Information.StartTime, " ", "")
+					// AM or PM
+					iStartEnding := iStartTime[len(iStartTime)-2:]
+					jStartTime := strings.ReplaceAll(session_records_manager[j].Information.StartTime, " ", "")
+					// AM or PM
+					jStartEnding := jStartTime[len(jStartTime)-2:]
+
+					iTimeOfDay := iStartTime[:len(iStartTime)-2]
+					jTimeOfDay := jStartTime[:len(jStartTime)-2]
+
 					iParsed, _ := time.Parse("01/02/2006", iDate)
 					jParsed, _ := time.Parse("01/02/2006", jDate)
 
+					if iDate == jDate {
+
+						if iStartEnding == "PM" && jStartEnding == "AM" {
+							return iParsed.Before(jParsed)
+						} else if iStartEnding == "AM" && jStartEnding == "PM" {
+							return !iParsed.Before(jParsed)
+						} else if iStartEnding == jStartEnding {
+							iHour, _ := strconv.Atoi(iTimeOfDay[:strings.Index(iTimeOfDay, ":")])
+							jHour, _ := strconv.Atoi(jTimeOfDay[:strings.Index(jTimeOfDay, ":")])
+							if iHour != 12 {
+								iHour += 12
+							}
+							if jHour != 12 {
+								jHour += 12
+							}
+							fmt.Println("iHour", iHour)
+							fmt.Println("jHour", jHour)
+							fmt.Println()
+							if iHour < jHour {
+								return !iParsed.Before(jParsed)
+							} else {
+								return iParsed.Before(jParsed)
+							}
+
+						}
+					}
 					return iParsed.Before(jParsed)
 				})
 				dashboard_content.ByLocation = false
@@ -367,9 +403,47 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 					iDate := session_records_manager[i].Information.Date
 					jDate := session_records_manager[j].Information.Date
 
+					iStartTime := strings.ReplaceAll(session_records_manager[i].Information.StartTime, " ", "")
+
+					// AM or PM
+					iStartEnding := iStartTime[len(iStartTime)-2:]
+
+					jStartTime := strings.ReplaceAll(session_records_manager[j].Information.StartTime, " ", "")
+					// AM or PM
+					jStartEnding := jStartTime[len(jStartTime)-2:]
+
+					iTimeOfDay := iStartTime[:len(iStartTime)-2]
+					jTimeOfDay := jStartTime[:len(jStartTime)-2]
+
 					iParsed, _ := time.Parse("01/02/2006", iDate)
 					jParsed, _ := time.Parse("01/02/2006", jDate)
 
+					if iDate == jDate {
+
+						if iStartEnding == "PM" && jStartEnding == "AM" {
+							return iParsed.Before(jParsed)
+						} else if iStartEnding == "AM" && jStartEnding == "PM" {
+							return !iParsed.Before(jParsed)
+						} else if iStartEnding == jStartEnding {
+							iHour, _ := strconv.Atoi(iTimeOfDay[:strings.Index(iTimeOfDay, ":")])
+							jHour, _ := strconv.Atoi(jTimeOfDay[:strings.Index(jTimeOfDay, ":")])
+							if iHour != 12 {
+								iHour += 12
+							}
+							if jHour != 12 {
+								jHour += 12
+							}
+							fmt.Println("iHour", iHour)
+							fmt.Println("jHour", jHour)
+							fmt.Println()
+							if iHour < jHour {
+								return !iParsed.Before(jParsed)
+							} else {
+								return iParsed.Before(jParsed)
+							}
+
+						}
+					}
 					return iParsed.Before(jParsed)
 				})
 				dashboard_content.ByLocation = false
@@ -532,9 +606,45 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 					iDate := spuser.SessionsSorted[i].Date
 					jDate := spuser.SessionsSorted[j].Date
 
+					iStartTime := strings.ReplaceAll(spuser.SessionsSorted[i].StartTime, " ", "")
+					// AM or PM
+					iStartEnding := iStartTime[len(iStartTime)-2:]
+					jStartTime := strings.ReplaceAll(spuser.SessionsSorted[j].StartTime, " ", "")
+					// AM or PM
+					jStartEnding := jStartTime[len(jStartTime)-2:]
+
+					iTimeOfDay := iStartTime[:len(iStartTime)-2]
+					jTimeOfDay := jStartTime[:len(jStartTime)-2]
+
 					iParsed, _ := time.Parse("01/02/2006", iDate)
 					jParsed, _ := time.Parse("01/02/2006", jDate)
 
+					if iDate == jDate {
+
+						if iStartEnding == "PM" && jStartEnding == "AM" {
+							return iParsed.Before(jParsed)
+						} else if iStartEnding == "AM" && jStartEnding == "PM" {
+							return !iParsed.Before(jParsed)
+						} else if iStartEnding == jStartEnding {
+							iHour, _ := strconv.Atoi(iTimeOfDay[:strings.Index(iTimeOfDay, ":")])
+							jHour, _ := strconv.Atoi(jTimeOfDay[:strings.Index(jTimeOfDay, ":")])
+							if iHour != 12 {
+								iHour += 12
+							}
+							if jHour != 12 {
+								jHour += 12
+							}
+							fmt.Println("iHour", iHour)
+							fmt.Println("jHour", jHour)
+							fmt.Println()
+							if iHour < jHour {
+								return !iParsed.Before(jParsed)
+							} else {
+								return iParsed.Before(jParsed)
+							}
+
+						}
+					}
 					return iParsed.Before(jParsed)
 				})
 				dashboard_content.ByLocation = false
@@ -566,8 +676,17 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 						} else if iStartEnding == "AM" && jStartEnding == "PM" {
 							return !iParsed.Before(jParsed)
 						} else if iStartEnding == jStartEnding {
-							iHour := iTimeOfDay[0]
-							jHour := jTimeOfDay[0]
+							iHour, _ := strconv.Atoi(iTimeOfDay[:strings.Index(iTimeOfDay, ":")])
+							jHour, _ := strconv.Atoi(jTimeOfDay[:strings.Index(jTimeOfDay, ":")])
+							if iHour != 12 {
+								iHour += 12
+							}
+							if jHour != 12 {
+								jHour += 12
+							}
+							fmt.Println("iHour", iHour)
+							fmt.Println("jHour", jHour)
+							fmt.Println()
 							if iHour < jHour {
 								return !iParsed.Before(jParsed)
 							} else {
@@ -576,7 +695,7 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 
 						}
 					}
-					return !iParsed.Before(jParsed)
+					return iParsed.Before(jParsed)
 				})
 				dashboard_content.ByLocation = false
 				dashboard_content.ByDate = true

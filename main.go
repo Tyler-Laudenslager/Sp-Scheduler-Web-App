@@ -1,9 +1,7 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/gorilla/sessions"
 )
@@ -15,7 +13,7 @@ var (
 )
 
 func init() {
-	loc, err := time.LoadLocation("EST")
+	/* loc, err := time.LoadLocation("EST")
 	if err != nil {
 		fmt.Println("Error in LoadLocation CheckExpirationDate :", err)
 	}
@@ -155,7 +153,7 @@ func init() {
 		fmt.Println("Error Making Record -> ", err)
 		return
 	}
-
+	*/
 }
 
 func main() {
