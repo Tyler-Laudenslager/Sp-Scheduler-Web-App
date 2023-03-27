@@ -546,10 +546,10 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 					iDate := spuser.SessionsSorted[i].Date
 					jDate := spuser.SessionsSorted[j].Date
 
-					iStartTime := spuser.SessionsSorted[i].StartTime
+					iStartTime := strings.ReplaceAll(spuser.SessionsSorted[i].StartTime, " ", "")
 					// AM or PM
 					iStartEnding := iStartTime[len(iStartTime)-2:]
-					jStartTime := spuser.SessionsSorted[j].StartTime
+					jStartTime := strings.ReplaceAll(spuser.SessionsSorted[j].StartTime, " ", "")
 					// AM or PM
 					jStartEnding := jStartTime[len(jStartTime)-2:]
 
@@ -627,12 +627,12 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 }
 
 func createsession(w http.ResponseWriter, r *http.Request) {
-	title := r.PostFormValue("title")
-	date := r.PostFormValue("date")
-	starttime := r.PostFormValue("starttime")
-	endtime := r.PostFormValue("endtime")
-	location := r.PostFormValue("location")
-	description := r.PostFormValue("description")
+	title := strings.TrimSpace(r.PostFormValue("title"))
+	date := strings.TrimSpace(r.PostFormValue("date"))
+	starttime := strings.TrimSpace(r.PostFormValue("starttime"))
+	endtime := strings.TrimSpace(r.PostFormValue("endtime"))
+	location := strings.TrimSpace(r.PostFormValue("location"))
+	description := strings.TrimSpace(r.PostFormValue("description"))
 	patientsneeded, err := strconv.Atoi(r.PostFormValue("patientsneeded"))
 	session, _ := store.Get(r, "sessionAuthSPCalendar")
 	if err != nil {
