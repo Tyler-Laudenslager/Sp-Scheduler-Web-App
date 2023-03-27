@@ -381,9 +381,7 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 							if jHour != 12 {
 								jHour += 12
 							}
-							fmt.Println("iHour", iHour)
-							fmt.Println("jHour", jHour)
-							fmt.Println()
+
 							if iHour < jHour {
 								return !iParsed.Before(jParsed)
 							} else {
@@ -433,9 +431,7 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 							if jHour != 12 {
 								jHour += 12
 							}
-							fmt.Println("iHour", iHour)
-							fmt.Println("jHour", jHour)
-							fmt.Println()
+
 							if iHour < jHour {
 								return !iParsed.Before(jParsed)
 							} else {
@@ -634,9 +630,6 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 							if jHour != 12 {
 								jHour += 12
 							}
-							fmt.Println("iHour", iHour)
-							fmt.Println("jHour", jHour)
-							fmt.Println()
 							if iHour < jHour {
 								return !iParsed.Before(jParsed)
 							} else {
@@ -684,9 +677,6 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 							if jHour != 12 {
 								jHour += 12
 							}
-							fmt.Println("iHour", iHour)
-							fmt.Println("jHour", jHour)
-							fmt.Println()
 							if iHour < jHour {
 								return !iParsed.Before(jParsed)
 							} else {
