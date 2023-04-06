@@ -75,6 +75,18 @@ func formatDate(date string) string {
 
 }
 
+func GetCurrentMonth() string {
+	loc, _ := time.LoadLocation("EST")
+	currentMonth := time.Now().In(loc).Format("January, 2006")
+	return currentMonth
+}
+
+func GetNextMonth() string {
+	loc, _ := time.LoadLocation("EST")
+	nextMonth := time.Now().In(loc).AddDate(0, 1, 0).Format("January, 2006")
+	return nextMonth
+}
+
 func removeDuplicate[T string | int](sliceList []T) []T {
 	allKeys := make(map[T]bool)
 	list := []T{}
@@ -137,6 +149,76 @@ func GetSessionInfoArchiveDates(sessions []*SessionInfo) []string {
 		dates = removeDuplicate(dates)
 	}
 	return dates
+}
+
+func CheckForSessionConflict(username string) bool {
+	spuserRecord, _ := GetSpUserRecord(username, db)
+	if len(spuserRecord.SessionsSelected) > 0 {
+		addedSession := spuserRecord.SessionsSelected[len(spuserRecord.SessionsSelected)-1]
+		oldsessions := spuserRecord.SessionsSelected[:len(spuserRecord.SessionsSelected)-1]
+		sort.Slice(oldsessions, func(i int, j int) bool {
+			iDate := oldsessions[i].Date
+			jDate := oldsessions[j].Date
+
+			iStartTime := strings.ReplaceAll(oldsessions[i].StartTime, " ", "")
+			// AM or PM
+			iStartEnding := strings.ToUpper(iStartTime[len(iStartTime)-2:])
+			jStartTime := strings.ReplaceAll(oldsessions[j].StartTime, " ", "")
+			// AM or PM
+			jStartEnding := strings.ToUpper(jStartTime[len(jStartTime)-2:])
+
+			iTimeOfDay := iStartTime[:len(iStartTime)-2]
+			jTimeOfDay := jStartTime[:len(jStartTime)-2]
+
+			iParsed, _ := time.Parse("01/02/2006", iDate)
+			jParsed, _ := time.Parse("01/02/2006", jDate)
+
+			if iDate == jDate {
+
+				if iStartEnding == "PM" && jStartEnding == "AM" {
+					return iParsed.Before(jParsed)
+				} else if iStartEnding == "AM" && jStartEnding == "PM" {
+					return !iParsed.Before(jParsed)
+				} else if iStartEnding == jStartEnding {
+					iHour, _ := strconv.Atoi(iTimeOfDay[:strings.Index(iTimeOfDay, ":")])
+					jHour, _ := strconv.Atoi(jTimeOfDay[:strings.Index(jTimeOfDay, ":")])
+					if iHour != 12 {
+						iHour += 12
+					}
+					if jHour != 12 {
+						jHour += 12
+					}
+
+					if iHour < jHour {
+						return !iParsed.Before(jParsed)
+					} else {
+						return iParsed.Before(jParsed)
+					}
+
+				}
+			}
+			return iParsed.Before(jParsed)
+		})
+		for _, s2 := range oldsessions {
+			if s2.Date == addedSession.Date {
+				s2EndTime := strings.ReplaceAll(s2.EndTime, " ", "")
+				s2TimeOfDay := s2EndTime[:len(s2EndTime)-2]
+				s2EndingTime, _ := strconv.Atoi(s2TimeOfDay[:strings.Index(s2TimeOfDay, ":")])
+				sStartTime := strings.ReplaceAll(addedSession.StartTime, " ", "")
+				sTimeOfDay := sStartTime[:len(sStartTime)-2]
+				sStartingTime, _ := strconv.Atoi(sTimeOfDay[:strings.Index(sTimeOfDay, ":")])
+
+				sStartingTime += 12
+				s2EndingTime += 12
+
+				if s2EndingTime < sStartingTime {
+					return true
+				}
+
+			}
+		}
+	}
+	return false
 }
 
 func CheckExpired(expireddate string) bool {
@@ -216,7 +298,49 @@ func StatusAvailable(status string) bool {
 }
 
 func sortSessionInfoByDate(a []*SessionInfo) []*SessionInfo {
-	sort.Sort(SessionInfoContainer(a[:]))
+	sort.Slice(a, func(i int, j int) bool {
+		iDate := a[i].Date
+		jDate := a[j].Date
+
+		iStartTime := strings.ReplaceAll(a[i].StartTime, " ", "")
+		// AM or PM
+		iStartEnding := strings.ToUpper(iStartTime[len(iStartTime)-2:])
+		jStartTime := strings.ReplaceAll(a[j].StartTime, " ", "")
+		// AM or PM
+		jStartEnding := strings.ToUpper(jStartTime[len(jStartTime)-2:])
+
+		iTimeOfDay := iStartTime[:len(iStartTime)-2]
+		jTimeOfDay := jStartTime[:len(jStartTime)-2]
+
+		iParsed, _ := time.Parse("01/02/2006", iDate)
+		jParsed, _ := time.Parse("01/02/2006", jDate)
+
+		if iDate == jDate {
+
+			if iStartEnding == "PM" && jStartEnding == "AM" {
+				return iParsed.Before(jParsed)
+			} else if iStartEnding == "AM" && jStartEnding == "PM" {
+				return !iParsed.Before(jParsed)
+			} else if iStartEnding == jStartEnding {
+				iHour, _ := strconv.Atoi(iTimeOfDay[:strings.Index(iTimeOfDay, ":")])
+				jHour, _ := strconv.Atoi(jTimeOfDay[:strings.Index(jTimeOfDay, ":")])
+				if iHour != 12 {
+					iHour += 12
+				}
+				if jHour != 12 {
+					jHour += 12
+				}
+
+				if iHour < jHour {
+					return !iParsed.Before(jParsed)
+				} else {
+					return iParsed.Before(jParsed)
+				}
+
+			}
+		}
+		return iParsed.Before(jParsed)
+	})
 	return a
 }
 
@@ -280,6 +404,9 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 
 		if err != nil {
 			// Cannot Find SP User Account Must Be Manager
+			if session.Values["orderBy"] == nil {
+				session.Values["orderBy"] = "byDate"
+			}
 			spmanager, err = GetSpManagerRecord(session.Values["username"].(string), db)
 			if err != nil {
 				fmt.Println("Error Get Manager record in dashboard: ", err)
@@ -355,10 +482,10 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 
 					iStartTime := strings.ReplaceAll(session_records_manager[i].Information.StartTime, " ", "")
 					// AM or PM
-					iStartEnding := iStartTime[len(iStartTime)-2:]
+					iStartEnding := strings.ToUpper(iStartTime[len(iStartTime)-2:])
 					jStartTime := strings.ReplaceAll(session_records_manager[j].Information.StartTime, " ", "")
 					// AM or PM
-					jStartEnding := jStartTime[len(jStartTime)-2:]
+					jStartEnding := strings.ToUpper(jStartTime[len(jStartTime)-2:])
 
 					iTimeOfDay := iStartTime[:len(iStartTime)-2]
 					jTimeOfDay := jStartTime[:len(jStartTime)-2]
@@ -404,11 +531,11 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 					iStartTime := strings.ReplaceAll(session_records_manager[i].Information.StartTime, " ", "")
 
 					// AM or PM
-					iStartEnding := iStartTime[len(iStartTime)-2:]
+					iStartEnding := strings.ToUpper(iStartTime[len(iStartTime)-2:])
 
 					jStartTime := strings.ReplaceAll(session_records_manager[j].Information.StartTime, " ", "")
 					// AM or PM
-					jStartEnding := jStartTime[len(jStartTime)-2:]
+					jStartEnding := strings.ToUpper(jStartTime[len(jStartTime)-2:])
 
 					iTimeOfDay := iStartTime[:len(iStartTime)-2]
 					jTimeOfDay := jStartTime[:len(jStartTime)-2]
@@ -469,6 +596,12 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 			isSpManager = true
 		} else {
 			// Sp User Section of the Dashboard
+			if session.Values["orderBy"] == nil {
+				session.Values["orderBy"] = "byDate"
+			}
+			if session.Values["dateFilter"] == nil {
+				session.Values["dateFilter"] = GetCurrentMonth()
+			}
 			spuser.SessionsPool = make([]*SessionInfo, 0)
 			sessions_viewed := append(spuser.SessionsAvailable, spuser.SessionsUnavailable...)
 			sessions_viewed = append(sessions_viewed, spuser.SessionsAssigned...)
@@ -504,18 +637,11 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 				spuser.SessionsSorted = append(spuser.SessionsSorted, si)
 			}
 
-			if session.Values["dateFilter"] == nil {
-				timenow := time.Now()
-				dateFilter := timenow.Format("January, 2006")
-				session.Values["dateFilter"] = dateFilter
-			}
-			if r.PostFormValue("date") == "" {
-				loc, err := time.LoadLocation("EST")
+			if r.PostFormValue("date") == "futureMonth" {
 				if err != nil {
 					fmt.Println("Error in LoadLocation CheckExpirationDate :", err)
 				}
-				timenow := time.Now().In(loc).AddDate(0, 1, 0)
-				dateFilter := timenow.Format("January, 2006")
+				dateFilter := GetNextMonth()
 				session.Values["dateFilter"] = dateFilter
 				dashboard_content.SelectedDate = dateFilter
 				newSessionsSorted := make([]*SessionInfo, 0)
@@ -527,13 +653,12 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 					}
 				}
 				spuser.SessionsSorted = newSessionsSorted
-
 			} else if r.PostFormValue("date") == "currentMonth" {
 				loc, err := time.LoadLocation("EST")
 				if err != nil {
 					fmt.Println("Error in LoadLocation CheckExpirationDate :", err)
 				}
-				timenow := time.Now().In(loc).AddDate(0, 1, 0)
+				timenow := time.Now().In(loc)
 				dateFilter := timenow.Format("January, 2006")
 				session.Values["dateFilter"] = dateFilter
 				dashboard_content.SelectedDate = dateFilter
@@ -577,6 +702,25 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 				dashboard_content.SelectedDate = "All Assigned"
 				spuser.SessionsSorted = spuser.SessionsAssigned
 				session.Values["dateFilter"] = "allsessions"
+			} else if r.PostFormValue("date") == "" {
+				loc, err := time.LoadLocation("EST")
+				if err != nil {
+					fmt.Println("Error in LoadLocation CheckExpirationDate :", err)
+				}
+				timenow := time.Now().In(loc)
+				dateFilter := timenow.Format("January, 2006")
+				session.Values["dateFilter"] = dateFilter
+				dashboard_content.SelectedDate = dateFilter
+				newSessionsSorted := make([]*SessionInfo, 0)
+				for _, s := range spuser.SessionsSorted {
+					time, _ := time.Parse("01/02/2006", s.Date)
+					date := time.Format("January, 2006")
+					if dateFilter == date {
+						newSessionsSorted = append(newSessionsSorted, s)
+					}
+				}
+				spuser.SessionsSorted = newSessionsSorted
+
 			}
 			if r.PostFormValue("orderBy") != "" {
 				session.Values["orderBy"] = r.PostFormValue("orderBy")
@@ -604,10 +748,10 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 
 					iStartTime := strings.ReplaceAll(spuser.SessionsSorted[i].StartTime, " ", "")
 					// AM or PM
-					iStartEnding := iStartTime[len(iStartTime)-2:]
+					iStartEnding := strings.ToUpper(iStartTime[len(iStartTime)-2:])
 					jStartTime := strings.ReplaceAll(spuser.SessionsSorted[j].StartTime, " ", "")
 					// AM or PM
-					jStartEnding := jStartTime[len(jStartTime)-2:]
+					jStartEnding := strings.ToUpper(jStartTime[len(jStartTime)-2:])
 
 					iTimeOfDay := iStartTime[:len(iStartTime)-2]
 					jTimeOfDay := jStartTime[:len(jStartTime)-2]
@@ -651,10 +795,10 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 
 					iStartTime := strings.ReplaceAll(spuser.SessionsSorted[i].StartTime, " ", "")
 					// AM or PM
-					iStartEnding := iStartTime[len(iStartTime)-2:]
+					iStartEnding := strings.ToUpper(iStartTime[len(iStartTime)-2:])
 					jStartTime := strings.ReplaceAll(spuser.SessionsSorted[j].StartTime, " ", "")
 					// AM or PM
-					jStartEnding := jStartTime[len(jStartTime)-2:]
+					jStartEnding := strings.ToUpper(jStartTime[len(jStartTime)-2:])
 
 					iTimeOfDay := iStartTime[:len(iStartTime)-2]
 					jTimeOfDay := jStartTime[:len(jStartTime)-2]
@@ -709,12 +853,15 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 			dashboard_content.User = spuser
 		}
 		funcMap := template.FuncMap{
+			"GetCurrentMonth":          GetCurrentMonth,
+			"GetNextMonth":             GetNextMonth,
 			"formatTitle":              formatTitle,
 			"formatDate":               formatDate,
 			"ExpirationDateSet":        ExpirationDateSet,
 			"CheckExpired":             CheckExpired,
 			"CheckNotExpired":          CheckNotExpired,
 			"CheckForAllSessionsInput": CheckForAllSessionsInput,
+			"CheckForSessionConflict":  CheckForSessionConflict,
 			"sortSessionInfoByDate":    sortSessionInfoByDate,
 			"sortSessionByDate":        sortSessionByDate,
 			"sortSpUserByLastName":     sortSpUserByLastName,
@@ -851,7 +998,6 @@ func CheckForAllSessionsInput(inputText string) bool {
 
 func confirmAllSPs(w http.ResponseWriter, r *http.Request) {
 	selectedmonth := r.PostFormValue("selectedmonth")
-	fmt.Println("Month Selected :", selectedmonth)
 	// Get all session records from database
 	session_records, err := GetAllSessionRecords(db)
 	if err != nil {
@@ -863,7 +1009,6 @@ func confirmAllSPs(w http.ResponseWriter, r *http.Request) {
 	for _, s := range session_records {
 		time, _ := time.Parse("01/02/2006", s.Information.Date)
 		date := time.Format("January, 2006")
-		fmt.Println(date)
 		if date == selectedmonth {
 			session_records_new = append(session_records_new, s)
 		}
@@ -1278,7 +1423,7 @@ func signupavailable(w http.ResponseWriter, r *http.Request) {
 	title := formatTitle(availableSessionRecord.Information.Title + availableSessionRecord.Information.Date +
 		availableSessionRecord.Information.StartTime + availableSessionRecord.Information.EndTime +
 		availableSessionRecord.Information.Location)
-
+	fmt.Println("Selected Date: ", session.Values["dateFilter"])
 	http.Redirect(w, r, "/dashboard#"+title, httpRedirectResponse)
 }
 
@@ -1337,6 +1482,7 @@ func signupnotavailable(w http.ResponseWriter, r *http.Request) {
 	title := formatTitle(notAvailableSessionRecord.Information.Title + notAvailableSessionRecord.Information.Date +
 		notAvailableSessionRecord.Information.StartTime + notAvailableSessionRecord.Information.EndTime +
 		notAvailableSessionRecord.Information.Location)
+	fmt.Println("Selected Date: ", session.Values["dateFilter"])
 	http.Redirect(w, r, "/dashboard#"+title, httpRedirectResponse)
 }
 

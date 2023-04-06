@@ -20,7 +20,7 @@
             <div class="col">
                 <button type="button" class="btn btn-info position: relative" data-bs-toggle="offcanvas" data-bs-target="#AssignedSessionRecords" 
                  aria-controls="#AssignedSessionRecords" style="background-color: white; color: #4581ef;">
-                Assigned Records
+                Session Records
                 </button>
             </div>
             <div class="col">
@@ -82,10 +82,22 @@
         <form action="/dashboard" class="mt-2 position relative" method="post" enctype="application/x-www-form-urlencoded">
                 <input type="hidden" name="date" value="currentMonth">
                 <button type="submit" class="btn btn-outline-primary" data-bs-dismiss="offcanvas">
-                    <h5>Current Sessions : {{ .SelectedDate }}</h5>
+                    {{ with $currentMonth := GetCurrentMonth }}
+                    <h5>Current Sessions : {{ $currentMonth }}</h5>
+                    {{ end }}
                 </button>
         </form>
-        
+        <form action="/dashboard" class="mt-2 position relative" method="post" enctype="application/x-www-form-urlencoded">
+            <input type="hidden" name="date" value="futureMonth">
+            <button type="submit" class="btn btn-outline-primary" data-bs-dismiss="offcanvas">
+                {{ with $nextMonth := GetNextMonth }}
+                <h5>Future Sessions : {{ $nextMonth }}</h5>
+                {{ end }}
+            </button>
+        </form>
+        <br/>
+        <br/>
+        <span class="badge bg-success" style="font-size: 0.9rem">Sessions Assigned</span>
         {{ range .Archives }}
             <form action="/dashboard" class="mt-2 position relative" method="post" enctype="application/x-www-form-urlencoded">
                 <input type="hidden" name="date" value="{{ . }}">
