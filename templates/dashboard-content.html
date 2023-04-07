@@ -100,7 +100,7 @@
         <span class="badge bg-success" style="font-size: 0.9rem">Sessions Assigned</span>
         {{ range .Archives }}
             <form action="/dashboard" class="mt-2 position relative" method="post" enctype="application/x-www-form-urlencoded">
-                <input type="hidden" name="date" value="{{ . }}">
+                <input type="hidden" name="date" value="{{ . }}assigned">
                 <button type="submit" class="btn btn-outline-primary" data-bs-dismiss="offcanvas">
                     <h5>{{ . }}</h5>
                 </button>

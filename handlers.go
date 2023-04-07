@@ -638,11 +638,12 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 			}
 
 			if r.PostFormValue("date") == "futureMonth" {
+				fmt.Println("Made it to Future Month")
 				if err != nil {
 					fmt.Println("Error in LoadLocation CheckExpirationDate :", err)
 				}
 				dateFilter := GetNextMonth()
-				session.Values["dateFilter"] = dateFilter
+				session.Values["dateFilter"] = "futureMonth"
 				dashboard_content.SelectedDate = dateFilter
 				newSessionsSorted := make([]*SessionInfo, 0)
 				for _, s := range spuser.SessionsSorted {
@@ -671,37 +672,72 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 					}
 				}
 				spuser.SessionsSorted = newSessionsSorted
-			} else if r.PostFormValue("date") != "allsessions" {
-				if r.PostFormValue("date") != "" {
-					session.Values["dateFilter"] = r.PostFormValue("date")
-					dashboard_content.SelectedDate = r.PostFormValue("date")
-					newSessionsAssigned := make([]*SessionInfo, 0)
-					for _, s := range spuser.SessionsAssigned {
-						time, _ := time.Parse("01/02/2006", s.Date)
-						date := time.Format("January, 2006")
-						if r.PostFormValue("date") == date {
-							newSessionsAssigned = append(newSessionsAssigned, s)
-						}
+			} else if strings.Contains(r.PostFormValue("date"), "assigned") {
+				fmt.Println("Made it to PostForm Assigned Date Filter")
+				session.Values["dateFilter"] = r.PostFormValue("date")
+				dashboard_content.SelectedDate = r.PostFormValue("date")[:len(r.PostFormValue("date"))-8]
+				newSessionsAssigned := make([]*SessionInfo, 0)
+				for _, s := range spuser.SessionsAssigned {
+					time, _ := time.Parse("01/02/2006", s.Date)
+					date := time.Format("January, 2006")
+					if dashboard_content.SelectedDate == date {
+						newSessionsAssigned = append(newSessionsAssigned, s)
 					}
-					spuser.SessionsSorted = newSessionsAssigned
-				} else if session.Values["dateFilter"] != nil && session.Values["dateFilter"] != "allsessions" {
-					dashboard_content.SelectedDate = session.Values["dateFilter"].(string)
-					newSessionsAssigned := make([]*SessionInfo, 0)
-					for _, s := range spuser.SessionsAssigned {
-						time, _ := time.Parse("01/02/2006", s.Date)
-						date := time.Format("January, 2006")
-						if session.Values["dateFilter"] == date {
-							newSessionsAssigned = append(newSessionsAssigned, s)
-						}
-					}
-					spuser.SessionsSorted = newSessionsAssigned
-				} else {
-					dashboard_content.SelectedDate = "All Assigned"
 				}
+				spuser.SessionsSorted = newSessionsAssigned
 			} else if r.PostFormValue("date") == "allsessions" {
 				dashboard_content.SelectedDate = "All Assigned"
 				spuser.SessionsSorted = spuser.SessionsAssigned
 				session.Values["dateFilter"] = "allsessions"
+			} else if strings.Contains(session.Values["dateFilter"].(string), "assigned") {
+				dateFilter := session.Values["dateFilter"].(string)
+				fmt.Println("Made it to session Values Assigned Date Filter: ", dateFilter[:len(dateFilter)-8])
+				dashboard_content.SelectedDate = dateFilter[:len(dateFilter)-8]
+				newSessionsAssigned := make([]*SessionInfo, 0)
+				for _, s := range spuser.SessionsAssigned {
+					time, _ := time.Parse("01/02/2006", s.Date)
+					date := time.Format("January, 2006")
+					if dashboard_content.SelectedDate == date {
+						newSessionsAssigned = append(newSessionsAssigned, s)
+					}
+				}
+				spuser.SessionsSorted = newSessionsAssigned
+
+			} else if session.Values["dateFilter"] == "currentMonth" {
+				loc, err := time.LoadLocation("EST")
+				if err != nil {
+					fmt.Println("Error in LoadLocation CheckExpirationDate :", err)
+				}
+				timenow := time.Now().In(loc)
+				dateFilter := timenow.Format("January, 2006")
+				session.Values["dateFilter"] = "currentMonth"
+				dashboard_content.SelectedDate = dateFilter
+				newSessionsSorted := make([]*SessionInfo, 0)
+				for _, s := range spuser.SessionsSorted {
+					time, _ := time.Parse("01/02/2006", s.Date)
+					date := time.Format("January, 2006")
+					if dateFilter == date {
+						newSessionsSorted = append(newSessionsSorted, s)
+					}
+				}
+				spuser.SessionsSorted = newSessionsSorted
+			} else if session.Values["dateFilter"] == "futureMonth" {
+				fmt.Println("Made it to Future Month")
+				if err != nil {
+					fmt.Println("Error in LoadLocation CheckExpirationDate :", err)
+				}
+				dateFilter := GetNextMonth()
+				session.Values["dateFilter"] = "futureMonth"
+				dashboard_content.SelectedDate = dateFilter
+				newSessionsSorted := make([]*SessionInfo, 0)
+				for _, s := range spuser.SessionsSorted {
+					time, _ := time.Parse("01/02/2006", s.Date)
+					date := time.Format("January, 2006")
+					if dateFilter == date {
+						newSessionsSorted = append(newSessionsSorted, s)
+					}
+				}
+				spuser.SessionsSorted = newSessionsSorted
 			} else if r.PostFormValue("date") == "" {
 				loc, err := time.LoadLocation("EST")
 				if err != nil {
