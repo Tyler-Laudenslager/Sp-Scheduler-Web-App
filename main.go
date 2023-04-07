@@ -72,17 +72,16 @@ func makeSession(name, date, starttime, endtime, location, description string) {
 
 // This function will run on initilization of program
 func init() {
-
 	// Session Creation
-	/* makeSession("Sacred Heart Check-UP", "05/25/2023", "11:00AM", "12:00PM", "Sacred Heart", "Check-Up")
+	makeSession("Sacred Heart Check-UP", "05/25/2023", "11:00AM", "12:00PM", "Sacred Heart", "Check-Up")
 	makeSession("Anderson Follow UP", "05/25/2023", "1:00PM", "2:00PM", "Warren", "Follow-Up")
 
 	// SP Creation
 	makeSP("Charles Darwin", "cdarwin", "letmein2")
-	makeSP("Robert Pike", "rpike", "letmein") */
+	makeSP("Robert Pike", "rpike", "letmein")
 
-	/* // Manager Creation
-	makeManager("Tyler Lauden", "tlaud", "letmeinman") */
+	// Manager Creation
+	makeManager("Tyler Lauden", "tlaud", "letmeinman")
 
 }
 
