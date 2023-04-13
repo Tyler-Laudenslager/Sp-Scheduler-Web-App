@@ -201,15 +201,26 @@ func CheckForSessionConflict(username string) bool {
 		})
 		for _, s2 := range oldsessions {
 			if s2.Date == addedSession.Date {
+
 				s2EndTime := strings.ReplaceAll(s2.EndTime, " ", "")
+
 				s2TimeOfDay := s2EndTime[:len(s2EndTime)-2]
+
 				s2EndingTime, _ := strconv.Atoi(s2TimeOfDay[:strings.Index(s2TimeOfDay, ":")])
+
 				sStartTime := strings.ReplaceAll(addedSession.StartTime, " ", "")
+
 				sTimeOfDay := sStartTime[:len(sStartTime)-2]
+
 				sStartingTime, _ := strconv.Atoi(sTimeOfDay[:strings.Index(sTimeOfDay, ":")])
 
-				sStartingTime += 12
-				s2EndingTime += 12
+				if sStartingTime != 12 {
+					sStartingTime += 12
+				}
+
+				if s2EndingTime != 12 {
+					s2EndingTime += 12
+				}
 
 				if s2EndingTime < sStartingTime {
 					return true
