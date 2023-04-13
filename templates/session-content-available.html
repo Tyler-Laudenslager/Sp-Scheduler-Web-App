@@ -1,7 +1,6 @@
 {{ define "session-content" }}
     {{ if .User.SessionsSorted }}
     {{ range .User.SessionsSorted }}
-    {{ if .Date | notPastSession }}
     {{ if .Status | StatusAssigned }}
     {{ if .ShowSession }}
     <div id="{{ .Title | formatTitle }}{{ .Date | formatTitle }}{{ .StartTime | formatTitle }}{{ .EndTime | formatTitle }}{{ .Location | formatTitle }}" class="card border-success" style="width: 40rem; background-color: #f7f8f7;">
@@ -164,7 +163,6 @@
             <h5 class="card-text">Sign Up By: {{ .ExpiredDate }}</h5>
         </div>
     </div>
-    {{ end }}
     {{ end }}
     {{ end }}
     {{ end }}

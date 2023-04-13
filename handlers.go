@@ -638,7 +638,6 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 			}
 
 			if r.PostFormValue("date") == "futureMonth" {
-				fmt.Println("Made it to Future Month")
 				if err != nil {
 					fmt.Println("Error in LoadLocation CheckExpirationDate :", err)
 				}
@@ -667,13 +666,12 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 				for _, s := range spuser.SessionsSorted {
 					time, _ := time.Parse("01/02/2006", s.Date)
 					date := time.Format("January, 2006")
-					if dateFilter == date {
+					if dateFilter == date && notPastSession(s.Date) {
 						newSessionsSorted = append(newSessionsSorted, s)
 					}
 				}
 				spuser.SessionsSorted = newSessionsSorted
 			} else if strings.Contains(r.PostFormValue("date"), "assigned") {
-				fmt.Println("Made it to PostForm Assigned Date Filter")
 				session.Values["dateFilter"] = r.PostFormValue("date")
 				dashboard_content.SelectedDate = r.PostFormValue("date")[:len(r.PostFormValue("date"))-8]
 				newSessionsAssigned := make([]*SessionInfo, 0)
@@ -691,7 +689,6 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 				session.Values["dateFilter"] = "allsessions"
 			} else if strings.Contains(session.Values["dateFilter"].(string), "assigned") {
 				dateFilter := session.Values["dateFilter"].(string)
-				fmt.Println("Made it to session Values Assigned Date Filter: ", dateFilter[:len(dateFilter)-8])
 				dashboard_content.SelectedDate = dateFilter[:len(dateFilter)-8]
 				newSessionsAssigned := make([]*SessionInfo, 0)
 				for _, s := range spuser.SessionsAssigned {
@@ -722,7 +719,6 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 				}
 				spuser.SessionsSorted = newSessionsSorted
 			} else if session.Values["dateFilter"] == "futureMonth" {
-				fmt.Println("Made it to Future Month")
 				if err != nil {
 					fmt.Println("Error in LoadLocation CheckExpirationDate :", err)
 				}
@@ -751,7 +747,7 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 				for _, s := range spuser.SessionsSorted {
 					time, _ := time.Parse("01/02/2006", s.Date)
 					date := time.Format("January, 2006")
-					if dateFilter == date {
+					if dateFilter == date && notPastSession(s.Date) {
 						newSessionsSorted = append(newSessionsSorted, s)
 					}
 				}
