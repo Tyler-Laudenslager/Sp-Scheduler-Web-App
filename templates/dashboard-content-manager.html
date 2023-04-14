@@ -270,13 +270,8 @@
                 {{ range .PatientsSelected }}
                 <div class="form-check">
                     <label>
-                        {{ if .Username | CheckForSessionConflict }}
-                        <input type="checkbox" name="{{ .Username }}" value="savedassigned" class="form-check-input" autocomplete="off" disabled>
-                        {{ .Name.First }} {{ .Name.Last }} &emsp; <span class="badge bg-danger" style="font-size: 0.7rem">session conflict found</span>
-                        {{ else }}
                         <input type="checkbox" name="{{ .Username }}" value="savedassigned" class="form-check-input" autocomplete="off">
                         {{ .Name.First }} {{ .Name.Last }}
-                        {{ end }}
                     </label>
                 </div>
                 {{ end }}

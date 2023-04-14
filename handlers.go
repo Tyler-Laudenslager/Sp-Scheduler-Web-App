@@ -1701,7 +1701,7 @@ func togglehourglass(w http.ResponseWriter, r *http.Request) {
 		timenow := time.Now().In(loc)
 		// end Load of Eastern Standard Time
 		// change expiration date of session
-		availableSessionRecord.Information.ExpiredDate = timenow.AddDate(0, 0, 5).Format("01/02/2006")
+		availableSessionRecord.Information.ExpiredDate = timenow.AddDate(0, 0, 2).Format("01/02/2006")
 		availableSessionRecord.Information.ShowSession = true
 		// get All SP Records from Database
 		allSpUsers, err := GetAllSpUserRecords(db)
