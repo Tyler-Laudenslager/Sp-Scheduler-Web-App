@@ -37,6 +37,7 @@ func sessionEqual(session1, session2 *SessionInfo) bool {
 	}
 	return true
 }
+
 func formatTitle(title string) string {
 	title = strings.ReplaceAll(title, ",", "")
 	title = strings.ReplaceAll(title, ".", "")
@@ -153,55 +154,34 @@ func GetSessionInfoArchiveDates(sessions []*SessionInfo) []string {
 
 func CheckForSessionConflict(username string) bool {
 	spuserRecord, _ := GetSpUserRecord(username, db)
-	if len(spuserRecord.SessionsSelected) > 0 {
-		addedSession := spuserRecord.SessionsSelected[len(spuserRecord.SessionsSelected)-1]
-		oldsessions := spuserRecord.SessionsSelected[:len(spuserRecord.SessionsSelected)-1]
-		sort.Slice(oldsessions, func(i int, j int) bool {
-			iDate := oldsessions[i].Date
-			jDate := oldsessions[j].Date
+	sessionsByDate := make(map[string][]*SessionInfo)
+	loc, err := time.LoadLocation("EST")
+	if err != nil {
+		fmt.Println("Error in LoadLocation CheckExpirationDate :", err)
+	}
 
-			iStartTime := strings.ReplaceAll(oldsessions[i].StartTime, " ", "")
-			// AM or PM
-			iStartEnding := strings.ToUpper(iStartTime[len(iStartTime)-2:])
-			jStartTime := strings.ReplaceAll(oldsessions[j].StartTime, " ", "")
-			// AM or PM
-			jStartEnding := strings.ToUpper(jStartTime[len(jStartTime)-2:])
+	timenow := time.Now().In(loc)
+	timenowdate := timenow.AddDate(0, 1, 0).Format("January, 2006")
+	spuserRecordsFiltered := make([]*SessionInfo, 0)
+	for _, s := range spuserRecord.SessionsSelected {
+		time, _ := time.Parse("01/02/2006", s.Date)
+		date := time.Format("January, 2006")
+		if timenowdate == date {
+			spuserRecordsFiltered = append(spuserRecordsFiltered, s)
+		}
+	}
 
-			iTimeOfDay := iStartTime[:len(iStartTime)-2]
-			jTimeOfDay := jStartTime[:len(jStartTime)-2]
+	if len(spuserRecordsFiltered) > 0 {
+		addedSession := spuserRecordsFiltered[len(spuserRecordsFiltered)-1]
+		oldsessions := spuserRecordsFiltered[:len(spuserRecordsFiltered)-1]
+		// sort sessions by time of day and date
+		oldsessions = sortSessionInfoByDate(oldsessions)
+		for _, si := range oldsessions {
+			sessionsByDate[si.Date] = append(sessionsByDate[si.Date], si)
+		}
 
-			iParsed, _ := time.Parse("01/02/2006", iDate)
-			jParsed, _ := time.Parse("01/02/2006", jDate)
-
-			if iDate == jDate {
-
-				if iStartEnding == "PM" && jStartEnding == "AM" {
-					return iParsed.Before(jParsed)
-				} else if iStartEnding == "AM" && jStartEnding == "PM" {
-					return !iParsed.Before(jParsed)
-				} else if iStartEnding == jStartEnding {
-					iHour, _ := strconv.Atoi(iTimeOfDay[:strings.Index(iTimeOfDay, ":")])
-					jHour, _ := strconv.Atoi(jTimeOfDay[:strings.Index(jTimeOfDay, ":")])
-					if iHour != 12 {
-						iHour += 12
-					}
-					if jHour != 12 {
-						jHour += 12
-					}
-
-					if iHour < jHour {
-						return !iParsed.Before(jParsed)
-					} else {
-						return iParsed.Before(jParsed)
-					}
-
-				}
-			}
-			return iParsed.Before(jParsed)
-		})
-		for _, s2 := range oldsessions {
-			if s2.Date == addedSession.Date {
-
+		if len(sessionsByDate[addedSession.Date]) > 0 {
+			for _, s2 := range sessionsByDate[addedSession.Date] {
 				s2EndTime := strings.ReplaceAll(s2.EndTime, " ", "")
 
 				s2TimeOfDay := s2EndTime[:len(s2EndTime)-2]
@@ -221,12 +201,15 @@ func CheckForSessionConflict(username string) bool {
 				if s2EndingTime != 12 {
 					s2EndingTime += 12
 				}
-
-				if s2EndingTime < sStartingTime {
+				if s2EndingTime > sStartingTime {
+					fmt.Println("Conflict Found")
 					return true
+
 				}
 
 			}
+		} else {
+			return false
 		}
 	}
 	return false
@@ -309,49 +292,7 @@ func StatusAvailable(status string) bool {
 }
 
 func sortSessionInfoByDate(a []*SessionInfo) []*SessionInfo {
-	sort.Slice(a, func(i int, j int) bool {
-		iDate := a[i].Date
-		jDate := a[j].Date
-
-		iStartTime := strings.ReplaceAll(a[i].StartTime, " ", "")
-		// AM or PM
-		iStartEnding := strings.ToUpper(iStartTime[len(iStartTime)-2:])
-		jStartTime := strings.ReplaceAll(a[j].StartTime, " ", "")
-		// AM or PM
-		jStartEnding := strings.ToUpper(jStartTime[len(jStartTime)-2:])
-
-		iTimeOfDay := iStartTime[:len(iStartTime)-2]
-		jTimeOfDay := jStartTime[:len(jStartTime)-2]
-
-		iParsed, _ := time.Parse("01/02/2006", iDate)
-		jParsed, _ := time.Parse("01/02/2006", jDate)
-
-		if iDate == jDate {
-
-			if iStartEnding == "PM" && jStartEnding == "AM" {
-				return iParsed.Before(jParsed)
-			} else if iStartEnding == "AM" && jStartEnding == "PM" {
-				return !iParsed.Before(jParsed)
-			} else if iStartEnding == jStartEnding {
-				iHour, _ := strconv.Atoi(iTimeOfDay[:strings.Index(iTimeOfDay, ":")])
-				jHour, _ := strconv.Atoi(jTimeOfDay[:strings.Index(jTimeOfDay, ":")])
-				if iHour != 12 {
-					iHour += 12
-				}
-				if jHour != 12 {
-					jHour += 12
-				}
-
-				if iHour < jHour {
-					return !iParsed.Before(jParsed)
-				} else {
-					return iParsed.Before(jParsed)
-				}
-
-			}
-		}
-		return iParsed.Before(jParsed)
-	})
+	sort.Sort(SessionInfoContainer(a[:]))
 	return a
 }
 
@@ -487,99 +428,14 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 			}
 
 			if r.PostFormValue("orderBy") == "byDate" {
-				sort.Slice(session_records_manager, func(i int, j int) bool {
-					iDate := session_records_manager[i].Information.Date
-					jDate := session_records_manager[j].Information.Date
-
-					iStartTime := strings.ReplaceAll(session_records_manager[i].Information.StartTime, " ", "")
-					// AM or PM
-					iStartEnding := strings.ToUpper(iStartTime[len(iStartTime)-2:])
-					jStartTime := strings.ReplaceAll(session_records_manager[j].Information.StartTime, " ", "")
-					// AM or PM
-					jStartEnding := strings.ToUpper(jStartTime[len(jStartTime)-2:])
-
-					iTimeOfDay := iStartTime[:len(iStartTime)-2]
-					jTimeOfDay := jStartTime[:len(jStartTime)-2]
-
-					iParsed, _ := time.Parse("01/02/2006", iDate)
-					jParsed, _ := time.Parse("01/02/2006", jDate)
-
-					if iDate == jDate {
-
-						if iStartEnding == "PM" && jStartEnding == "AM" {
-							return iParsed.Before(jParsed)
-						} else if iStartEnding == "AM" && jStartEnding == "PM" {
-							return !iParsed.Before(jParsed)
-						} else if iStartEnding == jStartEnding {
-							iHour, _ := strconv.Atoi(iTimeOfDay[:strings.Index(iTimeOfDay, ":")])
-							jHour, _ := strconv.Atoi(jTimeOfDay[:strings.Index(jTimeOfDay, ":")])
-							if iHour != 12 {
-								iHour += 12
-							}
-							if jHour != 12 {
-								jHour += 12
-							}
-
-							if iHour < jHour {
-								return !iParsed.Before(jParsed)
-							} else {
-								return iParsed.Before(jParsed)
-							}
-
-						}
-					}
-					return iParsed.Before(jParsed)
-				})
+				fmt.Println("This post form value by date was called")
+				session_records_manager = sortSessionByDate(session_records_manager)
 				dashboard_content.ByLocation = false
 				dashboard_content.ByDate = true
 			}
 
 			if session.Values["orderBy"] == "byDate" {
-				sort.Slice(session_records_manager, func(i int, j int) bool {
-					iDate := session_records_manager[i].Information.Date
-					jDate := session_records_manager[j].Information.Date
-
-					iStartTime := strings.ReplaceAll(session_records_manager[i].Information.StartTime, " ", "")
-
-					// AM or PM
-					iStartEnding := strings.ToUpper(iStartTime[len(iStartTime)-2:])
-
-					jStartTime := strings.ReplaceAll(session_records_manager[j].Information.StartTime, " ", "")
-					// AM or PM
-					jStartEnding := strings.ToUpper(jStartTime[len(jStartTime)-2:])
-
-					iTimeOfDay := iStartTime[:len(iStartTime)-2]
-					jTimeOfDay := jStartTime[:len(jStartTime)-2]
-
-					iParsed, _ := time.Parse("01/02/2006", iDate)
-					jParsed, _ := time.Parse("01/02/2006", jDate)
-
-					if iDate == jDate {
-
-						if iStartEnding == "PM" && jStartEnding == "AM" {
-							return iParsed.Before(jParsed)
-						} else if iStartEnding == "AM" && jStartEnding == "PM" {
-							return !iParsed.Before(jParsed)
-						} else if iStartEnding == jStartEnding {
-							iHour, _ := strconv.Atoi(iTimeOfDay[:strings.Index(iTimeOfDay, ":")])
-							jHour, _ := strconv.Atoi(jTimeOfDay[:strings.Index(jTimeOfDay, ":")])
-							if iHour != 12 {
-								iHour += 12
-							}
-							if jHour != 12 {
-								jHour += 12
-							}
-
-							if iHour < jHour {
-								return !iParsed.Before(jParsed)
-							} else {
-								return iParsed.Before(jParsed)
-							}
-
-						}
-					}
-					return iParsed.Before(jParsed)
-				})
+				session_records_manager = sortSessionByDate(session_records_manager)
 				dashboard_content.ByLocation = false
 				dashboard_content.ByDate = true
 			}
@@ -785,95 +641,13 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 			}
 
 			if r.PostFormValue("orderBy") == "byDate" {
-				sort.Slice(spuser.SessionsSorted, func(i int, j int) bool {
-					iDate := spuser.SessionsSorted[i].Date
-					jDate := spuser.SessionsSorted[j].Date
-
-					iStartTime := strings.ReplaceAll(spuser.SessionsSorted[i].StartTime, " ", "")
-					// AM or PM
-					iStartEnding := strings.ToUpper(iStartTime[len(iStartTime)-2:])
-					jStartTime := strings.ReplaceAll(spuser.SessionsSorted[j].StartTime, " ", "")
-					// AM or PM
-					jStartEnding := strings.ToUpper(jStartTime[len(jStartTime)-2:])
-
-					iTimeOfDay := iStartTime[:len(iStartTime)-2]
-					jTimeOfDay := jStartTime[:len(jStartTime)-2]
-
-					iParsed, _ := time.Parse("01/02/2006", iDate)
-					jParsed, _ := time.Parse("01/02/2006", jDate)
-
-					if iDate == jDate {
-
-						if iStartEnding == "PM" && jStartEnding == "AM" {
-							return iParsed.Before(jParsed)
-						} else if iStartEnding == "AM" && jStartEnding == "PM" {
-							return !iParsed.Before(jParsed)
-						} else if iStartEnding == jStartEnding {
-							iHour, _ := strconv.Atoi(iTimeOfDay[:strings.Index(iTimeOfDay, ":")])
-							jHour, _ := strconv.Atoi(jTimeOfDay[:strings.Index(jTimeOfDay, ":")])
-							if iHour != 12 {
-								iHour += 12
-							}
-							if jHour != 12 {
-								jHour += 12
-							}
-							if iHour < jHour {
-								return !iParsed.Before(jParsed)
-							} else {
-								return iParsed.Before(jParsed)
-							}
-
-						}
-					}
-					return iParsed.Before(jParsed)
-				})
+				spuser.SessionsSorted = sortSessionInfoByDate(spuser.SessionsSorted)
 				dashboard_content.ByLocation = false
 				dashboard_content.ByDate = true
 			}
 
 			if session.Values["orderBy"] == "byDate" {
-				sort.Slice(spuser.SessionsSorted, func(i int, j int) bool {
-					iDate := spuser.SessionsSorted[i].Date
-					jDate := spuser.SessionsSorted[j].Date
-
-					iStartTime := strings.ReplaceAll(spuser.SessionsSorted[i].StartTime, " ", "")
-					// AM or PM
-					iStartEnding := strings.ToUpper(iStartTime[len(iStartTime)-2:])
-					jStartTime := strings.ReplaceAll(spuser.SessionsSorted[j].StartTime, " ", "")
-					// AM or PM
-					jStartEnding := strings.ToUpper(jStartTime[len(jStartTime)-2:])
-
-					iTimeOfDay := iStartTime[:len(iStartTime)-2]
-					jTimeOfDay := jStartTime[:len(jStartTime)-2]
-
-					iParsed, _ := time.Parse("01/02/2006", iDate)
-					jParsed, _ := time.Parse("01/02/2006", jDate)
-
-					if iDate == jDate {
-
-						if iStartEnding == "PM" && jStartEnding == "AM" {
-							return iParsed.Before(jParsed)
-						} else if iStartEnding == "AM" && jStartEnding == "PM" {
-							return !iParsed.Before(jParsed)
-						} else if iStartEnding == jStartEnding {
-							iHour, _ := strconv.Atoi(iTimeOfDay[:strings.Index(iTimeOfDay, ":")])
-							jHour, _ := strconv.Atoi(jTimeOfDay[:strings.Index(jTimeOfDay, ":")])
-							if iHour != 12 {
-								iHour += 12
-							}
-							if jHour != 12 {
-								jHour += 12
-							}
-							if iHour < jHour {
-								return !iParsed.Before(jParsed)
-							} else {
-								return iParsed.Before(jParsed)
-							}
-
-						}
-					}
-					return iParsed.Before(jParsed)
-				})
+				spuser.SessionsSorted = sortSessionInfoByDate(spuser.SessionsSorted)
 				dashboard_content.ByLocation = false
 				dashboard_content.ByDate = true
 			}

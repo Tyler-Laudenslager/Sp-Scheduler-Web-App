@@ -4,6 +4,7 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"errors"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -167,14 +168,57 @@ type SessionContainer []*Session
 
 func (a SessionContainer) Len() int { return len(a) }
 func (a SessionContainer) Less(i, j int) bool {
-
 	iDate := a[i].Information.Date
 	jDate := a[j].Information.Date
+
+	iStartTime := strings.ReplaceAll(a[i].Information.StartTime, " ", "")
+
+	// AM or PM
+	iStartEnding := strings.ToUpper(iStartTime[len(iStartTime)-2:])
+
+	jStartTime := strings.ReplaceAll(a[j].Information.StartTime, " ", "")
+	// AM or PM
+	jStartEnding := strings.ToUpper(jStartTime[len(jStartTime)-2:])
+
+	iTimeOfDay := iStartTime[:len(iStartTime)-2]
+	jTimeOfDay := jStartTime[:len(jStartTime)-2]
 
 	iParsed, _ := time.Parse("01/02/2006", iDate)
 	jParsed, _ := time.Parse("01/02/2006", jDate)
 
+	if iDate == jDate {
+
+		if iStartEnding == "PM" && jStartEnding == "AM" {
+			return iParsed.Before(jParsed)
+		} else if iStartEnding == "AM" && jStartEnding == "PM" {
+			return !iParsed.Before(jParsed)
+		} else if iStartEnding == jStartEnding {
+			iHour, _ := strconv.Atoi(iTimeOfDay[:strings.Index(iTimeOfDay, ":")])
+			jHour, _ := strconv.Atoi(jTimeOfDay[:strings.Index(jTimeOfDay, ":")])
+			iMinutes, _ := strconv.Atoi(iTimeOfDay[strings.Index(iTimeOfDay, ":")+1:])
+			jMinutes, _ := strconv.Atoi(jTimeOfDay[strings.Index(jTimeOfDay, ":")+1:])
+
+			iMin := float64(iMinutes) / 60.0
+			jMin := float64(jMinutes) / 60.0
+
+			iH := float64(iHour) + iMin
+			jH := float64(jHour) + jMin
+			if iH != 12.0 {
+				iH += 12.0
+			}
+			if jH != 12.0 {
+				jH += 12.0
+			}
+			if iH < jH {
+				return !iParsed.Before(jParsed)
+			} else {
+				return iParsed.Before(jParsed)
+			}
+
+		}
+	}
 	return iParsed.Before(jParsed)
+
 }
 func (a SessionContainer) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
 
@@ -232,14 +276,57 @@ type SessionInfoContainer []*SessionInfo
 
 func (a SessionInfoContainer) Len() int { return len(a) }
 func (a SessionInfoContainer) Less(i, j int) bool {
-
 	iDate := a[i].Date
 	jDate := a[j].Date
+
+	iStartTime := strings.ReplaceAll(a[i].StartTime, " ", "")
+
+	// AM or PM
+	iStartEnding := strings.ToUpper(iStartTime[len(iStartTime)-2:])
+
+	jStartTime := strings.ReplaceAll(a[j].StartTime, " ", "")
+	// AM or PM
+	jStartEnding := strings.ToUpper(jStartTime[len(jStartTime)-2:])
+
+	iTimeOfDay := iStartTime[:len(iStartTime)-2]
+	jTimeOfDay := jStartTime[:len(jStartTime)-2]
 
 	iParsed, _ := time.Parse("01/02/2006", iDate)
 	jParsed, _ := time.Parse("01/02/2006", jDate)
 
+	if iDate == jDate {
+
+		if iStartEnding == "PM" && jStartEnding == "AM" {
+			return iParsed.Before(jParsed)
+		} else if iStartEnding == "AM" && jStartEnding == "PM" {
+			return !iParsed.Before(jParsed)
+		} else if iStartEnding == jStartEnding {
+			iHour, _ := strconv.Atoi(iTimeOfDay[:strings.Index(iTimeOfDay, ":")])
+			jHour, _ := strconv.Atoi(jTimeOfDay[:strings.Index(jTimeOfDay, ":")])
+			iMinutes, _ := strconv.Atoi(iTimeOfDay[strings.Index(iTimeOfDay, ":")+1:])
+			jMinutes, _ := strconv.Atoi(jTimeOfDay[strings.Index(jTimeOfDay, ":")+1:])
+
+			iMin := float64(iMinutes) / 60.0
+			jMin := float64(jMinutes) / 60.0
+
+			iH := float64(iHour) + iMin
+			jH := float64(jHour) + jMin
+			if iH != 12.0 {
+				iH += 12.0
+			}
+			if jH != 12.0 {
+				jH += 12.0
+			}
+			if iH < jH {
+				return !iParsed.Before(jParsed)
+			} else {
+				return iParsed.Before(jParsed)
+			}
+
+		}
+	}
 	return iParsed.Before(jParsed)
+
 }
 func (a SessionInfoContainer) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
 
