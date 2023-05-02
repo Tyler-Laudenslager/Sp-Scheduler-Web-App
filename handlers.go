@@ -833,7 +833,6 @@ func confirmAllSPs(w http.ResponseWriter, r *http.Request) {
 
 	// Add the session record information to each assigned sp account
 	for _, foundSession := range session_records_new {
-		fmt.Println(foundSession.Information.Title)
 		for _, spuser := range foundSession.PatientsAssigned {
 			username := spuser.Username
 			spuserRecord, err := GetSpUserRecord(username, db)
@@ -1268,7 +1267,6 @@ func signupavailable(w http.ResponseWriter, r *http.Request) {
 	title := formatTitle(availableSessionRecord.Information.Title + availableSessionRecord.Information.Date +
 		availableSessionRecord.Information.StartTime + availableSessionRecord.Information.EndTime +
 		availableSessionRecord.Information.Location)
-	fmt.Println("Selected Date: ", session.Values["dateFilter"])
 	http.Redirect(w, r, "/dashboard#"+title, httpRedirectResponse)
 }
 
@@ -1327,7 +1325,6 @@ func signupnotavailable(w http.ResponseWriter, r *http.Request) {
 	title := formatTitle(notAvailableSessionRecord.Information.Title + notAvailableSessionRecord.Information.Date +
 		notAvailableSessionRecord.Information.StartTime + notAvailableSessionRecord.Information.EndTime +
 		notAvailableSessionRecord.Information.Location)
-	fmt.Println("Selected Date: ", session.Values["dateFilter"])
 	http.Redirect(w, r, "/dashboard#"+title, httpRedirectResponse)
 }
 
