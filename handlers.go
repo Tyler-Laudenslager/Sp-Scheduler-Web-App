@@ -894,6 +894,34 @@ func confirmAllSPs(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/dashboard", httpRedirectResponse)
 }
 
+func selectedToAssigned(w http.ResponseWriter, r *http.Request) {
+	selectedmonth := r.PostFormValue("selectedmonth")
+	// Get all session records from database
+	session_records, err := GetAllSessionRecords(db)
+	if err != nil {
+		fmt.Println("Error getting records in confirmAllSPS", err)
+	}
+
+	// Filter the session records by date
+	session_records_new := make([]*Session, 0)
+	for _, s := range session_records {
+		time, _ := time.Parse("01/02/2006", s.Information.Date)
+		date := time.Format("January, 2006")
+		if date == selectedmonth {
+			session_records_new = append(session_records_new, s)
+		}
+	}
+
+	// For Each Session Record Move All SPs Selected to Assigned
+	for _, session := range session_records_new {
+		session.PatientsAssigned = append(session.PatientsAssigned, session.PatientsSelected...)
+		session.PatientsSelected = make([]*SpUser, 0)
+		session.UpdateRecord(db)
+	}
+
+	http.Redirect(w, r, "/dashboard", httpRedirectResponse)
+}
+
 func assignsp(w http.ResponseWriter, r *http.Request) {
 	//Get the information for the session
 	title := r.PostFormValue("title")

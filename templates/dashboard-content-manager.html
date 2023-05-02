@@ -2,12 +2,12 @@
 <section>
     <div class="container-fluid">
         <div id="header" class="vstack gap-2 align-items-center position relative">
-            <div class="card mt-4 position: relative">
+            <div class="card mt-4 ms-4 position: relative">
                 <div class="card-body">
                 <h2 class="card-title">Session Scheduler</h2>
                 </div>
             </div>
-            <div class="card position relative">
+            <div class="card position justify-content-center ms-4">
                 <div class="card-body">
                     <div class="row row-cols-auto">
                         <div class="col"><h5 class="card-text">Name: {{ .User.Name.First }} {{ .User.Name.Last }}</h5></div>
@@ -18,63 +18,43 @@
             </div>
             <div class="row row-cols-auto position relative mb-2">
                 <div class="col">
-                <button type="button" class="btn btn-info position: relative" data-bs-toggle="modal" data-bs-target="#ManageSPs"
-                        style="background-color: white; color: #4581ef;">
-                    Manage SPs
-                </button>
-                </div>
-                <div class="col">
-                    <button type="button" class="btn btn-info position: relative" data-bs-toggle="offcanvas" data-bs-target="#SessionArchives" 
-                     aria-controls="#SessionArchives" style="background-color: white; color: #4581ef;">
-                    Session Archives
-                    </button>
-                </div>
-                <div class="col">
-                <button type="button" class="btn btn-info position: relative logout-btn"
-                        style="background-color:white; color:#4581ef;">
-                    <a href="/json" target="_blank" style="text-decoration: none;">View All Data</a>
-                </button>
-                </div>
-                <div class="col">
-                <button type="button" class="btn btn-info position: relative" data-bs-toggle="modal" data-bs-target="#UserSettings"
-                        style="background-color: white; color: #4581ef;">
-                    User Settings
-                </button>
-                </div>
-                <div class="col">
-                <button type="button" class="btn btn-info position: relative logout-btn"
-                        style="background-color:white; color:#4581ef;">
-                    <a href="/logout" style="text-decoration: none;">Logout</a>
-                </button>
-                </div>
-            
-            </div>
-            <div class="row row-cols-auto">
-                <div class="col">
-                    <button type="button" class="mt-1 btn btn-info position relative" style="background-color: white; color: #4581ef;">
-                        Sessions Selected: {{ .SelectedDate }}
-                    </button>
-                </div>
-                <div class="col">
-                    <button type="button" class="mt-1 btn btn-info position relative" style="background-color: white; color: #4581ef;">
-                        Total Sessions: {{ .User.SessionsUnmanaged | len }}
-                    </button>
-                </div>
-                <div class="col">
-                    <button type="button" class="mt-1 btn btn-info position relative" data-bs-toggle="modal" data-bs-target="#ConfirmSPs" 
-                     style="background-color: rgb(98, 218, 68); color: #2e2e32;">
-                        Confirm All SPs
-                    </button>
-                </div>
-            </div>
-            <div class="row row-cols-auto">
-                <div class="col">
-                    <button type="button" class="mt-2 btn btn-info position relative" data-bs-toggle="modal" data-bs-target="#createSessionModal">
+                    <button type="button" class="btn btn-info position relative mt-1 ms-4" data-bs-toggle="modal" data-bs-target="#createSessionModal">
                         Create Session
                     </button>
                 </div>
                 <div class="col">
-                    <form action="/dashboard" class="mt-2 position relative" method="post" enctype="application/x-www-form-urlencoded">
+                    <div class="btn-group mt-1">
+                        <button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                          Manager Options
+                        </button>
+                        <ul class="dropdown-menu">
+                          <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#ManageSPs">Manage SPs</a></li>
+                          <li><a class="dropdown-item" data-bs-toggle="offcanvas" data-bs-target="#SessionArchives" aria-controls="#SessionArchives">Session Archives</a></li>
+                          <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#UserSettings">User Settings</a></li>
+                          <li><a class="dropdown-item" href="/logout" style="text-decoration: none;">Logout</a></li>
+                        </ul>
+                      </div>
+                </div>
+                <div class="col">
+                    <div class="btn-group mt-1">
+                        <button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                          Quick Assign Options
+                        </button>
+                        <ul class="dropdown-menu">
+                          <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#SelectedToAssigned">Assign All Selected SPs</a></li>
+                          <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#ConfirmSPs">Confirm All Assigned SPs</a></li>
+                        </ul>
+                      </div>
+                </div>
+            </div>
+            <div class="row row-cols-auto justify-content-center">
+                <div class="col ms-4">
+                    <span class="mt-1 badge d-inline-flex align-items-center justify-content-start" style="font-size: 1.0rem; height: 2.3rem; background-color: white; color: #4581ef;">
+                        Sessions Selected: {{ .SelectedDate }}&nbsp; | &nbsp; Total Sessions: {{ .User.SessionsUnmanaged | len }}
+                    </span>
+                </div>
+                <div class="col">
+                    <form action="/dashboard" class="mt-1 position relative" method="post" enctype="application/x-www-form-urlencoded">
                     <input type="hidden" name="username" value="{{ .User.Username }}">
                     {{ if .ByDate }}
                     <select name="orderBy" class="form-select" aria-label="Order Sessions" onchange="this.form.submit();" onfocus="this.selectedIndex = -1;">
@@ -98,7 +78,7 @@
                     </form>
                 </div>
             </div>
-            <ul class="listgroup mb-2 mt-2">
+            <ul class="listgroup mb-2 mt-2 justify-content-center">
             {{ template "session-content" .User }}
             </ul>
             {{ if .User.SessionsUnmanaged }}
@@ -570,6 +550,54 @@
     </div>
 </div>
 
+<div class="modal fade" id="SelectedToAssigned">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+    
+          <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Assign All Selected SPs</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+    
+          <!-- Modal body -->
+            <div class="modal-body">
+                {{ if .SelectedDate | CheckForAllSessionsInput }}
+                <div class="d-flex gap-2 justify-content-center">
+                <h1><span class="badge bg-danger">Error!</span></h1>
+                </div>
+                <br/>
+                <h5>"All Sessions" option selected!</h5>
+                <br/>
+                <h5>Select a month from the session archives to activate!</h5>
+                {{ else }}
+                <h5>Assign All Selected Standardized Patients
+                </h5>
+                <h5>Month Selected : {{ .SelectedDate }}</h5>
+                <br>
+                <div class="d-flex gap-2 justify-content-center">
+                    <form action="/selectedToAssigned" method="post" enctype="application/x-www-form-urlencoded">
+                        <input type="hidden" name="selectedmonth" value="{{ .SelectedDate }}">
+                        <button type="submit" class="btn btn-success mb-2" data-bs-dismiss="modal">
+                            Yes Confirm!
+                        </button> 
+                        <button type="button" class="btn btn-danger mb-2" data-bs-dismiss="modal">
+                            No Cancel!
+                        </button>
+                    </form>
+                </div>
+                {{ end }}
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <div class="modal fade" id="CreateSPRecord">
     <div class="modal-dialog modal-dialog-centered">
@@ -661,7 +689,9 @@
                 </button>
             </form>
         {{ end }}
-
+        <button type="button" class="btn btn-outline-info position-absolute ms-3 bottom-0 start-0 translate-middle-y">
+            <a href="/json" target="_blank" style="text-decoration: none;">All Data</a>
+        </button>
         <button type="button" class="btn btn-outline-danger position-absolute me-4 bottom-0 end-0 translate-middle-y" data-bs-toggle="modal" data-bs-target="#RestoreBackUp">
                     Restore Data From Backup File
         </button>
