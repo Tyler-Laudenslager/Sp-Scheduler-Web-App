@@ -893,6 +893,62 @@ func confirmAllSPs(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/dashboard", httpRedirectResponse)
 }
 
+func makeSessionsAvailable(w http.ResponseWriter, r *http.Request) {
+	selectedmonth := r.PostFormValue("selectedmonth")
+	// Get all session records from database
+	session_records, err := GetAllSessionRecords(db)
+	if err != nil {
+		fmt.Println("Error getting records in confirmAllSPS", err)
+	}
+
+	// Filter the session records by date
+	session_records_new := make([]*Session, 0)
+	for _, s := range session_records {
+		time, _ := time.Parse("01/02/2006", s.Information.Date)
+		date := time.Format("January, 2006")
+		if date == selectedmonth {
+			session_records_new = append(session_records_new, s)
+		}
+	}
+
+	// For Each Session Record Move All SPs Selected to Assigned
+	for _, session := range session_records_new {
+		loc, err := time.LoadLocation("EST")
+		if err != nil {
+			fmt.Println("Error loading location time in toggleHourGlass")
+		}
+		timenow := time.Now().In(loc)
+		// end Load of Eastern Standard Time
+		// change expiration date of session
+		session.Information.ExpiredDate = timenow.AddDate(0, 0, 2).Format("01/02/2006")
+		session.Information.ShowSession = true
+		// get All SP Records from Database
+		allSpUsers, err := GetAllSpUserRecords(db)
+		if err != nil {
+			fmt.Println("Error Getting all SP User records: ", err)
+		}
+		// For Every SP record in the database
+		for _, su := range allSpUsers {
+			// collect all sessions except for assigned ones
+			allSessions := append(su.SessionsAssigned, su.SessionsAvailable...)
+			allSessions = append(allSessions, su.SessionsUnavailable...)
+			allSessions = append(allSessions, su.SessionsPool...)
+			// find the session needed to be updated
+			for _, si := range allSessions {
+
+				if sessionEqual(session.Information, si) {
+					si.ExpiredDate = session.Information.ExpiredDate
+				}
+			}
+			// update the found session record
+			su.UpdateRecord(db)
+		}
+		session.UpdateRecord(db)
+	}
+
+	http.Redirect(w, r, "/dashboard", httpRedirectResponse)
+}
+
 func selectedToAssigned(w http.ResponseWriter, r *http.Request) {
 	selectedmonth := r.PostFormValue("selectedmonth")
 	// Get all session records from database

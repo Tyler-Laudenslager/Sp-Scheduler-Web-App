@@ -38,9 +38,10 @@
                 <div class="col">
                     <div class="btn-group mt-1">
                         <button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                          Quick Assign Options
+                          Quick Session Options
                         </button>
                         <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#MakeSessionsAvailable">Make Sessions Available</a></li>
                           <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#SelectedToAssigned">Assign All Selected SPs</a></li>
                           <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#ConfirmSPs">Confirm All Assigned SPs</a></li>
                         </ul>
@@ -577,6 +578,54 @@
                 <br>
                 <div class="d-flex gap-2 justify-content-center">
                     <form action="/selectedToAssigned" method="post" enctype="application/x-www-form-urlencoded">
+                        <input type="hidden" name="selectedmonth" value="{{ .SelectedDate }}">
+                        <button type="submit" class="btn btn-success mb-2" data-bs-dismiss="modal">
+                            Yes Confirm!
+                        </button> 
+                        <button type="button" class="btn btn-danger mb-2" data-bs-dismiss="modal">
+                            No Cancel!
+                        </button>
+                    </form>
+                </div>
+                {{ end }}
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="MakeSessionsAvailable">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+    
+          <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Make Selected Sessions Available</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+    
+          <!-- Modal body -->
+            <div class="modal-body">
+                {{ if .SelectedDate | CheckForAllSessionsInput }}
+                <div class="d-flex gap-2 justify-content-center">
+                <h1><span class="badge bg-danger">Error!</span></h1>
+                </div>
+                <br/>
+                <h5>"All Sessions" option selected!</h5>
+                <br/>
+                <h5>Select a month from the session archives to activate!</h5>
+                {{ else }}
+                <h5>Enable All Session Sign Ups
+                </h5>
+                <h5>Month Selected : {{ .SelectedDate }}</h5>
+                <br>
+                <div class="d-flex gap-2 justify-content-center">
+                    <form action="/makeSessionsAvailable" method="post" enctype="application/x-www-form-urlencoded">
                         <input type="hidden" name="selectedmonth" value="{{ .SelectedDate }}">
                         <button type="submit" class="btn btn-success mb-2" data-bs-dismiss="modal">
                             Yes Confirm!
