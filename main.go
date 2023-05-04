@@ -134,20 +134,55 @@ func saveDatabase() {
 
 // This function will run on initilization of program
 func init() {
-	// resetAllSpPasswords()
+	resetAllSpPasswords()
 
 	// Session Creation
-	makeSession("Sacred Heart Check-UP", "05/25/2023", "11:00am", "12:00pm", "Sacred Heart", "Check-Up")
-	makeSession("Anderson Follow UP", "05/25/2023", "1:00pm", "2:00pm", "Warren", "Follow-Up")
-	makeSession("Practice Session", "05/25/2023", "1:30pm", "3:00pm", "Sacred Heart", "Follow-Up")
-	makeSession("Practice Session", "05/25/2023", "7:30am", "8:30am", "Sacred Heart", "Follow-Up")
+	/* 	makeSession("Sacred Heart Check-UP", "05/25/2023", "11:00am", "12:00pm", "Sacred Heart", "Check-Up")
+	   	makeSession("Anderson Follow UP", "05/25/2023", "1:00pm", "2:00pm", "Warren", "Follow-Up")
+	   	makeSession("Practice Session", "05/25/2023", "1:30pm", "3:00pm", "Sacred Heart", "Follow-Up")
+	   	makeSession("Practice Session", "05/25/2023", "7:30am", "8:30am", "Sacred Heart", "Follow-Up") */
 	// SP Creation
-	makeSP("Charles Darwin", "cdarwin", "letmein2")
-	makeSP("Robert Pike", "rpike", "letmein")
+	//makeSP("Charles Darwin", "cdarwin", "letmein2")
+	//makeSP("Robert Pike", "rpike", "letmein")
 
 	// Manager Creation
 	// saveDatabase()
-	makeManager("Tyler Lauden", "tlaud", "letmeinman")
+	//makeManager("Tyler Lauden", "tlaud", "letmeinman")
+
+	/* allSpUsers, _ := GetAllSpUserRecords(db)
+	allSessionRecords, _ := GetAllSessionRecords(db)
+
+	session_records_manager_new := make([]*Session, 0)
+	for _, s := range allSessionRecords {
+		time, _ := time.Parse("01/02/2006", s.Information.Date)
+		date := time.Format("January, 2006")
+		if date == "May, 2023" {
+			session_records_manager_new = append(session_records_manager_new, s)
+		}
+	}
+	for _, su := range allSpUsers {
+		if su.Name.First == "Anh" && su.Name.Last == "Nguyen" {
+			for _, s := range session_records_manager_new {
+				if s.Information.Date == "05/10/2023" &&
+					s.Information.Title == "Bethlehem EM Sim" &&
+					s.Information.StartTime == "8:00am" &&
+					s.Information.EndTime == "10:00am" {
+					s.PatientsAvailable = append(s.PatientsAvailable, su)
+
+				}
+
+				if s.Information.Date == "05/17/2023" &&
+					s.Information.Title == "Bethlehem EM Sim" &&
+					s.Information.StartTime == "8:00 am" &&
+					s.Information.EndTime == "10:00 am" {
+
+					s.PatientsAvailable = append(s.PatientsAvailable, su)
+
+				}
+				s.UpdateRecord(db)
+			}
+		}
+	} */
 
 }
 

@@ -17,17 +17,23 @@
                 </div>
             </div>
             <div class="row row-cols-auto mt-1 mb-1">
-            <div class="col">
-                <button type="button" class="btn btn-info position: relative" data-bs-toggle="offcanvas" data-bs-target="#AssignedSessionRecords" 
-                 aria-controls="#AssignedSessionRecords" style="background-color: white; color: #4581ef;">
-                Session Records
-                </button>
-            </div>
-            <div class="col">
-                <button type="button" class="btn btn-info position relative" style="background-color: white; color: #4581ef;">
-                    Sessions Selected: {{ .SelectedDate }}
-                </button>
-            </div>
+                <div class="col">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                          SP Options
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" data-bs-toggle="offcanvas" data-bs-target="#AssignedSessionRecords">Session Records</a></li>
+                          <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#UserSettings">User Settings</a></li>
+                          <li><a class="dropdown-item" href="/logout" style="text-decoration: none;">Logout</a></li>
+                        </ul>
+                      </div>
+                </div>
+                <div class="col">
+                    <span class="badge d-inline-flex align-items-center justify-content-start" style="font-size: 1.0rem; height: 2.3rem; background-color: white; color: #4581ef;">
+                        Sessions Selected: {{ .SelectedDate }}
+                    </span>
+                </div>
             <div class="col">
                 <form action="/dashboard" class="position relative" method="post" enctype="application/x-www-form-urlencoded">
                 <input type="hidden" name="username" value="{{ .User.Username }}">
@@ -51,19 +57,6 @@
                 </select>
                 {{ end }}
                 </form>
-        </div>
-            <div class="col">
-                <button type="button" class="btn btn-info position: relative" data-bs-toggle="modal" data-bs-target="#UserSettings"
-                        style="background-color: white; color: #4581ef;">
-                    User Settings
-                </button>
-            </button>
-            </div>
-            <div class="col mb-2">
-                <button type="button" class="btn btn-info position: relative logout-btn"
-                        style="background-color:white; color:#4581ef;">
-                    <a href="/logout" style="text-decoration: none;">Logout</a>
-                </button>
             </div>
             </div>
             
