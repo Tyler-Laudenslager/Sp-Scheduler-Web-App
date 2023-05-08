@@ -788,52 +788,43 @@
                     <!-- Modal body -->
                     <div class="modal-body">
                         <h6>Username: {{ .Username }}</h6>
-                        <h6>Total Sessions Assigned : {{ .TotalSessionsAssigned }}</h6>
                         <h6>Email: {{ .Email }}</h6>
-                        <h6>Sessions Available | {{ .SessionsAvailable | len }}:</h6>
+                        <h6>Sessions Available</h6>
                         {{ if .SessionsAvailable }}
-                            {{ with $SessionsAvailable := .SessionsAvailable | sortSessionInfoByDate }}
-                            {{ range $SessionsAvailable }}
+                            {{ range .SessionsAvailable }}
                                 {{ if .Date | notPastSession }}
                                 <p>&emsp; {{ .Title }} {{ .Date }} {{ .StartTime }} {{ .EndTime }}</p>
                                 {{ end }}
                             {{ end }}
-                            {{ end }}
                         {{ else }}
                         <p>&emsp;None</p>
                         {{ end }}
-                        <h6>Sessions Unavailable | {{ .SessionsUnavailable | len }}:</h6>
+                        <h6>Sessions Unavailable</h6>
                         {{ if .SessionsUnavailable }}
-                            {{ with $SessionsUnavailable := .SessionsUnavailable | sortSessionInfoByDate }}
-                            {{ range $SessionsUnavailable }}
+                            {{ range .SessionsUnavailable }}
                                 {{ if .Date | notPastSession }}
                                 <p>&emsp; {{ .Title }} {{ .Date }} {{ .StartTime }} {{ .EndTime }}</p>
                                 {{ end }}
-                            {{ end }}
                             {{ end }}
                         {{ else }}
                         <p>&emsp;None</p>
                         {{ end }}
-                        <h6>Sessions Selected | {{ .SessionsSelected | len }}:</h6>
+                        <h6>Sessions Selected</h6>
                         {{ if .SessionsSelected }}
-                            {{ with $SessionsSelected := .SessionsSelected | sortSessionInfoByDate }}
-                            {{ range $SessionsSelected }}
+                            {{ range .SessionsSelected }}
                                 {{ if .Date | notPastSession }}
                                 <p>&emsp; {{ .Title }} {{ .Date }} {{ .StartTime }} {{ .EndTime }}</p>
                                 {{ end }}
-                            {{ end }}
                             {{ end }}
                         {{ else }}
                         <p>&emsp;None</p>
                         {{ end }} 
-                        <h6>Sessions Assigned | {{ .SessionsAssigned | len }}:</h6>
+                        <h6>Sessions Assigned</h6>
                         {{ if .SessionsAssigned }}
-                            {{ with $SessionsAssigned := .SessionsAssigned | sortSessionInfoByDate }}
-                            {{ range $SessionsAssigned }}
+                            {{ range .SessionsAssigned }}
                                 {{ if .Date | notPastSession }}
                                 <p>&emsp; {{ .Title }} {{ .Date }} {{ .StartTime }} {{ .EndTime }}</p>
                                 {{ end }}
-                            {{ end }}
                             {{ end }}
                         {{ else }}
                         <p>&emsp;None</p>
