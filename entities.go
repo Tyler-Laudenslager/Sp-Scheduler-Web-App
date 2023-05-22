@@ -4,6 +4,7 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -203,15 +204,20 @@ func (a SessionContainer) Less(i, j int) bool {
 
 			iH := float64(iHour) + iMin
 			jH := float64(jHour) + jMin
-			if iH != 12.0 {
+			if iHour != 12.0 {
 				iH += 12.0
 			}
-			if jH != 12.0 {
+			if jHour != 12.0 {
 				jH += 12.0
 			}
+			if iDate == "06/20/2023" {
+				fmt.Println("06/20/2023")
+			}
 			if iH < jH {
+				fmt.Println("iH: ", iH, "jH: ", jH)
 				return !iParsed.Before(jParsed)
 			} else {
+				fmt.Println("iH: ", iH, "jH: ", jH)
 				return iParsed.Before(jParsed)
 			}
 

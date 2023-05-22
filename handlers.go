@@ -100,6 +100,28 @@ func removeDuplicate[T string | int](sliceList []T) []T {
 	return list
 }
 
+func removeSPDuplicates(spbox []*SpUser) []*SpUser {
+	type miniSP struct {
+		first_name string
+		last_name  string
+	}
+	keys := make(map[miniSP]bool)
+	list := make([]*SpUser, 0)
+
+	for _, entry := range spbox {
+
+		spInfo := miniSP{
+			first_name: entry.Name.First,
+			last_name:  entry.Name.Last,
+		}
+		if _, value := keys[spInfo]; !value {
+			keys[spInfo] = true
+			list = append(list, entry)
+		}
+	}
+	return list
+}
+
 func removeSessionInfoDuplicates(sessionInfoBox []*SessionInfo) []*SessionInfo {
 
 	type miniSessionInfo struct {
@@ -297,6 +319,7 @@ func sortSessionInfoByDate(a []*SessionInfo) []*SessionInfo {
 }
 
 func sortSessionByDate(a []*Session) []*Session {
+
 	sort.Sort(SessionContainer(a[:]))
 	return a
 }
@@ -429,6 +452,7 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 
 			if r.PostFormValue("orderBy") == "byDate" {
 				fmt.Println("This post form value by date was called")
+
 				session_records_manager = sortSessionByDate(session_records_manager)
 				dashboard_content.ByLocation = false
 				dashboard_content.ByDate = true
