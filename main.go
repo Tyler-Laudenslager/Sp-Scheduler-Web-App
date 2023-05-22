@@ -134,7 +134,7 @@ func saveDatabase() {
 
 // This function will run on initilization of program
 func init() {
-	resetAllSpPasswords()
+	//resetAllSpPasswords()
 
 	// Session Creation
 	/* 	makeSession("Sacred Heart Check-UP", "05/25/2023", "11:00am", "12:00pm", "Sacred Heart", "Check-Up")
