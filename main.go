@@ -137,17 +137,17 @@ func init() {
 	//resetAllSpPasswords()
 
 	// Session Creation
-	/* 	makeSession("Sacred Heart Check-UP", "05/25/2023", "11:00am", "12:00pm", "Sacred Heart", "Check-Up")
-	   	makeSession("Anderson Follow UP", "05/25/2023", "1:00pm", "2:00pm", "Warren", "Follow-Up")
-	   	makeSession("Practice Session", "05/25/2023", "1:30pm", "3:00pm", "Sacred Heart", "Follow-Up")
-	   	makeSession("Practice Session", "05/25/2023", "7:30am", "8:30am", "Sacred Heart", "Follow-Up") */
+	//makeSession("Sacred Heart Check-UP", "05/25/2023", "11:00am", "12:00pm", "Sacred Heart", "Check-Up")
+	//makeSession("Anderson Follow UP", "05/25/2023", "1:00pm", "2:00pm", "Warren", "Follow-Up")
+	//makeSession("Practice Session", "05/25/2023", "1:30pm", "3:00pm", "Sacred Heart", "Follow-Up")
+	//makeSession("Practice Session", "05/25/2023", "7:30am", "8:30am", "Sacred Heart", "Follow-Up")
 	// SP Creation
 	//makeSP("Charles Darwin", "cdarwin", "letmein2")
 	//makeSP("Robert Pike", "rpike", "letmein")
 
 	// Manager Creation
 	// saveDatabase()
-	makeManager("Tyler Lauden", "tlaud", "letmeinman")
+	//makeManager("Tyler Lauden", "tlaud", "letmeinman")
 
 }
 
@@ -169,6 +169,7 @@ func main() {
 	http.HandleFunc("/confirmAllSPs", confirmAllSPs)
 	http.HandleFunc("/selectedToAssigned", selectedToAssigned)
 	http.HandleFunc("/makeSessionsAvailable", makeSessionsAvailable)
+	http.HandleFunc("/addcomment", addcomment)
 	http.HandleFunc("/assignsp", assignsp)
 	http.HandleFunc("/signupavailable", signupavailable)
 	http.HandleFunc("/signupnotavailable", signupnotavailable)

@@ -8,4 +8,7 @@ require (
 	golang.org/x/crypto v0.0.0-20221012134737-56aed061732a
 )
 
-require github.com/gorilla/securecookie v1.1.1 // indirect
+require (
+	github.com/gorilla/securecookie v1.1.1 // indirect
+	github.com/gorilla/websocket v1.5.0
+)

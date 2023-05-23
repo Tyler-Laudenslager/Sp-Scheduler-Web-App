@@ -111,6 +111,49 @@
     </div>
 </div>
 
+{{ if .User.SessionsSorted }}
+{{ range .User.SessionsSorted }}
+<div class="offcanvas offcanvas-end" id="{{ .Title | formatTitle }}{{ .Date | formatTitle }}{{ .StartTime | formatTitle }}{{ .EndTime | formatTitle }}{{ .Location | formatTitle }}comment" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" aria-labelledby="{{ .Title | formatTitle }}{{ .Date | formatTitle }}{{ .StartTime | formatTitle }}{{ .EndTime | formatTitle }}{{ .Location | formatTitle }}comment">
+    <div class="offcanvas-header">
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <h5>Session Information</h5>
+        <h5>-----------------------</h5>
+        <h5>Date : {{ .Date }}</h5>
+        <h5>Title : {{ .Title }}</h5>
+        <h5>Start Time : {{ .StartTime }}</h5>
+        <h5>End Time : {{ .EndTime }}</h5>
+        <h5>Location : {{ .Location }}</h5>
+        <h5>Description : </h5>
+        <p>&emsp;{{ .Description }}</p>
+        <h5>------------------------</h5>
+        {{ with $currentComment := GetComment $.User . }}
+        <h6>Current Comment: </h6>
+        <div class="card-text badge badge-pill text-wrap" style="font-size: 14px; background-color: rgb(158, 246, 252); color: rgb(18, 17, 17); width: 23rem; min-height: 5rem"><p class="text-break">{{ $currentComment }}</p></div></h5>
+        {{ end }}
+        <br/>
+        <br/>
+        <form action="/addcomment" method="post" enctype="application/x-www-form-urlencoded">
+            <input type="hidden" name="Title" value="{{ .Title }}">
+            <input type="hidden" name="Date" value="{{ .Date }}">
+            <input type="hidden" name="StartTime" value="{{ .StartTime }}">
+            <input type="hidden" name="EndTime" value="{{ .EndTime }}">
+            <input type="hidden" name="Location" value="{{ .Location }}">
+            <input type="hidden" name="Description" value="{{ .Description }}">
+            <div class="form-floating mb-2">
+            <textarea name="newcomment" style="height: 8rem;" class="form-control"></textarea>
+            <label for="floatingInput">Comment</label>
+            </div>
+            <button type="submit" class="btn btn-outline-success" data-bs-dismiss="modal">Submit</button>
+        </form>
+    </div>
+</div>
+{{ end }}
+{{ end }}
+
+
+
 {{ template "user-settings" . }}
 
 {{ end }}

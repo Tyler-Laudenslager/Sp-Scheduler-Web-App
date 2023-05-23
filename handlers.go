@@ -696,6 +696,7 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 		funcMap := template.FuncMap{
 			"GetCurrentMonth":          GetCurrentMonth,
 			"GetNextMonth":             GetNextMonth,
+			"GetComment":               GetComment,
 			"formatTitle":              formatTitle,
 			"formatDate":               formatDate,
 			"ExpirationDateSet":        ExpirationDateSet,
@@ -1483,6 +1484,83 @@ func changepassword(w http.ResponseWriter, r *http.Request) {
 		}
 		http.Redirect(w, r, "/dashboard", httpRedirectResponse)
 	}
+
+}
+
+func GetComment(sp SpUser, s SessionInfo) string {
+	spuser, err := GetSpUserRecord(sp.Username, db)
+	if err != nil {
+		fmt.Println("Error: GetSpUserRecord in signupavailable", err)
+	}
+
+	availableSessionRecord, err := GetSessionRecord(&s, db)
+	if err != nil {
+		fmt.Println("Error GetSessionRecord in signupavailable", err)
+	}
+	if availableSessionRecord.Information.Comments[spuser.Username] != nil {
+		return availableSessionRecord.Information.Comments[spuser.Username][0].Content
+	} else {
+		return ""
+	}
+
+}
+
+func addcomment(w http.ResponseWriter, r *http.Request) {
+	session, _ := store.Get(r, "sessionAuthSPCalendar")
+	if auth, ok := session.Values["authenticated"].(bool); !ok || !auth {
+		http.Redirect(w, r, "/login", httpRedirectResponse)
+		return
+	}
+	spuser, err := GetSpUserRecord(session.Values["username"].(string), db)
+	if err != nil {
+		fmt.Println("Error: GetSpUserRecord in signupavailable", err)
+	}
+	title := r.PostFormValue("Title")
+	date := r.PostFormValue("Date")
+	starttime := r.PostFormValue("StartTime")
+	endtime := r.PostFormValue("EndTime")
+	location := r.PostFormValue("location")
+	sessionInfo := SessionInfo{
+		Title:       r.PostFormValue("Title"),
+		Date:        r.PostFormValue("Date"),
+		StartTime:   r.PostFormValue("StartTime"),
+		EndTime:     r.PostFormValue("EndTime"),
+		Location:    r.PostFormValue("Location"),
+		Description: r.PostFormValue("Description"),
+	}
+
+	availableSessionRecord, err := GetSessionRecord(&sessionInfo, db)
+	if err != nil {
+		fmt.Println("Error GetSessionRecord in signupavailable", err)
+	}
+
+	newcomment := r.PostFormValue("newcomment")
+	loc, err := time.LoadLocation("EST")
+	if err != nil {
+		fmt.Println("Error in LoadLocation CheckExpirationDate :", err)
+	}
+	timenow := time.Now().In(loc)
+	datenow := timenow.Format("January, 02, 2006")
+	timedetails := timenow.Format("")
+	createdcomment := Comment{
+		Author:      spuser.Name.First + " " + spuser.Name.Last,
+		DateCreated: datenow,
+		TimeCreated: timedetails,
+		Content:     newcomment,
+	}
+	availableSessionRecord.Information.Comments[spuser.Username] = []*Comment{}
+	availableSessionRecord.Information.Comments[spuser.Username] = append(availableSessionRecord.Information.Comments[spuser.Username], &createdcomment)
+	availableSessionRecord.UpdateRecord(db)
+	fmt.Println("Sp User: ", spuser.Name.First, spuser.Name.Last)
+	fmt.Println("Added Comment: ", availableSessionRecord.Information.Comments[spuser.Username][0].Content)
+	fmt.Println("To This Session: ")
+	fmt.Println(availableSessionRecord.Information.Title)
+	fmt.Println(availableSessionRecord.Information.Date)
+	fmt.Println(availableSessionRecord.Information.StartTime)
+	fmt.Println(availableSessionRecord.Information.EndTime)
+	fmt.Println(availableSessionRecord.Information.Location)
+	title = formatTitle(title + date + starttime + endtime + location)
+	http.Redirect(w, r, "/dashboard#"+title, httpRedirectResponse)
 
 }
 

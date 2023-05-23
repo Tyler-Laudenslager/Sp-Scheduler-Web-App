@@ -4,7 +4,6 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -21,6 +20,26 @@ const (
 type Name struct {
 	First string `json:"First"`
 	Last  string `json:"Last"`
+}
+
+type Comment struct {
+	Author      string `json:"Creator"`
+	DateCreated string `json:"DateCreated"`
+	TimeCreated string `json:"TimeCreated"`
+	Content     string `json:"Content"`
+}
+
+func (c Comment) Value() (driver.Value, error) {
+	return json.Marshal(c)
+}
+
+func (c *Comment) Scan(value interface{}) error {
+	b, ok := value.([]byte)
+	if !ok {
+		return errors.New("type assertion to []byte failed")
+	}
+
+	return json.Unmarshal(b, &c)
 }
 
 func (n Name) Create(full_name string) *Name {
@@ -163,6 +182,7 @@ type Session struct {
 	PatientsAvailable   []*SpUser     `json:"PatientsAvailable"`
 	PatientsUnavailable []*SpUser     `json:"PatientsUnavailable"`
 	PatientsNoResponse  []*SpUser     `json:"PatientsNoResponse"`
+	Comments            []*Comment    `json:"Comments"`
 }
 
 type SessionContainer []*Session
@@ -210,14 +230,10 @@ func (a SessionContainer) Less(i, j int) bool {
 			if jHour != 12.0 {
 				jH += 12.0
 			}
-			if iDate == "06/20/2023" {
-				fmt.Println("06/20/2023")
-			}
+
 			if iH < jH {
-				fmt.Println("iH: ", iH, "jH: ", jH)
 				return !iParsed.Before(jParsed)
 			} else {
-				fmt.Println("iH: ", iH, "jH: ", jH)
 				return iParsed.Before(jParsed)
 			}
 
@@ -254,7 +270,8 @@ func (s Session) Create(title string, date string, starttime string, endtime str
 			CreatedDate:       "",
 			ExpiredDate:       "",
 			CheckMarkAssigned: false,
-			ShowSession:       false},
+			ShowSession:       false,
+			Comments:          map[string][]*Comment{}},
 		Instructors:         []*Instructor{},
 		PatientsNeeded:      0,
 		PatientsAssigned:    []*SpUser{},
@@ -266,17 +283,18 @@ func (s Session) Create(title string, date string, starttime string, endtime str
 }
 
 type SessionInfo struct {
-	Title             string `json:"Title"`
-	Date              string `json:"Date"`
-	StartTime         string `json:"StartTime"`
-	EndTime           string `json:"EndTime"`
-	Location          string `json:"Location"`
-	Description       string `json:"Description"`
-	Status            string `json:"Status"`
-	CreatedDate       string `json:"CreatedDate"`
-	ExpiredDate       string `json:"ExpiredDate"`
-	ShowSession       bool   `json:"ShowSession"`
-	CheckMarkAssigned bool   `json:"CheckMarkAssigned"`
+	Title             string                `json:"Title"`
+	Date              string                `json:"Date"`
+	StartTime         string                `json:"StartTime"`
+	EndTime           string                `json:"EndTime"`
+	Location          string                `json:"Location"`
+	Description       string                `json:"Description"`
+	Status            string                `json:"Status"`
+	CreatedDate       string                `json:"CreatedDate"`
+	ExpiredDate       string                `json:"ExpiredDate"`
+	ShowSession       bool                  `json:"ShowSession"`
+	CheckMarkAssigned bool                  `json:"CheckMarkAssigned"`
+	Comments          map[string][]*Comment `json:"Comments"`
 }
 type SessionInfoContainer []*SessionInfo
 

@@ -292,6 +292,25 @@
                 <button type="submit" formaction="/assignsp" class="btn btn-outline-success" data-bs-dismiss="modal">Submit</button>
                 </div>
             </form>
+            <br/>
+            <h6>Comments:</h6>
+            {{ if .Information.Comments }}
+            <div class="vstack gap-2 ">
+            {{ range $index, $comments := .Information.Comments }}
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                  {{ with $comment := index $comments 0 }}
+                  <h6 class="card-subtitle mb-2 text-muted" style="font-size: small;">{{ $comment.Author }}</h6>
+                  <p class="card-text">{{ $comment.Content }}</p>
+                  {{ end }}
+                </div>
+            </div>
+            {{ end }}
+            </div>
+            {{ else }}
+            <h6>None</h6>
+            {{ end }}
+
         </div>
     </div>
 {{ end }}
