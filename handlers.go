@@ -224,7 +224,6 @@ func CheckForSessionConflict(username string) bool {
 					s2EndingTime += 12
 				}
 				if s2EndingTime > sStartingTime {
-					fmt.Println("Conflict Found")
 					return true
 
 				}
