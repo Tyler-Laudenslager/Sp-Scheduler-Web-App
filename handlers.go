@@ -1551,14 +1551,6 @@ func addcomment(w http.ResponseWriter, r *http.Request) {
 	availableSessionRecord.Information.Comments[spuser.Username] = []*Comment{}
 	availableSessionRecord.Information.Comments[spuser.Username] = append(availableSessionRecord.Information.Comments[spuser.Username], &createdcomment)
 	availableSessionRecord.UpdateRecord(db)
-	fmt.Println("Sp User: ", spuser.Name.First, spuser.Name.Last)
-	fmt.Println("Added Comment: ", availableSessionRecord.Information.Comments[spuser.Username][0].Content)
-	fmt.Println("To This Session: ")
-	fmt.Println(availableSessionRecord.Information.Title)
-	fmt.Println(availableSessionRecord.Information.Date)
-	fmt.Println(availableSessionRecord.Information.StartTime)
-	fmt.Println(availableSessionRecord.Information.EndTime)
-	fmt.Println(availableSessionRecord.Information.Location)
 	title = formatTitle(title + date + starttime + endtime + location)
 	http.Redirect(w, r, "/dashboard#"+title, httpRedirectResponse)
 
