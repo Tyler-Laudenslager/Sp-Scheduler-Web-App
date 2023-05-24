@@ -908,11 +908,10 @@ func confirmAllSPs(w http.ResponseWriter, r *http.Request) {
 				fmt.Println("Error Updating Record: ", err)
 				return
 			}
-
-			foundSession.Information.CheckMarkAssigned = true
-			foundSession.Information.ShowSession = true
-			foundSession.UpdateRecord(db)
 		}
+		foundSession.Information.CheckMarkAssigned = true
+		foundSession.Information.ShowSession = true
+		foundSession.UpdateRecord(db)
 	}
 	http.Redirect(w, r, "/dashboard", httpRedirectResponse)
 }
