@@ -130,9 +130,13 @@
         <h5>------------------------</h5>
         {{ with $currentComment := GetComment $.User . }}
         <h6>Current Comment: </h6>
-        <div class="card-text badge badge-pill text-wrap" style="font-size: 14px; background-color: rgb(158, 246, 252); color: rgb(18, 17, 17); width: 23rem; min-height: 5rem"><p class="text-break">{{ $currentComment }}</p></div></h5>
+        <div class="card" style="width: 18rem;">
+            <div class="card-body">
+              <h6 class="card-subtitle mb-2 text-muted" style="font-size: small;">{{ $.User.Name.First }} {{ $.User.Name.Last }}</h6>
+              <p class="card-text">{{ $currentComment }}</p>
+            </div>
+        </div>
         {{ end }}
-        <br/>
         <br/>
         <form action="/addcomment" method="post" enctype="application/x-www-form-urlencoded">
             <input type="hidden" name="Title" value="{{ .Title }}">
