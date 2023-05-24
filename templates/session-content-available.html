@@ -1,6 +1,29 @@
 {{ define "session-content" }}
     {{ if .User.SessionsSorted }}
     {{ range .User.SessionsSorted }}
+    {{ if .Status | StatusCanceled }}
+    {{ if .ShowSession }}
+    <div id="{{ .Title | formatTitle }}{{ .Date | formatTitle }}{{ .StartTime | formatTitle }}{{ .EndTime | formatTitle }}{{ .Location | formatTitle }}" class="card border-success" style="width: 40rem; background-color: #f7f8f7;">
+        <div class="card-body">
+            <div class="vstack me-2 gap-2 d-flex align-items-center position-absolute top-50 end-0 translate-middle-y">
+                <div class="card text-white bg-danger" style="width: 16rem;">
+                    <div class="card-body">
+                      <h5 class="card-title">Canceled!</h5>
+                      
+                    </div>
+                  </div>
+            </div>
+            <h5 class="card-text">Date: {{ .Date | formatDate }}</h5>
+            <h5 class="card-text">Title: {{ .Title }}</h5>
+            <h5 class="card-text">Start Time: {{ .StartTime }}</h5>
+            <h5 class="card-text">End Time: {{ .EndTime }}</h5>
+            <h5 class="card-text">Location: {{ .Location }}</h5>
+            <h5 class="card-text">Description: <br><div class="card-text badge badge-pill text-wrap" style="font-size: 16px; background-color: lightgrey; color: black; width: 20rem; min-height: 5rem">{{ .Description }}</div></h5>
+            
+        </div>
+    </div>
+    {{ end }}
+    {{ end }}
     {{ if .Status | StatusAssigned }}
     {{ if .ShowSession }}
     <div id="{{ .Title | formatTitle }}{{ .Date | formatTitle }}{{ .StartTime | formatTitle }}{{ .EndTime | formatTitle }}{{ .Location | formatTitle }}" class="card border-success" style="width: 40rem; background-color: #f7f8f7;">

@@ -43,6 +43,7 @@ CREATE TABLE Sessions (
 	createddate varchar(20),
 	expireddate varchar(20),
 	CheckMarkAssigned BOOL NOT NULL,
+	CheckXCanceled BOOL NOT NULL,
 	Comments JSONB,
 	ShowSession BOOL NOT NULL,
 	Instructors JSONB,

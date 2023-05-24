@@ -296,6 +296,10 @@ func notPastSession(date string) bool {
 	return currentDate.Before(sessionDateParsed)
 }
 
+func StatusCanceled(status string) bool {
+	return status == "canceled"
+}
+
 func StatusAssigned(status string) bool {
 	return status == "assigned"
 }
@@ -511,8 +515,12 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 			}
 			spuser.SessionsSorted = make([]*SessionInfo, 0)
 			for _, si := range spuser.SessionsAssigned {
-				si.Status = "assigned"
-				spuser.SessionsSorted = append(spuser.SessionsSorted, si)
+				if si.Status != "canceled" {
+					si.Status = "assigned"
+					spuser.SessionsSorted = append(spuser.SessionsSorted, si)
+				} else {
+					spuser.SessionsSorted = append(spuser.SessionsSorted, si)
+				}
 			}
 			for _, si := range spuser.SessionsAvailable {
 				si.Status = "available"
@@ -706,6 +714,7 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 			"sortSessionInfoByDate":    sortSessionInfoByDate,
 			"sortSessionByDate":        sortSessionByDate,
 			"sortSpUserByLastName":     sortSpUserByLastName,
+			"StatusCanceled":           StatusCanceled,
 			"StatusAssigned":           StatusAssigned,
 			"StatusNoResponse":         StatusNoResponse,
 			"StatusAvailable":          StatusAvailable,
@@ -1765,6 +1774,94 @@ func togglechecksquare(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/dashboard#"+uniqueID, httpRedirectResponse)
 }
 
+func togglexcancel(w http.ResponseWriter, r *http.Request) {
+	sessionInfo := SessionInfo{
+		Title:       r.PostFormValue("title"),
+		Date:        r.PostFormValue("date"),
+		StartTime:   r.PostFormValue("starttime"),
+		EndTime:     r.PostFormValue("endtime"),
+		Location:    r.PostFormValue("location"),
+		Description: r.PostFormValue("description"),
+	}
+	//Put this session into all the SPs assigned sessionsAssignedBox
+	foundSession, err := GetSessionRecord(&sessionInfo, db)
+	if err != nil {
+		fmt.Println("Error GetSessionRecord in signupavailable", err)
+	}
+	if !foundSession.Information.CheckXCanceled {
+		foundSession.Information.CheckXCanceled = true
+		foundSession.Information.ShowSession = true
+		err = foundSession.UpdateRecord(db)
+		if err != nil {
+			fmt.Println("Error updating record in togglecheckassign ", err)
+		}
+		if len(foundSession.PatientsAssigned) > 0 {
+			for _, spuser := range foundSession.PatientsAssigned {
+				username := spuser.Username
+				spuserRecord, err := GetSpUserRecord(username, db)
+				if err != nil {
+					fmt.Println("Error Getting Record: ", err)
+					return
+				}
+
+				for _, si := range spuserRecord.SessionsAssigned {
+					if sessionEqual(foundSession.Information, si) {
+						si.Status = "canceled"
+					}
+				}
+				if spuserRecord.TotalSessionsAssigned > 0 {
+					spuserRecord.TotalSessionsAssigned = spuserRecord.TotalSessionsAssigned - 1
+				}
+
+				err = spuserRecord.UpdateRecord(db)
+				if err != nil {
+					fmt.Println("Error Updating Record: ", err)
+					return
+				}
+			}
+		}
+	} else {
+		foundSession.Information.CheckXCanceled = false
+		foundSession.Information.ShowSession = true
+		err = foundSession.UpdateRecord(db)
+		if err != nil {
+			fmt.Println("Error updating record in togglecheckassign ", err)
+		}
+		if len(foundSession.PatientsAssigned) > 0 {
+			for _, spuser := range foundSession.PatientsAssigned {
+				username := spuser.Username
+				spuserRecord, err := GetSpUserRecord(username, db)
+				if err != nil {
+					fmt.Println("Error Getting Record: ", err)
+					return
+				}
+
+				for _, si := range spuserRecord.SessionsAssigned {
+					if sessionEqual(foundSession.Information, si) {
+						si.Status = "assigned"
+					}
+				}
+				if spuserRecord.TotalSessionsAssigned > 0 {
+					spuserRecord.TotalSessionsAssigned = spuserRecord.TotalSessionsAssigned - 1
+				}
+
+				err = spuserRecord.UpdateRecord(db)
+				if err != nil {
+					fmt.Println("Error Updating Record: ", err)
+					return
+				}
+			}
+		}
+	}
+	uniqueID := formatTitle(foundSession.Information.Title)
+	uniqueID = formatTitle(uniqueID + foundSession.Information.Date)
+	uniqueID = formatTitle(uniqueID + foundSession.Information.StartTime)
+	uniqueID = formatTitle(uniqueID + foundSession.Information.EndTime)
+	uniqueID = formatTitle(uniqueID + foundSession.Information.Location)
+
+	http.Redirect(w, r, "/dashboard#"+uniqueID, httpRedirectResponse)
+}
+
 func authenticate(w http.ResponseWriter, r *http.Request) {
 	session, _ := store.Get(r, "sessionAuthSPCalendar")
 
@@ -1885,7 +1982,7 @@ func sessionbackup(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 			for _, manager := range HospitalCalendar.Managers {
-				err = manager.UpdateRecord(db)
+				err = manager.MakeRecord(db)
 				if err != nil {
 					fmt.Fprintln(w, "Error Creating User Record")
 				}

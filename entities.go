@@ -270,6 +270,7 @@ func (s Session) Create(title string, date string, starttime string, endtime str
 			CreatedDate:       "",
 			ExpiredDate:       "",
 			CheckMarkAssigned: false,
+			CheckXCanceled:    false,
 			ShowSession:       false,
 			Comments:          map[string][]*Comment{}},
 		Instructors:         []*Instructor{},
@@ -294,6 +295,7 @@ type SessionInfo struct {
 	ExpiredDate       string                `json:"ExpiredDate"`
 	ShowSession       bool                  `json:"ShowSession"`
 	CheckMarkAssigned bool                  `json:"CheckMarkAssigned"`
+	CheckXCanceled    bool                  `json:"CheckXCanceled"`
 	Comments          map[string][]*Comment `json:"Comments"`
 }
 type SessionInfoContainer []*SessionInfo
