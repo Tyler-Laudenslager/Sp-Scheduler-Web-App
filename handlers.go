@@ -316,6 +316,36 @@ func StatusAvailable(status string) bool {
 	return status == "available"
 }
 
+func filterSessionInfoByMonth(monthSelected, username, sessionsLabel string) []*SessionInfo {
+	SpUserRecord, _ := GetSpUserRecord(username, db)
+	var sessions []*SessionInfo
+	switch sessionsLabel {
+	case "available":
+		sessions = SpUserRecord.SessionsAvailable[:]
+	case "unavailable":
+		sessions = SpUserRecord.SessionsUnavailable[:]
+	case "assigned":
+		sessions = SpUserRecord.SessionsAssigned[:]
+	case "selected":
+		sessions = SpUserRecord.SessionsSelected[:]
+	case "noresponse":
+		sessions = SpUserRecord.SessionsPool[:]
+	}
+
+	newSessionsFiltered := make([]*SessionInfo, 0)
+	if len(sessions) != 0 {
+		for _, s := range sessions {
+			time, _ := time.Parse("01/02/2006", s.Date)
+			date := time.Format("January, 2006")
+			if monthSelected == date {
+				newSessionsFiltered = append(newSessionsFiltered, s)
+			}
+		}
+	}
+	return sortSessionInfoByDate(newSessionsFiltered)
+
+}
+
 func sortSessionInfoByDate(a []*SessionInfo) []*SessionInfo {
 	sort.Sort(SessionInfoContainer(a[:]))
 	return a
@@ -711,6 +741,7 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 			"CheckNotExpired":          CheckNotExpired,
 			"CheckForAllSessionsInput": CheckForAllSessionsInput,
 			"CheckForSessionConflict":  CheckForSessionConflict,
+			"filterSessionInfoByMonth": filterSessionInfoByMonth,
 			"sortSessionInfoByDate":    sortSessionInfoByDate,
 			"sortSessionByDate":        sortSessionByDate,
 			"sortSpUserByLastName":     sortSpUserByLastName,

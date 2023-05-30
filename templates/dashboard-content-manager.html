@@ -112,6 +112,9 @@
             <h5>Location : {{ .Information.Location }}</h5>
             <h5>Description : </h5>
             <p>&emsp;{{ .Information.Description }}</p>
+            {{ if .Information.CreatedDate }}
+            <h5>Created: {{ .Information.CreatedDate }}</h5>
+            {{ end }}
             {{ if .Information.ExpiredDate }}
             <h5>Sign Up Expires : {{ .Information.ExpiredDate }}</h5>
             {{ else }}
@@ -743,12 +746,6 @@
     </div>
     <div class="offcanvas-body" style="background-color: #f8f9f9;">
         <div class="vstack gap-2">
-        <form action="/dashboard" class="mt-2 position relative" method="post" enctype="application/x-www-form-urlencoded">
-            <input type="hidden" name="date" value="allsessions">
-            <button type="submit" class="btn btn-outline-primary" data-bs-dismiss="offcanvas">
-                <h5>All Sessions</h5>
-            </button>
-        </form>
         {{ range .Archives }}
             <form action="/dashboard" class="mt-2 position relative" method="post" enctype="application/x-www-form-urlencoded">
                 <input type="hidden" name="date" value="{{ . }}">
@@ -806,48 +803,66 @@
     
                     <!-- Modal body -->
                     <div class="modal-body">
+                        <h6>Selected Month: {{ $.SelectedDate }}</h6>
+                        <h6>-----------------------------------------------</h6>
+                        <h6>Full Name: {{ .Name.First }} {{ .Name.Last }}</h6>
                         <h6>Username: {{ .Username }}</h6>
                         <h6>Email: {{ .Email }}</h6>
-                        <h6>Sessions Available</h6>
-                        {{ if .SessionsAvailable }}
-                            {{ range .SessionsAvailable }}
-                                {{ if .Date | notPastSession }}
-                                <p>&emsp; {{ .Title }} {{ .Date }} {{ .StartTime }} {{ .EndTime }}</p>
-                                {{ end }}
-                            {{ end }}
+                        {{ with $SessionsAvailable := filterSessionInfoByMonth $.SelectedDate .Username "available" }}
+                        <h6>Sessions Available | {{ $SessionsAvailable | len }}</h6>
+                        {{ if $SessionsAvailable }}
+                        {{ range $SessionsAvailable }}
+                            <p>&emsp; {{ .Title }} {{ .Date }} {{ .StartTime }} {{ .EndTime }}</p>
+                        {{ end }}
                         {{ else }}
                         <p>&emsp;None</p>
                         {{ end }}
-                        <h6>Sessions Unavailable</h6>
-                        {{ if .SessionsUnavailable }}
-                            {{ range .SessionsUnavailable }}
-                                {{ if .Date | notPastSession }}
-                                <p>&emsp; {{ .Title }} {{ .Date }} {{ .StartTime }} {{ .EndTime }}</p>
-                                {{ end }}
-                            {{ end }}
+                        {{ end }}
+
+                        {{ with $SessionsUnavailable := filterSessionInfoByMonth $.SelectedDate .Username "unavailable" }}
+                        <h6>Sessions Unavailable | {{ $SessionsUnavailable | len }}</h6>
+                        {{ if $SessionsUnavailable }}
+                        {{ range $SessionsUnavailable }}
+                            <p>&emsp; {{ .Title }} {{ .Date }} {{ .StartTime }} {{ .EndTime }}</p>
+                        {{ end }}
                         {{ else }}
                         <p>&emsp;None</p>
                         {{ end }}
-                        <h6>Sessions Selected</h6>
-                        {{ if .SessionsSelected }}
-                            {{ range .SessionsSelected }}
-                                {{ if .Date | notPastSession }}
-                                <p>&emsp; {{ .Title }} {{ .Date }} {{ .StartTime }} {{ .EndTime }}</p>
-                                {{ end }}
-                            {{ end }}
+                        {{ end }}
+
+                        {{ with $SessionsSelected := filterSessionInfoByMonth $.SelectedDate .Username "selected" }}
+                        <h6>Sessions Selected | {{ $SessionsSelected | len }}</h6>
+                        {{ if $SessionsSelected }}
+                        {{ range $SessionsSelected }}
+                            <p>&emsp; {{ .Title }} {{ .Date }} {{ .StartTime }} {{ .EndTime }}</p>
+                        {{ end }}
                         {{ else }}
                         <p>&emsp;None</p>
-                        {{ end }} 
-                        <h6>Sessions Assigned</h6>
-                        {{ if .SessionsAssigned }}
-                            {{ range .SessionsAssigned }}
-                                {{ if .Date | notPastSession }}
-                                <p>&emsp; {{ .Title }} {{ .Date }} {{ .StartTime }} {{ .EndTime }}</p>
-                                {{ end }}
-                            {{ end }}
+                        {{ end }}
+                        {{ end }}
+
+                        {{ with $SessionsAssigned := filterSessionInfoByMonth $.SelectedDate .Username "assigned" }}
+                        <h6>Sessions Assigned | {{ $SessionsAssigned | len }}</h6>
+                        {{ if $SessionsAssigned }}
+                        {{ range $SessionsAssigned }}
+                            <p>&emsp; {{ .Title }} {{ .Date }} {{ .StartTime }} {{ .EndTime }}</p>
+                        {{ end }}
                         {{ else }}
                         <p>&emsp;None</p>
-                        {{ end }} 
+                        {{ end }}
+                        {{ end }}
+
+                        {{ with $SessionsNoResponse := filterSessionInfoByMonth $.SelectedDate .Username "noresponse" }}
+                        <h6>Sessions No Response | {{ $SessionsNoResponse | len }}</h6>
+                        {{ if $SessionsNoResponse }}
+                        {{ range $SessionsNoResponse }}
+                            <p>&emsp; {{ .Title }} {{ .Date }} {{ .StartTime }} {{ .EndTime }}</p>
+                        {{ end }}
+                        {{ else }}
+                        <p>&emsp;None</p>
+                        {{ end }}
+                        {{ end }}
+
                         
                     </div>
                 </div>
