@@ -134,42 +134,20 @@ func saveDatabase() {
 
 // This function will run on initilization of program
 func init() {
-	resetAllSpPasswords()
+	//resetAllSpPasswords()
 
 	// Session Creation
-	//makeSession("Sacred Heart Check-UP", "06/12/2023", "11:00am", "12:00pm", "Sacred Heart", "Check-Up")
-	//makeSession("Anderson Follow UP", "06/20/2023", "1:00pm", "2:00pm", "Warren", "Follow-Up")
-	//makeSession("Practice Session", "06/30/2023", "1:30pm", "3:00pm", "Sacred Heart", "Follow-Up")
-	//makeSession("Practice Session", "06/29/2023", "7:30am", "8:30am", "Sacred Heart", "Follow-Up")
+	makeSession("Sacred Heart Check-UP", "06/12/2023", "11:00am", "12:00pm", "Sacred Heart", "Check-Up")
+	makeSession("Anderson Follow UP", "06/20/2023", "1:00pm", "2:00pm", "Warren", "Follow-Up")
+	makeSession("Practice Session", "06/30/2023", "1:30pm", "3:00pm", "Sacred Heart", "Follow-Up")
+	makeSession("Practice Session", "06/29/2023", "7:30am", "8:30am", "Sacred Heart", "Follow-Up")
 	// SP Creation
-	//makeSP("Charles Darwin", "cdarwin", "letmein2")
-	//makeSP("Robert Pike", "rpike", "letmein")
+	makeSP("Charles Darwin", "cdarwin", "letmein2")
+	makeSP("Robert Pike", "rpike", "letmein")
 
 	// Manager Creation
 	// saveDatabase()
-	//makeManager("Tyler Lauden", "tlaud", "letmeinman")
-	allSessionRecords, _ := GetAllSessionRecords(db)
-	newSessionsFiltered := make([]*Session, 0)
-	for _, s := range allSessionRecords {
-		time, _ := time.Parse("01/02/2006", s.Information.Date)
-		date := time.Format("January, 2006")
-		if date == "May, 2023" {
-			newSessionsFiltered = append(newSessionsFiltered, s)
-		}
-
-	}
-
-	for _, s := range newSessionsFiltered {
-		if s.Information.Title == "STEMI Process Simulation" &&
-			s.Information.Date == "05/30/2023" &&
-			s.Information.StartTime == "10:00am" &&
-			s.Information.EndTime == "1:00pm" &&
-			s.Information.Location == "Warren" {
-
-			s.PatientsAvailable = removeSPDuplicates(s.PatientsAvailable)
-			s.UpdateRecord(db)
-		}
-	}
+	makeManager("Tyler Lauden", "tlaud", "letmeinman")
 
 }
 
