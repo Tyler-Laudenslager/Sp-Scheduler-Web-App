@@ -100,6 +100,15 @@ func removeDuplicate[T string | int](sliceList []T) []T {
 	return list
 }
 
+func SpUserIsIn(spuser *SpUser, in []*SpUser) bool {
+	for _, su := range in {
+		if spuser.Username == su.Username {
+			return true
+		}
+	}
+	return false
+}
+
 func removeSPDuplicates(spbox []*SpUser) []*SpUser {
 	type miniSP struct {
 		first_name string
@@ -1258,15 +1267,23 @@ func assignsp(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if override == "availableoverride" {
+		savedAvailableSpUsers := foundSession.PatientsAvailable
+		addedSpUsers := append(foundSession.PatientsAvailable, foundSession.PatientsSelected...)
+		addedSpUsers = append(addedSpUsers, foundSession.PatientsAssigned...)
 		foundSession.PatientsAvailable = []*SpUser{}
 		allSpUsers, err := GetAllSpUserRecords(db)
 		if err != nil {
 			fmt.Println("Error: Getting all Sp User records", err)
 		}
-		foundSession.PatientsAvailable = append(foundSession.PatientsAvailable, allSpUsers...)
-
+		for _, su := range allSpUsers {
+			if SpUserIsIn(su, addedSpUsers) {
+				continue
+			} else {
+				foundSession.PatientsAvailable = append(foundSession.PatientsAvailable, su)
+			}
+		}
+		foundSession.PatientsAvailable = append(foundSession.PatientsAvailable, savedAvailableSpUsers...)
 	}
-
 	err = foundSession.UpdateRecord(db)
 	if err != nil {
 		fmt.Println("Error updating record in assign sp", err)

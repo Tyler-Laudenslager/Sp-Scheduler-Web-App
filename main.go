@@ -150,8 +150,6 @@ func init() {
 	// Manager Creation
 	// saveDatabase()
 	makeManager("Tyler Lauden", "tlaud", "letmeinman")
-	fmt.Println("Made All Manager Accounts...")
-
 }
 
 func main() {
