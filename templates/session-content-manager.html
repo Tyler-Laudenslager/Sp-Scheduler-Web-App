@@ -135,7 +135,9 @@
             </div>
             <h5 class="card-text">Date: {{ .Information.Date | formatDate }}</h5>
             <h5 class="card-text">Title: {{ .Information.Title }}</h5>
+            {{ if .Information.ArrivalTime | IsValid }}
             <h5 class="card-text">Arrival Time: {{ .Information.ArrivalTime }}</h5>
+            {{ end }}
             <h5 class="card-text">Start Time: {{ .Information.StartTime }}</h5>
             <h5 class="card-text">End Time: {{ .Information.EndTime }}</h5>
             <h5 class="card-text">Location: {{ .Information.Location }}</h5>

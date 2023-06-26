@@ -15,7 +15,9 @@
             </div>
             <h5 class="card-text">Date: {{ .Date | formatDate }}</h5>
             <h5 class="card-text">Title: {{ .Title }}</h5>
+            {{ if .ArrivalTime | IsValid }}
             <h5 class="card-text">Arrival Time : {{ .ArrivalTime }}</h5>
+            {{ end }}
             <h5 class="card-text">Start Time: {{ .StartTime }}</h5>
             <h5 class="card-text">End Time: {{ .EndTime }}</h5>
             <h5 class="card-text">Location: {{ .Location }}</h5>
@@ -39,7 +41,9 @@
             </div>
             <h5 class="card-text">Date: {{ .Date | formatDate }}</h5>
             <h5 class="card-text">Title: {{ .Title }}</h5>
+            {{ if .ArrivalTime | IsValid }}
             <h5 class="card-text">Arrival Time: {{ .ArrivalTime }}</h5>
+            {{ end }}
             <h5 class="card-text">Start Time: {{ .StartTime }}</h5>
             <h5 class="card-text">End Time: {{ .EndTime }}</h5>
             <h5 class="card-text">Location: {{ .Location }}</h5>
@@ -86,7 +90,9 @@
             </div>
             <h5 class="card-text">Date: {{ .Date | formatDate }}</h5>
             <h5 class="card-text">Title: {{ .Title }}</h5>
+            {{ if .ArrivalTime | IsValid }}
             <h5 class="card-text">Arrival Time: {{ .ArrivalTime }}</h5>
+            {{ end }}
             <h5 class="card-text">Start Time: {{ .StartTime }}</h5>
             <h5 class="card-text">End Time: {{ .EndTime }}</h5>
             <h5 class="card-text">Location: {{ .Location }}</h5>
@@ -134,7 +140,9 @@
             </div>
             <h5 class="card-text">Date: {{ .Date | formatDate }}</h5>
             <h5 class="card-text">Title: {{ .Title }}</h5>
+            {{ if .ArrivalTime | IsValid }}
             <h5 class="card-text">Arrival Time: {{ .ArrivalTime }}</h5>
+            {{ end }}
             <h5 class="card-text">Start Time: {{ .StartTime }}</h5>
             <h5 class="card-text">End Time: {{ .EndTime }}</h5>
             <h5 class="card-text">Location: {{ .Location }}</h5>
@@ -187,7 +195,9 @@
             </div>
             <h5 class="card-text">Date: {{ .Date | formatDate }}</h5>
             <h5 class="card-text">Title: {{ .Title }}</h5>
+            {{ if .ArrivalTime | IsValid }}
             <h5 class="card-text">Arrival Time: {{ .ArrivalTime }}</h5>
+            {{ end }}
             <h5 class="card-text">Start Time: {{ .StartTime }}</h5>
             <h5 class="card-text">End Time: {{ .EndTime }}</h5>
             <h5 class="card-text">Location: {{ .Location }}</h5>

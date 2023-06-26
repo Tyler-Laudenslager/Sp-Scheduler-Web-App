@@ -272,6 +272,14 @@ func ExpirationDateSet(expireddate string) bool {
 	}
 }
 
+func IsValid(input string) bool {
+	if input == "" {
+		return false
+	} else {
+		return true
+	}
+}
+
 func pastSession(date string) bool {
 	loc, err := time.LoadLocation("EST")
 	if err != nil {
@@ -737,6 +745,7 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 			"formatTitle":              formatTitle,
 			"formatDate":               formatDate,
 			"ExpirationDateSet":        ExpirationDateSet,
+			"IsValid":                  IsValid,
 			"CheckExpired":             CheckExpired,
 			"CheckNotExpired":          CheckNotExpired,
 			"CheckForAllSessionsInput": CheckForAllSessionsInput,

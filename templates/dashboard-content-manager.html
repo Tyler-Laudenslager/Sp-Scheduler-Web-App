@@ -107,7 +107,9 @@
         <div class="offcanvas-body">
             <h5>Date : {{ .Information.Date }}</h5>
             <h5>Title : {{ .Information.Title }}</h5>
+            {{ if .Information.ArrivalTime | IsValid }}
             <h5>Arrival Time : {{ .Information.ArrivalTime }}</h5>
+            {{ end }}
             <h5>Start Time : {{ .Information.StartTime }}</h5>
             <h5>End Time : {{ .Information.EndTime }}</h5>
             <h5>Location : {{ .Information.Location }}</h5>
