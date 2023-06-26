@@ -17,7 +17,7 @@
                 </button>
                 {{ else }}
                 <button type="button" class="btn btn-outline-primary position: relative" data-bs-toggle="offcanvas" data-bs-target="#{{ .Information.Title | formatTitle}}{{ .Information.Date | formatTitle }}{{ .Information.StartTime | formatTitle }}{{ .Information.EndTime | formatTitle }}{{ .Information.Location | formatTitle }}assignsp" aria-controls="{{ .Information.Title | formatTitle }}{{ .Information.Date | formatTitle }}{{ .Information.StartTime | formatTitle }}{{ .Information.EndTime | formatTitle }}{{ .Information.Location | formatTitle }}assignsp" 
-                disabled>
+                >
                     Assign SPs
                 </button>
                 {{ end }}
@@ -135,6 +135,7 @@
             </div>
             <h5 class="card-text">Date: {{ .Information.Date | formatDate }}</h5>
             <h5 class="card-text">Title: {{ .Information.Title }}</h5>
+            <h5 class="card-text">Arrival Time: {{ .Information.ArrivalTime }}</h5>
             <h5 class="card-text">Start Time: {{ .Information.StartTime }}</h5>
             <h5 class="card-text">End Time: {{ .Information.EndTime }}</h5>
             <h5 class="card-text">Location: {{ .Information.Location }}</h5>

@@ -390,7 +390,7 @@ func (s *Session) Display() {
 	fmt.Println("Seen :", s.Information.ShowSession)
 }
 func (s *Session) MakeRecord(db *sql.DB) (err error) {
-	statement := "insert into sessions (title, date, starttime, endtime, location, description, status, createddate, expireddate, checkmarkassigned, checkxcanceled, comments, showsession, instructors, patientsneeded, patientsassigned, patientsselected, patientsavailable, patientsunavailable, patientsnoresponse) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20) returning id"
+	statement := "insert into sessions (title, date, arrivaltime, starttime, endtime, location, description, status, createddate, expireddate, checkmarkassigned, checkxcanceled, comments, showsession, instructors, patientsneeded, patientsassigned, patientsselected, patientsavailable, patientsunavailable, patientsnoresponse) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21) returning id"
 	stmt, err := db.Prepare(statement)
 	if err != nil {
 		return
@@ -408,6 +408,7 @@ func (s *Session) MakeRecord(db *sql.DB) (err error) {
 	err = stmt.QueryRow(
 		s.Information.Title,
 		s.Information.Date,
+		s.Information.ArrivalTime,
 		s.Information.StartTime,
 		s.Information.EndTime,
 		s.Information.Location,
@@ -444,10 +445,10 @@ func GetSessionRecord(sinfo *SessionInfo, db *sql.DB) (s Session, err error) {
 	var patientsNoResponseByte []byte
 	var commentsByte []byte
 
-	err = db.QueryRow("select id, title, date, starttime, endtime, location, description, status, createddate, expireddate, checkmarkassigned, checkxcanceled, comments, showsession, "+
+	err = db.QueryRow("select id, title, date, arrivaltime, starttime, endtime, location, description, status, createddate, expireddate, checkmarkassigned, checkxcanceled, comments, showsession, "+
 		"instructors, patientsneeded, patientsassigned, patientsselected, patientsavailable, patientsunavailable, patientsnoresponse "+
 		"from sessions where title = $1 and date = $2 and starttime = $3 and endtime = $4 and location = $5 and description = $6 ", sinfo.Title, sinfo.Date, sinfo.StartTime, sinfo.EndTime, sinfo.Location, sinfo.Description).Scan(&s.Id,
-		&s.Information.Title, &s.Information.Date, &s.Information.StartTime, &s.Information.EndTime, &s.Information.Location,
+		&s.Information.Title, &s.Information.Date, &s.Information.ArrivalTime, &s.Information.StartTime, &s.Information.EndTime, &s.Information.Location,
 		&s.Information.Description, &s.Information.Status, &s.Information.CreatedDate, &s.Information.ExpiredDate, &s.Information.CheckMarkAssigned, &s.Information.CheckXCanceled, &commentsByte, &s.Information.ShowSession, &instructorsByte, &s.PatientsNeeded,
 		&patientsAssignedByte, &patientsSelectedByte, &patientsAvailableByte, &patientsUnavailableByte, &patientsNoResponseByte)
 
@@ -516,9 +517,9 @@ func (s *Session) UpdateRecord(db *sql.DB) (err error) {
 		return
 	}
 	_, err = db.Exec("update sessions set title = $2, date = $3, "+
-		"starttime = $4, endtime = $5, "+
-		"location = $6, description = $7, status = $8, createddate = $9, expireddate = $10, checkmarkassigned = $11, checkxcanceled = $12, comments = $13, showsession = $14, instructors = $15, patientsneeded = $16, patientsassigned = $17, patientsselected = $18, patientsavailable = $19, patientsunavailable = $20, patientsnoresponse = $21 where id = $1",
-		s.Id, s.Information.Title, s.Information.Date, s.Information.StartTime, s.Information.EndTime,
+		"arrivaltime = $4, starttime = $5, endtime = $6, "+
+		"location = $7, description = $8, status = $9, createddate = $10, expireddate = $11, checkmarkassigned = $12, checkxcanceled = $13, comments = $14, showsession = $15, instructors = $16, patientsneeded = $17, patientsassigned = $18, patientsselected = $19, patientsavailable = $20, patientsunavailable = $21, patientsnoresponse = $22 where id = $1",
+		s.Id, s.Information.Title, s.Information.Date, s.Information.ArrivalTime, s.Information.StartTime, s.Information.EndTime,
 		s.Information.Location, s.Information.Description, s.Information.Status, s.Information.CreatedDate, s.Information.ExpiredDate, s.Information.CheckMarkAssigned, s.Information.CheckXCanceled, commentsByte, s.Information.ShowSession,
 		instructorsByte, s.PatientsNeeded,
 		patientsAssignedByte, patientsSelectedByte, patientsAvailableByte,
@@ -535,7 +536,7 @@ func (s *Session) DeleteRecord(db *sql.DB) (err error) {
 }
 
 func GetAllSessionInfoRecords(db *sql.DB) (sessions []*SessionInfo, err error) {
-	rows, err := db.Query("select id, title, date, starttime, endtime, location, description, status, createddate, expireddate, checkmarkassigned, checkxcanceled, comments, showsession from sessions")
+	rows, err := db.Query("select id, title, date, arrivaltime, starttime, endtime, location, description, status, createddate, expireddate, checkmarkassigned, checkxcanceled, comments, showsession from sessions")
 	if err != nil {
 		return
 	}
@@ -543,7 +544,7 @@ func GetAllSessionInfoRecords(db *sql.DB) (sessions []*SessionInfo, err error) {
 	for rows.Next() {
 		session := &Session{Information: &SessionInfo{}}
 		var commentsByte []byte
-		err = rows.Scan(&session.Id, &session.Information.Title, &session.Information.Date, &session.Information.StartTime, &session.Information.EndTime,
+		err = rows.Scan(&session.Id, &session.Information.Title, &session.Information.Date, &session.Information.ArrivalTime, &session.Information.StartTime, &session.Information.EndTime,
 			&session.Information.Location, &session.Information.Description, &session.Information.Status, &session.Information.CreatedDate, &session.Information.ExpiredDate,
 			&session.Information.CheckMarkAssigned, &session.Information.CheckXCanceled, &commentsByte, &session.Information.ShowSession)
 		if err != nil {
@@ -560,7 +561,7 @@ func GetAllSessionInfoRecords(db *sql.DB) (sessions []*SessionInfo, err error) {
 }
 
 func GetAllSessionRecords(db *sql.DB) (sessions []*Session, err error) {
-	rows, err := db.Query("select id, title, date, starttime, endtime, location, description, status, createddate, expireddate, checkmarkassigned, checkxcanceled, comments, showsession, instructors, patientsneeded, " +
+	rows, err := db.Query("select id, title, date, arrivaltime, starttime, endtime, location, description, status, createddate, expireddate, checkmarkassigned, checkxcanceled, comments, showsession, instructors, patientsneeded, " +
 		"patientsassigned, patientsselected, patientsavailable, patientsunavailable, patientsnoresponse" + " from sessions")
 	if err != nil {
 		return
@@ -579,6 +580,7 @@ func GetAllSessionRecords(db *sql.DB) (sessions []*Session, err error) {
 			&session.Id,
 			&session.Information.Title,
 			&session.Information.Date,
+			&session.Information.ArrivalTime,
 			&session.Information.StartTime,
 			&session.Information.EndTime,
 			&session.Information.Location,

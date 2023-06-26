@@ -766,6 +766,7 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 func createsession(w http.ResponseWriter, r *http.Request) {
 	title := strings.TrimSpace(r.PostFormValue("title"))
 	date := strings.TrimSpace(r.PostFormValue("date"))
+	arrivaltime := strings.TrimSpace(r.PostFormValue("arrivaltime"))
 	starttime := strings.TrimSpace(r.PostFormValue("starttime"))
 	endtime := strings.TrimSpace(r.PostFormValue("endtime"))
 	location := strings.TrimSpace(r.PostFormValue("location"))
@@ -775,7 +776,7 @@ func createsession(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println("Error converting patients needed to integer")
 	}
-	newSession := Session{}.Create(title, date, starttime, endtime, location, description)
+	newSession := Session{}.Create(title, date, arrivaltime, starttime, endtime, location, description)
 	loc, err := time.LoadLocation("EST")
 	if err != nil {
 		fmt.Println("Error in LoadLocation CheckExpirationDate :", err)
@@ -805,6 +806,7 @@ func updatesession(w http.ResponseWriter, r *http.Request) {
 	description := r.PostFormValue("description")
 	newtitle := r.PostFormValue("newtitle")
 	newdate := r.PostFormValue("newdate")
+	newarrivaltime := r.PostFormValue("newarrivaltime")
 	newstarttime := r.PostFormValue("newstarttime")
 	newendtime := r.PostFormValue("newendtime")
 	newlocation := r.PostFormValue("newlocation")
@@ -843,6 +845,7 @@ func updatesession(w http.ResponseWriter, r *http.Request) {
 			if sessionEqual(foundSession.Information, si) {
 				si.Title = newtitle
 				si.Date = newdate
+				si.ArrivalTime = newarrivaltime
 				si.StartTime = newstarttime
 				si.EndTime = newendtime
 				si.Location = newlocation
@@ -855,6 +858,7 @@ func updatesession(w http.ResponseWriter, r *http.Request) {
 
 	foundSession.Information.Title = newtitle
 	foundSession.Information.Date = newdate
+	foundSession.Information.ArrivalTime = newarrivaltime
 	foundSession.Information.StartTime = newstarttime
 	foundSession.Information.EndTime = newendtime
 	foundSession.Information.Location = newlocation

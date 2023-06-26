@@ -35,6 +35,7 @@ CREATE TABLE Sessions (
 	id SERIAL PRIMARY KEY,
 	title varchar(75) NOT NULL,
  	date varchar(50) NOT NULL,
+	arrivaltime varchar(50) NOT NULL,
 	starttime varchar(50) NOT NULL,
 	endtime varchar(50) NOT NULL,
 	location varchar(50) NOT NULL,

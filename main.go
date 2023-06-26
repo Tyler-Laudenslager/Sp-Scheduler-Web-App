@@ -64,14 +64,14 @@ func resetAllSpPasswords() {
 	}
 }
 
-func makeSession(name, date, starttime, endtime, location, description string) {
+func makeSession(name, date, arrivaltime, starttime, endtime, location, description string) {
 
 	loc, err := time.LoadLocation("EST")
 	if err != nil {
 		fmt.Println("Error in LoadLocation CheckExpirationDate :", err)
 	}
 
-	session := Session{}.Create(name, date, starttime, endtime, location, description)
+	session := Session{}.Create(name, date, arrivaltime, starttime, endtime, location, description)
 	session.Information.CreatedDate = time.Now().In(loc).Format("01/02/2006")
 	session.Information.ExpiredDate = time.Now().In(loc).Format("01/02/2006")
 	session.PatientsNeeded = 3
@@ -137,17 +137,20 @@ func init() {
 	//resetAllSpPasswords()
 
 	// Session Creation
-	makeSession("Sacred Heart Check-UP", "06/12/2023", "11:00am", "12:00pm", "Sacred Heart", "Check-Up")
-	makeSession("Anderson Follow UP", "06/20/2023", "1:00pm", "2:00pm", "Warren", "Follow-Up")
-	makeSession("Practice Session", "06/30/2023", "1:30pm", "3:00pm", "Sacred Heart", "Follow-Up")
-	makeSession("Practice Session", "06/29/2023", "7:30am", "8:30am", "Sacred Heart", "Follow-Up")
+	makeSession("Sacred Heart Check-UP", "06/27/2023", "10:45am", "11:00am", "12:00pm", "Sacred Heart", "Check-Up")
+	makeSession("Anderson Follow UP", "06/28/2023", "12:45am", "1:00pm", "2:00pm", "Warren", "Follow-Up")
+	makeSession("Practice Session", "06/29/2023", "1:15am", "1:30pm", "3:00pm", "Sacred Heart", "Follow-Up")
+	makeSession("Practice Session", "06/30/2023", "7:15am", "7:30am", "8:30am", "Sacred Heart", "Follow-Up")
+	fmt.Println("Made All Sessions...")
 	// SP Creation
 	makeSP("Charles Darwin", "cdarwin", "letmein2")
 	makeSP("Robert Pike", "rpike", "letmein")
+	fmt.Println("Made All SP Accounts...")
 
 	// Manager Creation
 	// saveDatabase()
 	makeManager("Tyler Lauden", "tlaud", "letmeinman")
+	fmt.Println("Made All Manager Accounts...")
 
 }
 

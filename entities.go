@@ -257,11 +257,12 @@ func (s *Session) Scan(value interface{}) error {
 	return json.Unmarshal(b, &s)
 }
 
-func (s Session) Create(title string, date string, starttime string, endtime string, location string, description string) *Session {
+func (s Session) Create(title string, date string, arrivaltime string, starttime string, endtime string, location string, description string) *Session {
 	return &Session{
 		Information: &SessionInfo{
 			Title:             title,
 			Date:              date,
+			ArrivalTime:       arrivaltime,
 			StartTime:         starttime,
 			EndTime:           endtime,
 			Location:          location,
@@ -286,6 +287,7 @@ func (s Session) Create(title string, date string, starttime string, endtime str
 type SessionInfo struct {
 	Title             string                `json:"Title"`
 	Date              string                `json:"Date"`
+	ArrivalTime       string                `json:"ArrivalTime"`
 	StartTime         string                `json:"StartTime"`
 	EndTime           string                `json:"EndTime"`
 	Location          string                `json:"Location"`

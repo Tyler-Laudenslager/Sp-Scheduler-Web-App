@@ -107,6 +107,7 @@
         <div class="offcanvas-body">
             <h5>Date : {{ .Information.Date }}</h5>
             <h5>Title : {{ .Information.Title }}</h5>
+            <h5>Arrival Time : {{ .Information.ArrivalTime }}</h5>
             <h5>Start Time : {{ .Information.StartTime }}</h5>
             <h5>End Time : {{ .Information.EndTime }}</h5>
             <h5>Location : {{ .Information.Location }}</h5>
@@ -168,6 +169,10 @@
             <div class="form-floating mb-2">
                 <input type="text" name="newdate" class="form-control" value="{{ .Information.Date }}">
                 <label for="floatingInput">Date</label>
+            </div>
+            <div class="form-floating mb-2">
+                <input type="text" name="newarrivaltime" class="form-control" value="{{ .Information.ArrivalTime }}">
+                <label for="floatingInput">Arrival Time</label>
             </div>
             <div class="form-floating mb-2">
                 <input type="text" name="newstarttime" class="form-control" value="{{ .Information.StartTime }}">
@@ -461,6 +466,10 @@
                 <div class="form-floating mb-2">
                     <input type="text" name="date" class="form-control" value="04/23/2028">
                     <label for="floatingInput">Date</label>
+                </div>
+                <div class="form-floating mb-2">
+                    <input type="text" name="arrivaltime" class="form-control" value="10:45AM">
+                    <label for="floatingInput">Arrival Time</label>
                 </div>
                 <div class="form-floating mb-2">
                     <input type="text" name="starttime" class="form-control" value="11:00AM">
