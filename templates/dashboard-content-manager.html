@@ -298,11 +298,21 @@
                 {{ else }}
                     <h6>None</h6>
                 {{ end }}
+                <br/>
+                <h6>----------------------------------------------------------------</h6>
+                <span class="badge bg-danger" style="font-size: 0.7rem">Override Manager Controls</span>
+                <div class="form-check">
+                    <label>
+                        <input type="checkbox" name="override" value="availableoverride" class="form-check-input" autocomplete="off">
+                        Add All SPs to Available
+                    </label>
+                </div> 
                 <div class="container mt-4">
                 <button type="submit" formaction="/assignsp" class="btn btn-outline-success" data-bs-dismiss="modal">Submit</button>
                 </div>
             </form>
             <br/>
+            
             <h6>Comments:</h6>
             {{ if .Information.Comments }}
             <div class="vstack gap-2 ">

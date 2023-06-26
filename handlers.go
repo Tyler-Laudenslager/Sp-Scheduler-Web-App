@@ -1061,6 +1061,7 @@ func assignsp(w http.ResponseWriter, r *http.Request) {
 	endtime := r.PostFormValue("endtime")
 	location := r.PostFormValue("location")
 	description := r.PostFormValue("description")
+	override := r.PostFormValue("override")
 	sessionInfo := SessionInfo{
 		Title:       title,
 		Date:        date,
@@ -1254,6 +1255,16 @@ func assignsp(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 		}
+	}
+
+	if override == "availableoverride" {
+		foundSession.PatientsAvailable = []*SpUser{}
+		allSpUsers, err := GetAllSpUserRecords(db)
+		if err != nil {
+			fmt.Println("Error: Getting all Sp User records", err)
+		}
+		foundSession.PatientsAvailable = append(foundSession.PatientsAvailable, allSpUsers...)
+
 	}
 
 	err = foundSession.UpdateRecord(db)
