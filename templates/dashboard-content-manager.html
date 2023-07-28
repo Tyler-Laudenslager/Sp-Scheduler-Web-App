@@ -41,9 +41,9 @@
                           Quick Session Options
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#MakeSessionsAvailable">Make Sessions Available</a></li>
-                          <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#SelectedToAssigned">Assign All Selected SPs</a></li>
-                          <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#ConfirmSPs">Confirm All Assigned SPs</a></li>
+                            <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#MakeSessionsAvailable">1. Make Sessions Available</a></li>
+                          <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#SelectedToAssigned">2. Assign All Selected SPs</a></li>
+                          <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#ConfirmSPs">3. Confirm All Assigned SPs</a></li>
                         </ul>
                       </div>
                 </div>
@@ -242,17 +242,18 @@
                 <input type="hidden" name="description" value="{{ .Information.Description }}">
                 <h6>Available SPs | <span class="badge bg-primary">{{ .PatientsAvailable | len }}</span></h5></h6>
                 {{ if .PatientsAvailable }}
-                <span class="badge bg-primary" style="font-size: 0.7rem">add to selected</span>
-                {{ range .PatientsAvailable }}
-                <div class="form-check">
-                    <label class="mt-1">
-                        <input type="checkbox" name="{{ .Username }}" value="savedselected" class="form-check-input mt-1" autocomplete="off">
-                        {{ .Name.First }} {{ .Name.Last }}
-                    </label>
-                </div> 
-                {{ end }}
+                    <span class="badge bg-primary" style="font-size: 0.7rem">add to selected</span>
+                    {{ range .PatientsAvailable }}
+                        <div class="form-check">
+                            <label class="mt-1">
+                                <input type="checkbox" name="{{ .Username }}" value="savedselected" class="form-check-input mt-1" autocomplete="off">
+                                {{ .Name.First }} {{ .Name.Last }}
+                            </label>
+                        </div>
+                    {{ end }}
+                    
                 {{ else }}
-                    <h6>None</h6>
+                <h6>None</h6>
                 {{ end }}
                 <br>
                 <h6>Selected SPs | <span class="badge bg-warning">{{ .PatientsSelected | len }}</span></h5></h6>
@@ -331,6 +332,79 @@
             <h6>None</h6>
             {{ end }}
 
+        </div>
+    </div>
+    <div class="offcanvas offcanvas-end" id="{{ .Information.Title | formatTitle }}{{ .Information.Date | formatTitle }}{{ .Information.StartTime | formatTitle }}{{ .Information.EndTime | formatTitle }}{{ .Information.Location | formatTitle }}linked" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" aria-labelledby="{{ .Information.Title | formatTitle }}{{ .Information.Date | formatTitle }}{{ .Information.StartTime | formatTitle }}{{ .Information.EndTime | formatTitle }}{{ .Information.Location | formatTitle }}linked">
+        <div class="offcanvas-header">
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <div class="container-fluid overflow-auto">
+            <form action="/linkedsessions" method="post" enctype="application/x-www-form-urlencoded">
+                <input type="hidden" name="title" value="{{ .Information.Title }}">
+                <input type="hidden" name="date" value="{{ .Information.Date }}">
+                <input type="hidden" name="starttime" value="{{ .Information.StartTime }}">
+                <input type="hidden" name="endtime" value="{{ .Information.EndTime }}">
+                <input type="hidden" name="location" value="{{ .Information.Location }}">
+                <input type="hidden" name="description" value="{{ .Information.Description }}">
+                <input type="hidden" name="selecteddate" value="{{ $.SelectedDate }}">
+                <h5>Link Sessions to a Session</h5>
+                <h6>----------------------------</h6>
+                <h6>Selected Session Information</h6>
+                <h6>Date : {{ .Information.Date }}</h6>
+                <h6>Title : {{ .Information.Title }}</h6>
+                <h6>Start Time : {{ .Information.StartTime }}</h6>
+                <h6>End Time : {{ .Information.EndTime }}</h6>
+                <h6>Location : {{ .Information.Location }}</h6>
+                <h6>Description : </h6>
+                <p>&emsp;{{ .Information.Description }}</p>
+                <h6>Sessions Currently Linked:</h6>
+                {{ if .LinkedSessions }}
+                {{ range .LinkedSessions }}
+
+                <div class="card mt-2" style="width: 18rem;">
+                    <div class="card-body">
+                        <h6 class="card-title">Title: {{ .Title }}</h6>
+                        <h6 class="card-subtitle mb-2">Date: {{ .Date }}</h6>
+                        <h6 class="card-subtitle mb-2">Start Time: {{ .StartTime }}</h6>
+                        <h6 class="card-subtitle mb-2">End Time: {{ .EndTime }}</h6>
+                        <h6 class="card-subtitle mb-2">Location: {{ .Location }}</h6>
+                    </div>
+                </div>
+                {{ end }}
+                {{ else }}
+                <h6>None</h6>
+                {{ end }}
+                <h6>------------------------</h6>
+                <h6>Link Session with Sessions Selected Below:</h6>
+                <div class="container overflow-auto" style="height: 400px; width: 346px;">
+                {{ with $Sessions := filterSessionsByInfo .Information $.SelectedDate $.User.SessionsUnmanaged }}
+                {{ range $Sessions }}
+                <div class="form-check">
+                    <div class="hstack gap-2">
+                                        <input class="form-check-input" type="checkbox" name="{{ .Information.Title | formatTitle }}{{ .Information.Date | formatTitle }}{{ .Information.StartTime | formatTitle }}{{ .Information.EndTime | formatTitle }}{{ .Information.Location | formatTitle }}" value="linked" id="{{ .Information.Title | formatTitle }}{{ .Information.Date | formatTitle }}{{ .Information.StartTime | formatTitle }}{{ .Information.EndTime | formatTitle }}{{ .Information.Location | formatTitle }}">
+                                        <label class="form-check-label" for="{{ .Information.Title | formatTitle }}{{ .Information.Date | formatTitle }}{{ .Information.StartTime | formatTitle }}{{ .Information.EndTime | formatTitle }}{{ .Information.Location | formatTitle }}">
+                                        <div class="card mt-2" style="width: 18rem;">
+                                            <div class="card-body">
+                                                <h6 class="card-title">Title: {{ .Information.Title }}</h6>
+                                                <h6 class="card-subtitle mb-2">Date: {{ .Information.Date }}</h6>
+                                                <h6 class="card-subtitle mb-2">Start Time: {{ .Information.StartTime }}</h6>
+                                                <h6 class="card-subtitle mb-2">End Time: {{ .Information.EndTime }}</h6>
+                                                <h6 class="card-subtitle mb-2">Location: {{ .Information.Location }}</h6>
+                                            </div>
+                                        </div>
+                    </div>
+                </div>
+                {{ end }}
+                {{ end }}
+                </div>
+                <div class="hstack gap-4">
+                <button type="submit" formaction="/linkedsessions" class="btn btn-outline-success mt-2 mb-2" data-bs-dismiss="modal">Link Sessions!</button>
+                <button type="submit" formaction="/resetlinkedsessions" class="btn btn-outline-danger mt-2 mb-2" data-bs-dismiss="modal">Reset Linked Sessions!</button>
+                </div>
+            </form>
+            </div>
+            </div>
         </div>
     </div>
 {{ end }}

@@ -76,6 +76,40 @@ func formatDate(date string) string {
 
 }
 
+func IsSessionIn(sessionInfo *SessionInfo, sessionCollection []*SessionInfo) bool {
+
+	if len(sessionCollection) == 0 {
+		return false
+	}
+	for _, sinfo := range sessionCollection {
+		if sessionEqual(sessionInfo, sinfo) {
+			return true
+		}
+	}
+	return false
+}
+
+func filterSessionsByInfo(selectedsessionInfo *SessionInfo, monthSelected string, sessions []*Session) []*Session {
+	newSessionsFiltered := make([]*Session, 0)
+	foundSession, _ := GetSessionRecord(selectedsessionInfo, db)
+	if len(sessions) != 0 {
+		for _, s := range sessions {
+			time, _ := time.Parse("01/02/2006", s.Information.Date)
+			date := time.Format("January, 2006")
+			if sessionEqual(selectedsessionInfo, s.Information) {
+				continue
+			}
+			if IsSessionIn(s.Information, foundSession.LinkedSessions) {
+				continue
+			}
+			if monthSelected == date {
+				newSessionsFiltered = append(newSessionsFiltered, s)
+			}
+		}
+	}
+	return sortSessionByDate(newSessionsFiltered)
+}
+
 func GetCurrentMonth() string {
 	loc, _ := time.LoadLocation("EST")
 	currentMonth := time.Now().In(loc).Format("January, 2006")
@@ -86,6 +120,29 @@ func GetNextMonth() string {
 	loc, _ := time.LoadLocation("EST")
 	nextMonth := time.Now().In(loc).AddDate(0, 1, 0).Format("January, 2006")
 	return nextMonth
+}
+
+func GetLinkedInfo(sinfo *SessionInfo) string {
+	linkedsessioninfo := "<h6>Must be available for the following sessions:</h6>"
+	foundSession, err := GetSessionRecord(sinfo, db)
+	if err != nil {
+		fmt.Println("Error : ", err)
+		return "Error"
+	}
+	if len(foundSession.LinkedSessions) > 0 {
+		for _, si := range foundSession.LinkedSessions {
+			linkedsessioninfo += "<p>"
+			for i := 20; i >= 0; i-- {
+				linkedsessioninfo += "*"
+			}
+			linkedsessioninfo += fmt.Sprintf("<br>Date: %s<br>", si.Date)
+			linkedsessioninfo += fmt.Sprintf("Title: %s<br>", si.Title)
+			linkedsessioninfo += fmt.Sprintf("Arrival Time: %s<br>", si.ArrivalTime)
+			linkedsessioninfo += fmt.Sprintf("End Time: %s<br>", si.EndTime)
+			linkedsessioninfo += "</p>"
+		}
+	}
+	return linkedsessioninfo
 }
 
 func removeDuplicate[T string | int](sliceList []T) []T {
@@ -331,6 +388,19 @@ func StatusUnavailable(status string) bool {
 
 func StatusAvailable(status string) bool {
 	return status == "available"
+}
+
+func SessionLinked(sessionInfo *SessionInfo) bool {
+	foundSession, err := GetSessionRecord(sessionInfo, db)
+	if err != nil {
+		fmt.Println("Error : ", err)
+	}
+
+	if len(foundSession.LinkedSessions) > 0 {
+		return true
+	} else {
+		return false
+	}
 }
 
 func filterSessionInfoByMonth(monthSelected, username, sessionsLabel string) []*SessionInfo {
@@ -755,15 +825,21 @@ func dashboard(w http.ResponseWriter, r *http.Request) {
 			"formatDate":               formatDate,
 			"ExpirationDateSet":        ExpirationDateSet,
 			"IsValid":                  IsValid,
+			"SessionLinked":            SessionLinked,
 			"CheckExpired":             CheckExpired,
 			"CheckNotExpired":          CheckNotExpired,
+			"CheckAvailableForLinked":  CheckAvailableForLinked,
 			"CheckForAllSessionsInput": CheckForAllSessionsInput,
 			"CheckForSessionConflict":  CheckForSessionConflict,
+			"filterSessionsByInfo":     filterSessionsByInfo,
 			"filterSessionInfoByMonth": filterSessionInfoByMonth,
+			"GetLinkedInfo":            GetLinkedInfo,
 			"sortSessionInfoByDate":    sortSessionInfoByDate,
 			"sortSessionByDate":        sortSessionByDate,
 			"sortSpUserByLastName":     sortSpUserByLastName,
 			"StatusCanceled":           StatusCanceled,
+			"NotNil":                   NotNil,
+			"NotNilSessions":           NotNilSessions,
 			"StatusAssigned":           StatusAssigned,
 			"StatusNoResponse":         StatusNoResponse,
 			"StatusAvailable":          StatusAvailable,
@@ -975,6 +1051,140 @@ func confirmAllSPs(w http.ResponseWriter, r *http.Request) {
 		foundSession.Information.ShowSession = true
 		foundSession.UpdateRecord(db)
 	}
+	http.Redirect(w, r, "/dashboard", httpRedirectResponse)
+}
+
+func resetlinkedsessions(w http.ResponseWriter, r *http.Request) {
+	//Get the information for the session
+	title := r.PostFormValue("title")
+	date := r.PostFormValue("date")
+	starttime := r.PostFormValue("starttime")
+	endtime := r.PostFormValue("endtime")
+	location := r.PostFormValue("location")
+	description := r.PostFormValue("description")
+	sessionInfo := SessionInfo{
+		Title:       title,
+		Date:        date,
+		StartTime:   starttime,
+		EndTime:     endtime,
+		Location:    location,
+		Description: description,
+	}
+	foundSession, _ := GetSessionRecord(&sessionInfo, db)
+	for _, si := range foundSession.LinkedSessions {
+		linkedSession, _ := GetSessionRecord(si, db)
+		linkedSession.LinkedSessions = []*SessionInfo{}
+		err := linkedSession.UpdateRecord(db)
+		if err != nil {
+			fmt.Println("Error : ", err)
+		}
+	}
+	foundSession.LinkedSessions = []*SessionInfo{}
+	foundSession.UpdateRecord(db)
+	http.Redirect(w, r, "/dashboard", httpRedirectResponse)
+}
+
+func CheckSPForAllLinked(spuser *SpUser, linkedSessions []*SessionInfo) bool {
+	for _, si := range spuser.SessionsAvailable {
+		if IsSessionIn(si, linkedSessions) {
+			fmt.Println(si, "Not Found in Linked Sessions")
+			fmt.Println("return false")
+			return true
+		}
+	}
+	fmt.Println("Not Found in Linked Sessions")
+	fmt.Println("return false")
+	return false
+}
+
+func NotNil(spusers []*SpUser) bool {
+	if len(spusers) != 0 {
+		fmt.Println("returned true in NotNil")
+		return true
+	} else {
+		fmt.Println("returned false in NotNil")
+		return false
+	}
+}
+
+func NotNilSessions(sessions []*SessionInfo) bool {
+	if len(sessions) != 0 {
+		fmt.Println("returned true in NotNil")
+		return true
+	} else {
+		fmt.Println("returned false in NotNil")
+		return false
+	}
+}
+
+func CheckAvailableForLinked(spusers []*SpUser, linkedSessions []*SessionInfo) []*SpUser {
+	fmt.Println("Made it to Linked Session Checking")
+	availableSpUsers := []*SpUser{}
+	for _, su := range spusers {
+		if CheckSPForAllLinked(su, linkedSessions) {
+
+			availableSpUsers = append(availableSpUsers, su)
+		}
+	}
+	fmt.Println("Available People when Linked")
+	for _, su := range availableSpUsers {
+		fmt.Println(su.Username)
+	}
+	return availableSpUsers
+}
+
+func SearchAndRemove(sinfo *SessionInfo, sinfobox []*SessionInfo) []*SessionInfo {
+	newinfobox := []*SessionInfo{}
+	for i, si := range sinfobox {
+		if sessionEqual(si, sinfo) {
+			//All elements up to but not including the element
+			//All elements after but not including the element
+			fmt.Println("Removing ", si.Title)
+			newinfobox = append(sinfobox[:i], sinfobox[i+1:]...)
+			return newinfobox
+		}
+
+	}
+	return []*SessionInfo{}
+}
+
+func linkedsessions(w http.ResponseWriter, r *http.Request) {
+	//Get the information for the session
+	title := r.PostFormValue("title")
+	date := r.PostFormValue("date")
+	starttime := r.PostFormValue("starttime")
+	endtime := r.PostFormValue("endtime")
+	location := r.PostFormValue("location")
+	description := r.PostFormValue("description")
+	sessionInfo := SessionInfo{
+		Title:       title,
+		Date:        date,
+		StartTime:   starttime,
+		EndTime:     endtime,
+		Location:    location,
+		Description: description,
+	}
+	foundSession, _ := GetSessionRecord(&sessionInfo, db)
+
+	allSessionRecords, _ := GetAllSessionRecords(db)
+	for _, s := range allSessionRecords {
+		session_info := s.Information.Title + s.Information.Date + s.Information.StartTime + s.Information.EndTime + s.Information.Location
+		session_info = formatTitle(session_info)
+		if r.PostFormValue(session_info) != "" {
+			foundSession.LinkedSessions = append(foundSession.LinkedSessions, s.Information)
+			s.UpdateRecord(db)
+		}
+	}
+	for _, si := range foundSession.LinkedSessions {
+		foundLinked, err := GetSessionRecord(si, db)
+		if err != nil {
+			fmt.Println("Error : ", err)
+		}
+		for _, si2 := range SearchAndRemove(foundLinked.Information, foundSession.LinkedSessions) {
+			fmt.Println(si2.Title)
+		}
+	}
+	foundSession.UpdateRecord(db)
 	http.Redirect(w, r, "/dashboard", httpRedirectResponse)
 }
 
@@ -1375,6 +1585,19 @@ func signupavailable(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println("Error GetSessionRecord in signupavailable", err)
 	}
+	needToRemove := false
+	indexToRemove := 0
+	if availableSessionRecord.PatientsUnavailable != nil {
+		for i, su := range availableSessionRecord.PatientsUnavailable {
+			if su.Name.First == spuser.Name.First && su.Name.Last == spuser.Name.Last {
+				needToRemove = true
+				indexToRemove = i
+			}
+		}
+	}
+	if needToRemove {
+		availableSessionRecord.PatientsUnavailable = append(availableSessionRecord.PatientsUnavailable[:indexToRemove], availableSessionRecord.PatientsUnavailable[indexToRemove+1:]...)
+	}
 	for _, su := range availableSessionRecord.PatientsAvailable {
 		if su.Name.First == spuser.Name.First && su.Name.Last == spuser.Name.Last {
 			duplicate = true
@@ -1386,10 +1609,6 @@ func signupavailable(w http.ResponseWriter, r *http.Request) {
 	}
 	if err != nil {
 		fmt.Println("Error updating session record", err)
-	}
-	availableSessionRecord, err = GetSessionRecord(&sessionInfo, db)
-	if err != nil {
-		fmt.Println("Error GetSessionRecord in signupavailable", err)
 	}
 	duplicate = false
 	if spuser.SessionsAvailable != nil {
@@ -1450,29 +1669,59 @@ func signupnotavailable(w http.ResponseWriter, r *http.Request) {
 		Description: r.PostFormValue("Description"),
 	}
 
-	notAvailableSessionRecord, err := GetSessionRecord(&sessionInfo, db)
+	notavailableSessionRecord, err := GetSessionRecord(&sessionInfo, db)
 	if err != nil {
 		fmt.Println("Error GetSessionRecord in signupavailable", err)
 	}
+	needToRemove := false
+	indexToRemove := 0
+	if notavailableSessionRecord.PatientsAvailable != nil {
+		for i, su := range notavailableSessionRecord.PatientsAvailable {
+			if su.Name.First == spuser.Name.First && su.Name.Last == spuser.Name.Last {
+				needToRemove = true
+				indexToRemove = i
+			}
+		}
+	}
+	if needToRemove {
+		notavailableSessionRecord.PatientsAvailable = append(notavailableSessionRecord.PatientsAvailable[:indexToRemove], notavailableSessionRecord.PatientsAvailable[indexToRemove+1:]...)
+	}
+
+	for _, su := range notavailableSessionRecord.PatientsUnavailable {
+		if su.Name.First == spuser.Name.First && su.Name.Last == spuser.Name.Last {
+			duplicate = true
+		}
+	}
+	if !duplicate {
+		notavailableSessionRecord.PatientsUnavailable = append(notavailableSessionRecord.PatientsUnavailable, &spuser)
+		err = notavailableSessionRecord.UpdateRecord(db)
+	}
+	if err != nil {
+		fmt.Println("Error updating session record", err)
+	}
+	duplicate = false
 	if spuser.SessionsUnavailable != nil {
 		for i := 0; i < len(spuser.SessionsUnavailable); i++ {
-			if sessionEqual(notAvailableSessionRecord.Information, spuser.SessionsUnavailable[i]) {
+			if sessionEqual(notavailableSessionRecord.Information, spuser.SessionsUnavailable[i]) {
 				duplicate = true
 			}
 		}
 	}
 	if !duplicate {
 		for i := 0; i < len(spuser.SessionsPool); i++ {
+			// Removed Session From Sessions Pool
 			if sessionEqual(spuser.SessionsPool[i], &sessionInfo) {
 				spuser.SessionsPool = append(spuser.SessionsPool[:i], spuser.SessionsPool[i+1:]...)
 			}
 		}
 		for i := 0; i < len(spuser.SessionsAvailable); i++ {
+			//Removed Session from Sessions Unavailable
 			if sessionEqual(spuser.SessionsAvailable[i], &sessionInfo) {
 				spuser.SessionsAvailable = append(spuser.SessionsAvailable[:i], spuser.SessionsAvailable[i+1:]...)
 			}
 		}
-		spuser.SessionsUnavailable = append(spuser.SessionsUnavailable, notAvailableSessionRecord.Information)
+		//Add session to SessionsUnavailable
+		spuser.SessionsUnavailable = append(spuser.SessionsUnavailable, notavailableSessionRecord.Information)
 		spuser.UpdateRecord(db)
 		if err != nil {
 			fmt.Println("Error updating record in signupavailable: ", err)
@@ -1481,10 +1730,11 @@ func signupnotavailable(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			fmt.Println("Error: GetSpUserRecord in signupavailable", err)
 		}
+
 	}
-	title := formatTitle(notAvailableSessionRecord.Information.Title + notAvailableSessionRecord.Information.Date +
-		notAvailableSessionRecord.Information.StartTime + notAvailableSessionRecord.Information.EndTime +
-		notAvailableSessionRecord.Information.Location)
+	title := formatTitle(notavailableSessionRecord.Information.Title + notavailableSessionRecord.Information.Date +
+		notavailableSessionRecord.Information.StartTime + notavailableSessionRecord.Information.EndTime +
+		notavailableSessionRecord.Information.Location)
 	http.Redirect(w, r, "/dashboard#"+title, httpRedirectResponse)
 }
 

@@ -390,7 +390,7 @@ func (s *Session) Display() {
 	fmt.Println("Seen :", s.Information.ShowSession)
 }
 func (s *Session) MakeRecord(db *sql.DB) (err error) {
-	statement := "insert into sessions (title, date, arrivaltime, starttime, endtime, location, description, status, createddate, expireddate, checkmarkassigned, checkxcanceled, comments, showsession, instructors, patientsneeded, patientsassigned, patientsselected, patientsavailable, patientsunavailable, patientsnoresponse) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21) returning id"
+	statement := "insert into sessions (title, date, arrivaltime, starttime, endtime, location, description, status, createddate, expireddate, checkmarkassigned, checkxcanceled, comments, showsession, instructors, patientsneeded, patientsassigned, patientsselected, patientsavailable, patientsunavailable, patientsnoresponse, linkedsessions) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22) returning id"
 	stmt, err := db.Prepare(statement)
 	if err != nil {
 		return
@@ -402,8 +402,9 @@ func (s *Session) MakeRecord(db *sql.DB) (err error) {
 	patientsSelectedByte, err := json.Marshal(&s.PatientsSelected)
 	patientsAvailableByte, err := json.Marshal(&s.PatientsAvailable)
 	patientsUnavailableByte, err := json.Marshal(&s.PatientsUnavailable)
-	patientsNoResponse, err := json.Marshal(&s.PatientsNoResponse)
+	patientsNoResponseByte, err := json.Marshal(&s.PatientsNoResponse)
 	commentsByte, err := json.Marshal(&s.Information.Comments)
+	linkedSessionsByte, err := json.Marshal(&s.LinkedSessions)
 
 	err = stmt.QueryRow(
 		s.Information.Title,
@@ -426,7 +427,8 @@ func (s *Session) MakeRecord(db *sql.DB) (err error) {
 		patientsSelectedByte,
 		patientsAvailableByte,
 		patientsUnavailableByte,
-		patientsNoResponse).Scan(&s.Id)
+		patientsNoResponseByte,
+		linkedSessionsByte).Scan(&s.Id)
 
 	if err != nil {
 		return
@@ -444,13 +446,14 @@ func GetSessionRecord(sinfo *SessionInfo, db *sql.DB) (s Session, err error) {
 	var patientsUnavailableByte []byte
 	var patientsNoResponseByte []byte
 	var commentsByte []byte
+	var linkedSessionsByte []byte
 
 	err = db.QueryRow("select id, title, date, arrivaltime, starttime, endtime, location, description, status, createddate, expireddate, checkmarkassigned, checkxcanceled, comments, showsession, "+
-		"instructors, patientsneeded, patientsassigned, patientsselected, patientsavailable, patientsunavailable, patientsnoresponse "+
+		"instructors, patientsneeded, patientsassigned, patientsselected, patientsavailable, patientsunavailable, patientsnoresponse, linkedsessions "+
 		"from sessions where title = $1 and date = $2 and starttime = $3 and endtime = $4 and location = $5 and description = $6 ", sinfo.Title, sinfo.Date, sinfo.StartTime, sinfo.EndTime, sinfo.Location, sinfo.Description).Scan(&s.Id,
 		&s.Information.Title, &s.Information.Date, &s.Information.ArrivalTime, &s.Information.StartTime, &s.Information.EndTime, &s.Information.Location,
 		&s.Information.Description, &s.Information.Status, &s.Information.CreatedDate, &s.Information.ExpiredDate, &s.Information.CheckMarkAssigned, &s.Information.CheckXCanceled, &commentsByte, &s.Information.ShowSession, &instructorsByte, &s.PatientsNeeded,
-		&patientsAssignedByte, &patientsSelectedByte, &patientsAvailableByte, &patientsUnavailableByte, &patientsNoResponseByte)
+		&patientsAssignedByte, &patientsSelectedByte, &patientsAvailableByte, &patientsUnavailableByte, &patientsNoResponseByte, &linkedSessionsByte)
 
 	if err != nil {
 		return
@@ -481,6 +484,10 @@ func GetSessionRecord(sinfo *SessionInfo, db *sql.DB) (s Session, err error) {
 		return
 	}
 	err = json.Unmarshal(commentsByte, &s.Information.Comments)
+	if err != nil {
+		return
+	}
+	err = json.Unmarshal(linkedSessionsByte, &s.LinkedSessions)
 	if err != nil {
 		return
 	}
@@ -516,14 +523,18 @@ func (s *Session) UpdateRecord(db *sql.DB) (err error) {
 	if err != nil {
 		return
 	}
+	linkedSessionsByte, err := json.Marshal(&s.LinkedSessions)
+	if err != nil {
+		return
+	}
 	_, err = db.Exec("update sessions set title = $2, date = $3, "+
 		"arrivaltime = $4, starttime = $5, endtime = $6, "+
-		"location = $7, description = $8, status = $9, createddate = $10, expireddate = $11, checkmarkassigned = $12, checkxcanceled = $13, comments = $14, showsession = $15, instructors = $16, patientsneeded = $17, patientsassigned = $18, patientsselected = $19, patientsavailable = $20, patientsunavailable = $21, patientsnoresponse = $22 where id = $1",
+		"location = $7, description = $8, status = $9, createddate = $10, expireddate = $11, checkmarkassigned = $12, checkxcanceled = $13, comments = $14, showsession = $15, instructors = $16, patientsneeded = $17, patientsassigned = $18, patientsselected = $19, patientsavailable = $20, patientsunavailable = $21, patientsnoresponse = $22, linkedsessions = $23 where id = $1",
 		s.Id, s.Information.Title, s.Information.Date, s.Information.ArrivalTime, s.Information.StartTime, s.Information.EndTime,
 		s.Information.Location, s.Information.Description, s.Information.Status, s.Information.CreatedDate, s.Information.ExpiredDate, s.Information.CheckMarkAssigned, s.Information.CheckXCanceled, commentsByte, s.Information.ShowSession,
 		instructorsByte, s.PatientsNeeded,
 		patientsAssignedByte, patientsSelectedByte, patientsAvailableByte,
-		patientsUnavailableByte, patientsNoResponseByte)
+		patientsUnavailableByte, patientsNoResponseByte, linkedSessionsByte)
 
 	return
 }
@@ -562,7 +573,7 @@ func GetAllSessionInfoRecords(db *sql.DB) (sessions []*SessionInfo, err error) {
 
 func GetAllSessionRecords(db *sql.DB) (sessions []*Session, err error) {
 	rows, err := db.Query("select id, title, date, arrivaltime, starttime, endtime, location, description, status, createddate, expireddate, checkmarkassigned, checkxcanceled, comments, showsession, instructors, patientsneeded, " +
-		"patientsassigned, patientsselected, patientsavailable, patientsunavailable, patientsnoresponse" + " from sessions")
+		"patientsassigned, patientsselected, patientsavailable, patientsunavailable, patientsnoresponse, linkedsessions " + " from sessions")
 	if err != nil {
 		return
 	}
@@ -576,6 +587,7 @@ func GetAllSessionRecords(db *sql.DB) (sessions []*Session, err error) {
 		var patientsUnavailableByte []byte
 		var patientsNoResponseByte []byte
 		var commentsByte []byte
+		var linkedSessionsByte []byte
 		err = rows.Scan(
 			&session.Id,
 			&session.Information.Title,
@@ -598,7 +610,8 @@ func GetAllSessionRecords(db *sql.DB) (sessions []*Session, err error) {
 			&patientsSelectedByte,
 			&patientsAvailableByte,
 			&patientsUnavailableByte,
-			&patientsNoResponseByte)
+			&patientsNoResponseByte,
+			&linkedSessionsByte)
 		if err != nil {
 			return
 		}
@@ -627,6 +640,10 @@ func GetAllSessionRecords(db *sql.DB) (sessions []*Session, err error) {
 			return
 		}
 		err = json.Unmarshal(commentsByte, &session.Information.Comments)
+		if err != nil {
+			return
+		}
+		err = json.Unmarshal(linkedSessionsByte, &session.LinkedSessions)
 		if err != nil {
 			return
 		}

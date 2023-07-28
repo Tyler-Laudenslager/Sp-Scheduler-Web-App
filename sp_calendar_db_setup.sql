@@ -53,5 +53,6 @@ CREATE TABLE Sessions (
 	PatientsAssigned JSONB,
 	PatientsSelected JSONB,
 	PatientsUnavailable JSONB,
-	PatientsNoResponse JSONB
+	PatientsNoResponse JSONB,
+	LinkedSessions JSONB
 );

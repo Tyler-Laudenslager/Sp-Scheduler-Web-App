@@ -22,7 +22,19 @@
             <h5 class="card-text">End Time: {{ .EndTime }}</h5>
             <h5 class="card-text">Location: {{ .Location }}</h5>
             <h5 class="card-text">Description: <br><div class="card-text badge badge-pill text-wrap" style="font-size: 16px; background-color: lightgrey; color: black; width: 20rem; min-height: 5rem">{{ .Description }}</div></h5>
-            
+            {{ if SessionLinked . }}
+            <div class="row row-cols-auto align-cols-end align-items-center position-absolute top-0 end-0">
+                <div class="col">
+                    {{ with $linkedinfo := GetLinkedInfo . }}
+                    <button type="button" class="btn btn-link" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top" title="{{ $linkedinfo }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="red" class="bi bi-exclamation" viewBox="0 0 16 16">
+                            <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.553.553 0 0 1-1.1 0L7.1 4.995z"/>
+                        </svg> 
+                    </button>
+                    {{ end }}
+                </div>
+            </div>
+            {{ end }}
         </div>
     </div>
     {{ end }}
@@ -50,6 +62,18 @@
             <h5 class="card-text">Description: <br><div class="card-text badge badge-pill text-wrap" style="font-size: 16px; background-color: lightgrey; color: black; width: 20rem; min-height: 5rem">{{ .Description }}</div></h5>
             
         </div>
+        {{ if SessionLinked . }}
+        <div class="row row-cols-auto align-cols-end align-items-center position-absolute top-0 end-0">
+            <div class="col">
+                <button type="button" class="btn btn-link" data-bs-toggle="tooltip" data-bs-placement="top" title="Linked Sessions">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-link-45deg" viewBox="0 0 16 16">
+                        <path d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1.002 1.002 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4.018 4.018 0 0 1-.128-1.287z"/>
+                        <path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243L6.586 4.672z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        {{ end }}
     </div>
     {{ end }}
     {{ end }}
@@ -88,6 +112,19 @@
                     </button> 
                 </form>
             </div>
+            {{ if SessionLinked . }}
+            <div class="row row-cols-auto align-cols-end align-items-center position-absolute top-0 end-0">
+                <div class="col">
+                    {{ with $linkedinfo := GetLinkedInfo . }}
+                    <button type="button" class="btn btn-link" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top" title="{{ $linkedinfo }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="red" class="bi bi-exclamation" viewBox="0 0 16 16">
+                            <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.553.553 0 0 1-1.1 0L7.1 4.995z"/>
+                        </svg> 
+                    </button>
+                    {{ end }}
+                </div>
+            </div>
+            {{ end }}
             <h5 class="card-text">Date: {{ .Date | formatDate }}</h5>
             <h5 class="card-text">Title: {{ .Title }}</h5>
             {{ if .ArrivalTime | IsValid }}
@@ -138,6 +175,19 @@
                     </button> 
                 </form>
             </div>
+            {{ if SessionLinked . }}
+            <div class="row row-cols-auto align-cols-end align-items-center position-absolute top-0 end-0">
+                <div class="col">
+                    {{ with $linkedinfo := GetLinkedInfo . }}
+                    <button type="button" class="btn btn-link" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top" title="{{ $linkedinfo }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="red" class="bi bi-exclamation" viewBox="0 0 16 16">
+                            <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.553.553 0 0 1-1.1 0L7.1 4.995z"/>
+                        </svg> 
+                    </button>
+                    {{ end }}
+                </div>
+            </div>
+            {{ end }}
             <h5 class="card-text">Date: {{ .Date | formatDate }}</h5>
             <h5 class="card-text">Title: {{ .Title }}</h5>
             {{ if .ArrivalTime | IsValid }}
@@ -193,6 +243,19 @@
                     </button> 
                 </form>
             </div>
+            {{ if SessionLinked . }}
+            <div class="row row-cols-auto align-cols-end align-items-center position-absolute top-0 end-0">
+                <div class="col">
+                    {{ with $linkedinfo := GetLinkedInfo . }}
+                    <button type="button" class="btn btn-link" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top" title="{{ $linkedinfo }}" trigger="click">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="red" class="bi bi-exclamation" viewBox="0 0 16 16">
+                            <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.553.553 0 0 1-1.1 0L7.1 4.995z"/>
+                        </svg> 
+                    </button>
+                    {{ end }}
+                </div>
+            </div>
+            {{ end }}
             <h5 class="card-text">Date: {{ .Date | formatDate }}</h5>
             <h5 class="card-text">Title: {{ .Title }}</h5>
             {{ if .ArrivalTime | IsValid }}

@@ -173,16 +173,16 @@ func (spManager SpManager) Create(name Name, role Role, email string) *SpManager
 }
 
 type Session struct {
-	Id                  uint          `json:"Id"`
-	Information         *SessionInfo  `json:"Information"`
-	Instructors         []*Instructor `json:"Instructors"`
-	PatientsNeeded      int           `json:"PatientsNeeded"`
-	PatientsAssigned    []*SpUser     `json:"PatientsAssigned"`
-	PatientsSelected    []*SpUser     `json:"PatientsSelected"`
-	PatientsAvailable   []*SpUser     `json:"PatientsAvailable"`
-	PatientsUnavailable []*SpUser     `json:"PatientsUnavailable"`
-	PatientsNoResponse  []*SpUser     `json:"PatientsNoResponse"`
-	Comments            []*Comment    `json:"Comments"`
+	Id                  uint           `json:"Id"`
+	Information         *SessionInfo   `json:"Information"`
+	Instructors         []*Instructor  `json:"Instructors"`
+	PatientsNeeded      int            `json:"PatientsNeeded"`
+	PatientsAssigned    []*SpUser      `json:"PatientsAssigned"`
+	PatientsSelected    []*SpUser      `json:"PatientsSelected"`
+	PatientsAvailable   []*SpUser      `json:"PatientsAvailable"`
+	PatientsUnavailable []*SpUser      `json:"PatientsUnavailable"`
+	PatientsNoResponse  []*SpUser      `json:"PatientsNoResponse"`
+	LinkedSessions      []*SessionInfo `json:"LinkedSessions"`
 }
 
 type SessionContainer []*Session
@@ -281,6 +281,7 @@ func (s Session) Create(title string, date string, arrivaltime string, starttime
 		PatientsAvailable:   []*SpUser{},
 		PatientsUnavailable: []*SpUser{},
 		PatientsNoResponse:  []*SpUser{},
+		LinkedSessions:      []*SessionInfo{},
 	}
 }
 
