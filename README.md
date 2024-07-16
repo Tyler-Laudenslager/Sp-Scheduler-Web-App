@@ -40,7 +40,5 @@
         Github Respository -> <a href="https://github.com/sausheong/gwp">Go Web Programming Source Files</a>
         </p>
         </br>
-        <p>Any questions / concerns concerning the contents of this repository can be directed to the project admin :</p></br> 
-        <p>Email : <b>tyler.laudenslager@sluhn.org</b></p></br>
     </body>
 </html>
